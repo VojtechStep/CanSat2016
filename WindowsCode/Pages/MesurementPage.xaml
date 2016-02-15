@@ -19,8 +19,7 @@
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        
-        <GridView Name="GView" ItemsSource="{x:Bind RecentItems}" Margin="10 5 0 0" SelectionMode="None">
+        <GridView Name="GView" ItemsSource="{x:Bind RecentItems}" Margin="10 10 0 0" SelectionMode="None">
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="clss:RecentItem">
                     <comp:MesurementTemplate HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />

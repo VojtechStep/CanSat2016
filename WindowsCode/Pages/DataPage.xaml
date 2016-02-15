@@ -7,27 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Pivot Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <PivotItem Header="Environment">
-            <StackPanel>
-                <TextBlock Text="Current Temperature: -12 °C" />
-                <TextBlock Text="Current Pressure: 9 875 Pa" />
-            </StackPanel>
-        </PivotItem>
-        <PivotItem Header="Acceleration">
-            <StackPanel>
-                <TextBlock Text="X Acceleration: 7.45" />
-                <TextBlock Text="Y Acceleration: -9.12" />
-                <TextBlock Text="Z Acceleration: -0.98" />
-            </StackPanel>
-        </PivotItem>
-        <PivotItem Header="GPS">
-            <StackPanel>
-                <TextBlock Text="Status: OK" />
-                <TextBlock Text="Laltitude: 50° 32&quot;16'" />
-                <TextBlock Text="Longitude: 32° 03&quot;50'" />
-                <TextBlock Text="Direction: North-West" />
-            </StackPanel>
-        </PivotItem>
-    </Pivot>
+    <StackPanel>
+        <TextBlock Name="DataBlock" />
+    </StackPanel>
 </Page>

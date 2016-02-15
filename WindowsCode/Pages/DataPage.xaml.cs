@@ -14,6 +14,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using WindowsCode.Classes;
 using Windows.UI;
+using System.Text;
+using System.Diagnostics;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -24,10 +26,23 @@ namespace WindowsCode.Pages
     /// </summary>
     public sealed partial class DataPage : Page
     {
+        Int32 dataIndex = 0;
         public DataPage()
         {
             this.InitializeComponent();
-            
+            dataIndex = 0;
+            (Window.Current.Content as MainPage).DataState.Data.CollectionChanged += Data_CollectionChanged;
+        }
+
+        private void Data_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            StringBuilder dataBuilder = new StringBuilder();
+            foreach (CSVInfo data in (Window.Current.Content as MainPage).DataState.Data)
+            {
+                dataBuilder.Append($"{dataIndex++}: {data.RawData}\n");
+                Debug.WriteLine($"Temperature: {data.Temperature.ToString()}");
+            }
+            DataBlock.Text = dataBuilder.ToString();
         }
     }
 }

@@ -17,8 +17,7 @@ namespace WindowsCode.Classes
 
     public class DataState
     {
-        public SolidColorBrush Background { get; set; } = new SolidColorBrush(Colors.White);
-
+        public ObservableCollection<CSVInfo> Data = new ObservableCollection<CSVInfo>();
     }
 
     public class MapState

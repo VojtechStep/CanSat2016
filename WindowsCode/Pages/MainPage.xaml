@@ -38,15 +38,14 @@
             <Button Name="HamburgerToggle" Foreground="White" Background="{ThemeResource SystemAccentColor}" Width="{StaticResource CompactPaneLength}" Height="{StaticResource CompactPaneLength}" Grid.Column="0" Grid.Row="0" Click="HamburgerToggle_Click" Style="{StaticResource HamburgerToggle}">
                 <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="{StaticResource DefaultFontSize}" FontWeight="Bold" Text="&#xE700;" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </Button>
-            <TextBlock Name="PageTitle" Margin="10 0 0 0" FontSize="20" FontWeight="SemiBold" Foreground="White" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"/>
+            <TextBlock Name="PageTitle" Margin="10 0 0 0" FontSize="15" FontWeight="Bold" Foreground="White" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"/>
         </StackPanel>
-        <SplitView Name="HamburgerMenu" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" DisplayMode="CompactOverlay" CompactPaneLength="{StaticResource CompactPaneLength}">
+        <SplitView Name="HamburgerMenu" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" DisplayMode="Overlay" CompactPaneLength="{StaticResource CompactPaneLength}">
             <SplitView.Pane>
                 <RelativePanel Name="HMRelativePanel">
                     <comps:HamburgerMenuItem x:Name="MesurementsItem" MenuItemIcon="&#xEBDE;" MenuItemLabel="Mesurements" RelativePanel.AlignTopWithPanel="True" Click="MesurementsItem_Click" />
-                    <comps:HamburgerMenuItem x:Name="DataItem" MenuItemIcon="&#xE16D;" MenuItemLabel="Data" RelativePanel.Below="MesurementsItem" Click="DataItem_Click"/>
+                    <comps:HamburgerMenuItem x:Name="DataItem" MenuItemIcon="&#xE16D;" MenuItemLabel="Data" RelativePanel.Below="MesurementsItem" Click="DataItem_Click" Visibility="{x:Bind DataTabVisibility}"/>
                     <comps:HamburgerMenuItem x:Name="SettingsItem" MenuItemIcon="&#xE115;" MenuItemLabel="Settings" RelativePanel.AlignBottomWithPanel="True" Click="SettingsItem_Click"/>
-                    <comps:HamburgerMenuItem x:Name="MapItem" MenuItemIcon="&#xE81B;" MenuItemLabel="Map" RelativePanel.Below="DataItem" Click="MapItem_Click" />
                 </RelativePanel>
             </SplitView.Pane>
             <SplitView.Content>
@@ -60,12 +59,12 @@
             <VisualStateGroup x:Name="WindowState">
                 <VisualState x:Name="Narrow">
                     <VisualState.Setters>
-                        
+                        <Setter Target="HamburgerMenu.DisplayMode" Value="Overlay" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Wide">
                     <VisualState.Setters>
-                        
+                        <Setter Target="HamburgerMenu.DisplayMode" Value="CompactOverlay" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

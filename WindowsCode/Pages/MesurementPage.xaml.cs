@@ -79,7 +79,7 @@ namespace WindowsCode.Pages
             }
 
             foreach (RecentItem item in (Window.Current.Content as MainPage).MesurementState.RecentItems)
-                item.Bg = AbsoluteRequestedTheme() == ElementTheme.Dark ? Colors.Yellow : Colors.Navy;
+                item.Bg = AbsoluteRequestedTheme() == ElementTheme.Dark ? Color.FromArgb(255, 40, 40, 40) : Colors.LightGray;
             RecentItems = (Window.Current.Content as MainPage).MesurementState.RecentItems;
             Bindings.Update();
         }
@@ -94,7 +94,7 @@ namespace WindowsCode.Pages
                 Fixed = true,
                 Removable = false,
                 Pinnable = false,
-                Bg = AbsoluteRequestedTheme() == ElementTheme.Dark ? Colors.Yellow : Colors.Navy
+                Bg = AbsoluteRequestedTheme() == ElementTheme.Dark ? Color.FromArgb(255, 40, 40, 40) : Colors.LightGray
             };
             NewRecentItem.Click += (s, a) =>
             {
@@ -103,6 +103,7 @@ namespace WindowsCode.Pages
 
             AddRecent(NewRecentItem);
         }
+
     }
 
 }

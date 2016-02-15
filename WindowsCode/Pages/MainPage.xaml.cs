@@ -23,6 +23,8 @@ namespace WindowsCode
             }
         }
 
+        private Visibility _dataTabVisibility = Visibility.Collapsed;
+
         public enum DeviceFamily
         {
             Mobile,
@@ -37,7 +39,6 @@ namespace WindowsCode
         public MainPage()
         {
             InitializeComponent();
-            ShowStatusBar();
             HamburgerMenu.RegisterPropertyChangedCallback(SplitView.IsPaneOpenProperty, IsPaneOpenPropertyChanged);
             SizeChanged += HandleSizeChange;
         }
@@ -45,8 +46,16 @@ namespace WindowsCode
 
         private void HandleSizeChange(object sender, SizeChangedEventArgs e)
         {
-            if (e.NewSize.Width >= 720) VisualStateManager.GoToState(this, "Wide", false);
-            else VisualStateManager.GoToState(this, "Narrow", false);
+            if (e.NewSize.Width >= 720)
+            {
+                VisualStateManager.GoToState(this, "Wide", false);
+                HideStatusBar();
+            }
+            else
+            {
+                VisualStateManager.GoToState(this, "Narrow", false);
+                ShowStatusBar();
+            }
         }
 
         private async void ShowStatusBar()
@@ -60,6 +69,16 @@ namespace WindowsCode
                 statusbar.ForegroundColor = White;
             }
         }
+
+        private async void HideStatusBar()
+        {
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                var statusbar = StatusBar.GetForCurrentView();
+                await statusbar.HideAsync();
+            }
+        }
+
         public bool IsPaneOpen
         {
             get { return HamburgerMenu.IsPaneOpen; }
@@ -85,7 +104,7 @@ namespace WindowsCode
             {
                 hmi.Selected = hmi.MenuItemLabel == PageTypeName;
             }
-            PageTitle.Text = PageTypeName;
+            PageTitle.Text = PageTypeName.ToUpper();
         }
 
         private void HamburgerToggle_Click(object sender, RoutedEventArgs e)
@@ -96,6 +115,16 @@ namespace WindowsCode
         public void GoToPage(Type PageType)
         {
             GoToPage(PageType, null);
+        }
+
+        public Visibility DataTabVisibility
+        {
+            get { return _dataTabVisibility; }
+            set
+            {
+                _dataTabVisibility = value;
+                Bindings.Update();
+            }
         }
 
         public void GoToPage(Type PageType, object args)
@@ -123,16 +152,6 @@ namespace WindowsCode
         {
             GoToPage(typeof(DataPage));
 
-        }
-
-        private void MapItem_Click(object sender, RoutedEventArgs e)
-        {
-            GoToPage(typeof(MapPage));
-        }
-
-        private void syncButton_Click(object sender, RoutedEventArgs e)
-        {
-            GoToPage(typeof(CSSyncPage));
         }
     }
 

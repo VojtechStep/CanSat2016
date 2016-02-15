@@ -27,6 +27,7 @@ namespace WindowsCode.Classes
                     LatitudeDirection = (Direction)parts[7].ToCharArray()[0];
                     Longitude = Double.Parse(parts[8]);
                     LongitudeDirection = (Direction)parts[9].ToCharArray()[0];
+                    RawData = input;
                 }
                 catch (Exception)
                 {
@@ -46,6 +47,7 @@ namespace WindowsCode.Classes
         public Direction LatitudeDirection { get; private set; }
         public Double Longitude { get; private set; }
         public Direction LongitudeDirection { get; private set; }
+        public String RawData { get; private set; }
     }
 
     public enum Direction
@@ -55,5 +57,6 @@ namespace WindowsCode.Classes
         EAST = 'E',
         WEST = 'W'
     }
+
 
 }
