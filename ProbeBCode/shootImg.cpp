@@ -1,5 +1,6 @@
 #include <SoftwareSerial\SoftwareSerial.h>
 #include <SD\src\SD.h>
+#include <string>
 
 //setting up pins and other crap for Camera
 SoftwareSerial mySerial(5, 6);
@@ -114,7 +115,7 @@ void cameraInit(byte baud)
 	delay(100);
 }
 
-void shootImg()
+void shootImg(int iteration)
 {
 	byte b[32];
 
@@ -127,7 +128,9 @@ void shootImg()
 		incomingByte = mySerial.read();
 	}
 
-	myFile = SD.open("pic.jpg", FILE_WRITE);
+	string name = "img" + iteration + ".jpg";
+
+	myFile = SD.open(name, FILE_WRITE);
 
 	while (!end)
 	{

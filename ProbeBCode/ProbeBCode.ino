@@ -7,6 +7,8 @@
 #include <SPI\SPI.h>
 #include <SD\src\SD.h>
 
+int iteration = 0;
+
 void setup() {
 	SPI.begin();
 	Serial.begin(9600);
@@ -15,12 +17,12 @@ void setup() {
 
 
 void loop() {
-	shootImg();
+	shootImg(iteration);
 	readBuffer();
 	saveBuffer();
 }
 
-void shootImg();
+void shootImg(int);
 void cameraInit(byte);
 
 void readBuffer()
