@@ -1,5 +1,5 @@
-#include <SoftwareSerial\SoftwareSerial.h>
-#include <SD\src\SD.h>
+#include <SoftwareSerial.h>
+#include <SD.h>
 #include <string>
 
 //setting up pins and other crap for Camera
