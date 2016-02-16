@@ -6,13 +6,16 @@
 
 #include <SPI\SPI.h>
 #include <SD\src\SD.h>
+#include <string>
 
 int iteration = 0;
+string data;
+File dataFile;
 
 void setup() {
 	SPI.begin();
-	Serial.begin(9600);
 	cameraInit(0x2A);
+	dataFile = SD.open("Mesures", FILE_WRITE);
 }
 
 
@@ -29,4 +32,11 @@ void readBuffer()
 {}
 
 void saveBuffer()
-{}
+{
+	dataFile = SD.open("Mesures");
+	if (dataFile)
+	{
+		dataFile.println(data);
+		dataFile.close;
+	}
+}

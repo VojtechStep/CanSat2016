@@ -10,7 +10,7 @@ byte incomingByte;
 long int i = 0x0000, j = 0, k = 0, count = 0;
 uint8_t MH, ML;
 bool end = false;
-File myFile;
+File img;
 
 
 
@@ -130,7 +130,7 @@ void shootImg(int iteration)
 
 	string name = "img" + iteration + ".jpg";
 
-	myFile = SD.open(name, FILE_WRITE);
+	img = SD.open(name, FILE_WRITE);
 
 	while (!end)
 	{
@@ -156,9 +156,9 @@ void shootImg(int iteration)
 		
 		for (int l = 0; l < count; l++)
 		{
-			myFile.write(b[l]);
+			img.write(b[l]);
 		}
 	}
 
-	myFile.close();
+	img.close();
 }
