@@ -4,10 +4,10 @@
     xmlns:local="using:WindowsCode.Resources">
 
     <x:Double x:Key="CompactPaneLength">48</x:Double>
-    <x:Double x:Key="OpenPaneLengthPercentage">0.50</x:Double>
-    <x:Double x:Key="DefaultFontSize">20</x:Double>
+    <x:Double x:Key="OpenPaneLengthPercentage">0.45</x:Double>
+    <x:Double x:Key="DefaultFontSize">15</x:Double>
     <x:Double x:Key="VerMajor">0</x:Double>
     <x:Double x:Key="VerMinor">2</x:Double>
-    <x:Double x:Key="BuildNum">40</x:Double>
+    <x:Double x:Key="BuildNum">60</x:Double>
 
 </ResourceDictionary>

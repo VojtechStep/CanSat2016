@@ -26,11 +26,10 @@ namespace WindowsCode.Pages
     /// </summary>
     public sealed partial class DataPage : Page
     {
-        Int32 dataIndex = 0;
         public DataPage()
         {
             this.InitializeComponent();
-            dataIndex = 0;
+
             (Window.Current.Content as MainPage).DataState.Data.CollectionChanged += Data_CollectionChanged;
         }
 
@@ -39,8 +38,7 @@ namespace WindowsCode.Pages
             StringBuilder dataBuilder = new StringBuilder();
             foreach (CSVInfo data in (Window.Current.Content as MainPage).DataState.Data)
             {
-                dataBuilder.Append($"{dataIndex++}: {data.RawData}\n");
-                Debug.WriteLine($"Temperature: {data.Temperature.ToString()}");
+                dataBuilder.Append($"{data.RawData}\n");
             }
             DataBlock.Text = dataBuilder.ToString();
         }

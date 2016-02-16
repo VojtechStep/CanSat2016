@@ -17,5 +17,9 @@
   <ItemGroup>
     <None Include="GroundStationCode.ino" />
   </ItemGroup>
- 
+  <ItemGroup>
+    <ClInclude Include="__vm\.GroundStationCode.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

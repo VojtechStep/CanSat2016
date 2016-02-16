@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using WindowsCode.Classes;
+using Windows.Storage;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -35,6 +36,8 @@ namespace WindowsCode.Pages
         private Boolean _connectionsAvailable = false;
         private DateTime receptionStart;
         private DateTime receptionEnd;
+
+        private Int32 sessionPackageCount;
 
         public NewMesurementPage()
         {
@@ -79,11 +82,13 @@ namespace WindowsCode.Pages
 
         private void Browse_Click(object sender, RoutedEventArgs e)
         {
+
         }
 
         private void Done_Click(object sender, RoutedEventArgs e)
         {
-            StartTest(PortSelector.SelectedIndex);
+ //           StartTest(PortSelector.SelectedIndex);
+            OpenFile((FileNameSelector.Text != "" ? FileNameSelector.Text : "NewMesurement") + ((TextBlock)FileExtensionSelector.SelectedItem).Text, FilePathSelector.Text ?? "");
             (Window.Current.Content as MainPage).DataTabVisibility = Visibility.Visible;
             (Window.Current.Content as MainPage).GoToPage(typeof(DataPage));
         }
@@ -91,6 +96,11 @@ namespace WindowsCode.Pages
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             (App.Current as App).GoBack();
+        }
+
+        public void OpenFile(String FileName, String Path)
+        {
+            Debug.WriteLine($"{Path}\\{FileName}");
         }
 
         public async void StartTest(Int32 deviceIndex)
@@ -124,6 +134,7 @@ namespace WindowsCode.Pages
                         if (line.ToString().Contains("START"))
                         {
                             receptionStart = DateTime.UtcNow;
+                            sessionPackageCount = 0;
                             listening = true;
                         }
                         else if (listening)
@@ -139,12 +150,13 @@ namespace WindowsCode.Pages
                                 receptionEnd = DateTime.UtcNow;
                                 listening = false;
                                 Debug.WriteLine($"Reception time: {(receptionEnd - receptionStart).Seconds} sec");
-                                Debug.WriteLine($"Received: {(Window.Current.Content as MainPage).DataState.Data.Count} packets");
-                                Debug.WriteLine($"Transfer speed: {(Window.Current.Content as MainPage).DataState.Data.Count / (receptionEnd - receptionStart).Seconds} transfers/sec");
+                                Debug.WriteLine($"Received: {sessionPackageCount} packets");
+                                Debug.WriteLine($"Transfer speed: {sessionPackageCount / (receptionEnd - receptionStart).Seconds} transfers/sec");
                             }
                             else
                             {
                                 (Window.Current.Content as MainPage).DataState.Data.Add(new CSVInfo(line.ToString()));
+                                sessionPackageCount++;
                             }
                         }
                         line = new StringBuilder();
