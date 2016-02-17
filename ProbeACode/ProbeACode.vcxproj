@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C5F80730-F44F-4478-BDAE-6634EFC2CA88}</ProjectGuid>
+    <ProjectGuid>{01F41767-904B-4DDA-85C5-C9EB740CCEB1}</ProjectGuid>
     <RootNamespace>ProbeCode</RootNamespace>
     <ProjectName>ProbeACode</ProjectName>
     <SccProjectName>SAK</SccProjectName>

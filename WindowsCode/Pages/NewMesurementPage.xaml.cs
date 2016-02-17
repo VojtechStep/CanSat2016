@@ -21,6 +21,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using WindowsCode.Classes;
 using Windows.Storage;
+using Windows.System;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -43,6 +44,7 @@ namespace WindowsCode.Pages
         {
             this.InitializeComponent();
             GetSerialPorts();
+   //         Debug.WriteLine(KnownFolders.DocumentsLibrary.Path);
         }
 
         private async void GetSerialPorts()
