@@ -87,4 +87,5 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <..\ProbeACode\ProbeACode.ino>
 #include <..\ProbeACode\EC_ADXL345.cpp>
 #include <..\ProbeACode\readData.cpp>
+#include <..\ProbeACode\readData.h>
 #endif

@@ -1,5 +1,11 @@
 #include <string>
 
+//initialization functions
+void tempInit() {}
+void presInit() {}
+void AcceInit() {}
+void GPSIniti() {}
+
 //function calling other functions and formating whole string
 void readData(string & dataString)
 {
@@ -19,10 +25,7 @@ void readTemp(string & dataString)
 
 }
 
-void readAcc(string & dataString)
-{
-
-}
+void readAcc(string & dataString);
 
 void readGPS(string & dataString)
 {
