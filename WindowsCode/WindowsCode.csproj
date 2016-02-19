@@ -113,9 +113,6 @@
     <Compile Include="CustomControls\MesurementTemplate.xaml.cs">
       <DependentUpon>MesurementTemplate.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\CSSyncPage.xaml.cs">
-      <DependentUpon>CSSyncPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Pages\DataPage.xaml.cs">
       <DependentUpon>DataPage.xaml</DependentUpon>
     </Compile>
@@ -162,10 +159,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="CustomControls\MesurementTemplate.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Pages\CSSyncPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

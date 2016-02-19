@@ -22,6 +22,7 @@ using Windows.UI.Xaml.Navigation;
 using WindowsCode.Classes;
 using Windows.Storage;
 using Windows.System;
+using Windows.Storage.Pickers;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -44,7 +45,6 @@ namespace WindowsCode.Pages
         {
             this.InitializeComponent();
             GetSerialPorts();
-   //         Debug.WriteLine(KnownFolders.DocumentsLibrary.Path);
         }
 
         private async void GetSerialPorts()
@@ -57,12 +57,7 @@ namespace WindowsCode.Pages
             {
                 Ports.Add(di);
             }
-
-            ConnectionsAvailable = Ports.Count > 0;
-
-            Bindings.Update();
-
-            if (ConnectionsAvailable) PortSelector.SelectedIndex = 0;
+            CheckIfValid();
         }
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
@@ -82,9 +77,26 @@ namespace WindowsCode.Pages
             set { _connectionsAvailable = value; }
         }
 
-        private void Browse_Click(object sender, RoutedEventArgs e)
+        private async void Browse_Click(object sender, RoutedEventArgs e)
         {
+            FolderPicker fpicker = new FolderPicker();
+            fpicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            fpicker.FileTypeFilter.Add(".txt");
+            StorageFolder selectedFolder = await fpicker.PickSingleFolderAsync();
+            if (selectedFolder != null)
+            {
+                FilePathSelector.Text = selectedFolder.Path;
+            }
+            CheckIfValid();
+        }
 
+        private void CheckIfValid()
+        {
+            Boolean valid = true;
+            if (FilePathSelector.Text == null || FilePathSelector.Text == "") valid = false;
+            if (FileNameSelector.Text == null || FileNameSelector.Text == "") valid = false;
+            if (Ports.Count <= 0) valid = false;
+            Done.IsEnabled = valid;
         }
 
         private void Done_Click(object sender, RoutedEventArgs e)
