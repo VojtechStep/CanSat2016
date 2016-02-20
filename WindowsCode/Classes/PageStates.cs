@@ -1,34 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 
 namespace WindowsCode.Classes
 {
-    public class MesurementState
+    public static class MesurementState
     {
-        public ObservableCollection<RecentItem> RecentItems { get; set; } = new ObservableCollection<RecentItem>();
-        public SolidColorBrush Background { get; set; } = new SolidColorBrush(Colors.White);
+        public static ObservableCollection<RecentItem> RecentItems { get; set; } = new ObservableCollection<RecentItem>();
+        public static MesurementItem CurrentItem { get; set; }
     }
 
-    public class DataState
+    public static class DataState
     {
-        public ObservableCollection<CSVInfo> Data = new ObservableCollection<CSVInfo>();
+        public static ObservableCollection<CSVInfo> Data = new ObservableCollection<CSVInfo>();
+        public static StorageFile OutputFile;
     }
 
-    public class MapState
+    public static class MapState
     {
-        public SolidColorBrush Background { get; set; } = new SolidColorBrush(Colors.White);
 
     }
 
-    public class SettingsState
+    public static class SettingsState
     {
-        public SolidColorBrush Background { get; set; } = new SolidColorBrush(Colors.White);
 
     }
 

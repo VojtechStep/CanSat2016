@@ -31,11 +31,6 @@ namespace WindowsCode
             Desktop
         }
 
-        public MesurementState MesurementState { get; set; } = new MesurementState();
-        public DataState DataState { get; set; } = new DataState();
-        public MapState MapState { get; set; } = new MapState();
-        public SettingsState SettingsState { get; set; } = new SettingsState();
-
         public MainPage()
         {
             InitializeComponent();

@@ -16,6 +16,8 @@ using WindowsCode.Classes;
 using Windows.UI;
 using System.Text;
 using System.Diagnostics;
+using Windows.Storage;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -30,17 +32,24 @@ namespace WindowsCode.Pages
         {
             this.InitializeComponent();
 
-            (Window.Current.Content as MainPage).DataState.Data.CollectionChanged += Data_CollectionChanged;
+            DataState.Data.CollectionChanged -= Data_CollectionChanged;
+            DataState.Data.CollectionChanged += Data_CollectionChanged;
         }
 
-        private void Data_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private async void Data_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            StringBuilder dataBuilder = new StringBuilder();
-            foreach (CSVInfo data in (Window.Current.Content as MainPage).DataState.Data)
+            foreach (CSVInfo data in e.NewItems)
             {
-                dataBuilder.Append($"{data.RawData}\n");
+                DataBlock.Text += data.RawData;
+                if (DataState.OutputFile != null)
+                {
+                    using (StreamWriter writer = new StreamWriter(await DataState.OutputFile.OpenStreamForWriteAsync()))
+                    {
+                        await writer.WriteAsync(data.RawData);
+                    }
+                }
             }
-            DataBlock.Text = dataBuilder.ToString();
+            MesurementState.CurrentItem.Data = DataState.Data;
         }
     }
 }

@@ -114,4 +114,6 @@
         </Setter>
     </Style>
 
+    <SolidColorBrush x:Key="MesurementBackground" Color="LightGray" />
+
 </ResourceDictionary>

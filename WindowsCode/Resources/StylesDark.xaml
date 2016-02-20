@@ -3,6 +3,39 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WindowsCode.Resources">
 
+    <Style x:Key="HamburgerToggle" TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal">
+                                    <!--Useless-->
+                                </VisualState>
+                                <VisualState x:Name="PointerOver">
+                                    <Storyboard>
+                                        <DoubleAnimation To="0.9" Duration="0" Storyboard.TargetName="BackgroundBorder" Storyboard.TargetProperty="Opacity" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <DoubleAnimation To="0.7" Duration="0" Storyboard.TargetName="BackgroundBorder" Storyboard.TargetProperty="Opacity" />
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border Name="BackgroundBorder">
+                            <Border.Background>
+                                <SolidColorBrush Color="{ThemeResource SystemAccentColor}" />
+                            </Border.Background>
+                        </Border>
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     <Style x:Key="HamburgerMenuItem" TargetType="RadioButton">
         <Setter Property="Template">
             <Setter.Value>
@@ -51,5 +84,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <SolidColorBrush x:Key="MesurementBackground" Color="#282828" />
 
 </ResourceDictionary>

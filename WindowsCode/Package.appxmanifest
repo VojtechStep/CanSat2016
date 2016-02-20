@@ -22,11 +22,28 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="csv">
+            <uap:DisplayName>Comma Separated Value</uap:DisplayName>
+            <uap:SupportedFileTypes>
+              <uap:FileType ContentType="text/csv">.csv</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="cansatmesurement">
+            <uap:DisplayName>CanSat Mesurement</uap:DisplayName>
+            <uap:EditFlags OpenIsSafe="true" />
+            <uap:SupportedFileTypes>
+              <uap:FileType ContentType="text/txt">.csmes</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+        <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="text">
             <uap:DisplayName>Text</uap:DisplayName>
             <uap:EditFlags OpenIsSafe="true" />
             <uap:SupportedFileTypes>
-              <uap:FileType ContentType="text/txt">.txt</uap:FileType>
+              <uap:FileType ContentType="text/plain">.txt</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>

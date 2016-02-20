@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace WindowsCode.Classes
@@ -49,11 +50,21 @@ namespace WindowsCode.Classes
             else return (Window.Current.Content as MainPage).RequestedTheme;
         }
 
-        public static Windows.Storage.ApplicationDataCompositeValue ToDataCompositeValue(this RecentItem ri)
+        public static Windows.Storage.ApplicationDataCompositeValue ToDataCompositeValue(this MesurementItem ri)
         {
             Windows.Storage.ApplicationDataCompositeValue composite = new Windows.Storage.ApplicationDataCompositeValue();
 
             return composite;
+        }
+
+        public static Visibility ToVisibility(this Boolean vis)
+        {
+            return vis ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            foreach (var current in enumerable) action(current);
         }
 
     }
@@ -65,7 +76,7 @@ namespace WindowsCode.Classes
         Light,
     }
     
-    public enum BufferPosition
+    public enum QueryPosition
     {
         Normal,
         Start,

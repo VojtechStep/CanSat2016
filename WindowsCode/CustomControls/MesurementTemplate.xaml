@@ -18,9 +18,9 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <RelativePanel Name="WrapperPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="125" Height="200" Background="{x:Bind RecentItem.Bg, Converter={StaticResource SolidBrushConverter}}" ToolTipService.ToolTip="{x:Bind RecentItem.Location}">
-        <TextBlock Name="MesIcon" Text="{x:Bind RecentItem.Icon}" Margin="0 20 0 0" FontFamily="Segoe MDL2 Assets" FontSize="100" HorizontalAlignment="Stretch" Opacity="0.4" RelativePanel.AlignHorizontalCenterWithPanel="True"/>
-        <TextBlock Name="ItemName" Text="{x:Bind RecentItem.Name}" FontWeight="Bold" RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.Below="MesIcon" Margin="0 10 0 0" />
+    <RelativePanel Name="WrapperPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="125" Height="200" Background="{ThemeResource MesurementBackground}">
+        <TextBlock Name="MesIcon" Text="{x:Bind StoredItem.Icon}" Margin="0 20 0 0" FontFamily="Segoe MDL2 Assets" FontSize="100" HorizontalAlignment="Stretch" Opacity="0.4" RelativePanel.AlignHorizontalCenterWithPanel="True"/>
+        <TextBlock Name="ItemName" Text="{x:Bind StoredItem.Name}" FontWeight="Bold" RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.Below="MesIcon" Margin="0 10 0 0" />
         <Button Name="Remove" Height="30" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Content="Remove" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignLeftWithPanel="True" Click="Remove_Click" />
         <Button Name="Pin" Height="30" Width="30" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignRightWithPanel="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0 0 0 0" Click="Pin_Click">
             <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE718;" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
