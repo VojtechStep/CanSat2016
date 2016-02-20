@@ -7,7 +7,65 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel>
-        <TextBlock Name="DataBlock" />
-    </StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Pivot>
+            <PivotItem Header="Temp &amp; Pres">
+                <PivotItem.Content>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="TemperatureLabel" Text="Temperature: " />
+                            <TextBlock Name="TemperatureValue" Text="24 °C"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="PressureLabel" Text="Pressure: " />
+                            <TextBlock Name="PressureValue" Text="9998 mB"/>
+                        </StackPanel>
+                    </StackPanel>
+                </PivotItem.Content>
+            </PivotItem>
+            <PivotItem Header="Acceleration">
+                <PivotItem.Content>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="XAxisLabel" Text="X-Axis: " />
+                            <TextBlock Name="XAxisValue" Text="10000"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="YAxisLabel" Text="Y-Axis: " />
+                            <TextBlock Name="YAxisValue" Text="10000"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="ZAxisLabel" Text="Z-Axis: " />
+                            <TextBlock Name="ZAxisValue" Text="10000"/>
+                        </StackPanel>
+                    </StackPanel>
+                </PivotItem.Content>
+            </PivotItem>
+            <PivotItem Header="GPS">
+                <PivotItem.Content>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="LatitudeLabel" Text="Latitude: " />
+                            <TextBlock Name="LatitudeValue" Text="172°59&quot;12&apos;"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="LongitudeLabel" Text="Longitude: " />
+                            <TextBlock Name="LongitudeValue" Text="172°59&quot;12&apos;"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="LaltitudeLabel" Text="Laltitude: " />
+                            <TextBlock Name="LaltitudeValue" Text="300 m"/>
+                        </StackPanel>
+                    </StackPanel>
+                </PivotItem.Content>
+            </PivotItem>
+        </Pivot>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" Grid.Row="1">
+            <TextBlock Name="DataBlock" />
+        </ScrollViewer>
+    </Grid>
 </Page>

@@ -18,6 +18,8 @@ using System.Text;
 using System.Diagnostics;
 using Windows.Storage;
 using System.Threading.Tasks;
+using Windows.Storage.Streams;
+using Windows.Storage.AccessCache;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -28,6 +30,7 @@ namespace WindowsCode.Pages
     /// </summary>
     public sealed partial class DataPage : Page
     {
+        StringBuilder dataBuilder = new StringBuilder();
         public DataPage()
         {
             this.InitializeComponent();
@@ -38,18 +41,10 @@ namespace WindowsCode.Pages
 
         private async void Data_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            foreach (CSVInfo data in e.NewItems)
-            {
-                DataBlock.Text += data.RawData;
-                if (DataState.OutputFile != null)
-                {
-                    using (StreamWriter writer = new StreamWriter(await DataState.OutputFile.OpenStreamForWriteAsync()))
-                    {
-                        await writer.WriteAsync(data.RawData);
-                    }
-                }
-            }
-            MesurementState.CurrentItem.Data = DataState.Data;
+            dataBuilder = new StringBuilder();
+            (from data in e.NewItems.Cast<CSVData>() where data != null select data.RawData + "\n").ForEach((raw) => dataBuilder.Append(raw));
+            FileIO.AppendTextAsync((await StorageApplicationPermissions.FutureAccessList.GetFileAsync(DataState.OutputFileToken)), dataBuilder.ToString()).AsTask().Wait();
+            DataBlock.Text += dataBuilder.ToString();
         }
     }
 }

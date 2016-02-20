@@ -19,8 +19,8 @@ namespace WindowsCode.Classes
 
     public static class DataState
     {
-        public static ObservableCollection<CSVInfo> Data = new ObservableCollection<CSVInfo>();
-        public static StorageFile OutputFile;
+        public static ObservableCollection<CSVData> Data = new ObservableCollection<CSVData>();
+        public static String OutputFileToken;
     }
 
     public static class MapState

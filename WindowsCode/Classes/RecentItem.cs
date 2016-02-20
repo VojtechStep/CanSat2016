@@ -40,7 +40,7 @@ namespace WindowsCode.Classes
     public class MesurementItem : RecentItem
     {
         public String Location { get; set; }
-        public ObservableCollection<CSVInfo> Data { get; set; }
+        public ObservableCollection<CSVData> Data { get; set; }
         public Boolean IsPinVisible { get; set; } = true;
         public Boolean IsTrashCanVisible { get; set; } = true;
 

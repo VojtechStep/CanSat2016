@@ -107,6 +107,9 @@
     <Compile Include="Classes\PageStates.cs" />
     <Compile Include="Classes\RecentItem.cs" />
     <Compile Include="Classes\Utils.cs" />
+    <Compile Include="CustomControls\Chart2D.xaml.cs">
+      <DependentUpon>Chart2D.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\HamburgerMenuItem.xaml.cs">
       <DependentUpon>HamburgerMenuItem.xaml</DependentUpon>
     </Compile>
@@ -154,6 +157,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="CustomControls\Chart2D.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CustomControls\HamburgerMenuItem.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

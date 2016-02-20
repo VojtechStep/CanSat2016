@@ -32,7 +32,7 @@ void loop()
 
 		sprintf(data, "%s,%s,1000,1000,1000,A,1000000,N,1000000,W", temp.c_str(), pres.c_str());
 		Serial.println(data);
-		delay(100);
+		delay(500);
 	}
 	Serial.println("PAUSE");
 	delay(2000);

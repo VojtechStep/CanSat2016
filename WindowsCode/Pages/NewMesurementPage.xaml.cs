@@ -36,10 +36,7 @@ namespace WindowsCode.Pages
         private ObservableCollection<DeviceInformation> _ports = new ObservableCollection<DeviceInformation>();
         SerialDevice serialPort;
         private Boolean _connectionsAvailable = false;
-        private DateTime receptionStart;
-        private DateTime receptionEnd;
-
-        private Int32 sessionPackageCount;
+        
         private Int32 iteration;
 
         public NewMesurementPage()
@@ -96,31 +93,18 @@ namespace WindowsCode.Pages
             fpicker.FileTypeChoices.Add("Text", new String[] { ".txt" });
             fpicker.FileTypeChoices.Add("CanSat Mesurement", new String[] { ".csmes" });
             StorageFile output = await fpicker.PickSaveFileAsync();
-            await Task.Run(() => {
-                if (!File.Exists(output.Path)) File.Create(output.Path);
-            });
-            DataState.OutputFile = output;
-            FilePathSelector.Text = output?.Path;
+            if (output != null)
+            {
+                DataState.OutputFileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(output);
+                FilePathSelector.Text = output.Path;
+            }
             CheckIfValid();
         }
 
-        private async void CheckIfValid()
+        private void CheckIfValid()
         {
             Boolean valid = true;
-            if (FilePathSelector.Text == null || FilePathSelector.Text == "") valid = false;
-            if (valid)
-            {
-                try
-                {
-                    await StorageFolder.GetFolderFromPathAsync(FilePathSelector.Text.Remove(FilePathSelector.Text.LastIndexOf('\\')));
-                    PathErrorBoxPanel.Visibility = Visibility.Collapsed;
-                }
-                catch (Exception)
-                {
-                    PathErrorBoxPanel.Visibility = Visibility.Visible;
-                    valid = false;
-                }
-            }
+            if (String.IsNullOrWhiteSpace(FilePathSelector.Text)) valid = false;
             if (valid && Ports.Count <= 0) valid = false;
 
             Done.IsEnabled = valid;
@@ -184,8 +168,6 @@ namespace WindowsCode.Pages
                     {
                         if (line.ToString().Contains("START"))
                         {
-                            receptionStart = DateTime.UtcNow;
-                            sessionPackageCount = 0;
                             listening = true;
                             iteration++;
                         }
@@ -199,11 +181,7 @@ namespace WindowsCode.Pages
                             }
                             else if (line.ToString().Contains("PAUSE"))
                             {
-                                receptionEnd = DateTime.UtcNow;
                                 listening = false;
-                                Debug.WriteLine($"Reception time: {(receptionEnd - receptionStart).Seconds} sec");
-                                Debug.WriteLine($"Received: {sessionPackageCount} packets");
-                                Debug.WriteLine($"Transfer speed: {sessionPackageCount / (receptionEnd - receptionStart).Seconds} transfers/sec");
                                 if (iteration == 3)
                                 {
                                     listening = false;
@@ -213,15 +191,14 @@ namespace WindowsCode.Pages
                             }
                             else
                             {
-                                DataState.Data.Add(new CSVInfo(line.ToString()));
-                                sessionPackageCount++;
+                                DataState.Data.Add(new CSVData(line.ToString()));
                             }
                         }
                         line = new StringBuilder();
                     }
                 }
             }
-            
+
         }
 
         public void CloseConnection()

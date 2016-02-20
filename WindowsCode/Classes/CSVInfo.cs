@@ -7,9 +7,9 @@ using Windows.Storage.Streams;
 
 namespace WindowsCode.Classes
 {
-    public class CSVInfo
+    public class CSVData
     {
-        public CSVInfo(String input)
+        public CSVData(String input)
         {
             String[] parts = input.Split(',');
 
