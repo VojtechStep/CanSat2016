@@ -20,6 +20,7 @@ using Windows.Storage;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Windows.Storage.AccessCache;
+using System.Collections.ObjectModel;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -30,6 +31,10 @@ namespace WindowsCode.Pages
     /// </summary>
     public sealed partial class DataPage : Page
     {
+        private ObservableCollection<Point> Temp { get { return DataState.Data.GetTemp(); } }
+
+        private ObservableCollection<Point> Press { get { return DataState.Data.GetPress(); } }
+
         StringBuilder dataBuilder = new StringBuilder();
         public DataPage()
         {

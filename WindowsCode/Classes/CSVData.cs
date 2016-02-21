@@ -57,6 +57,5 @@ namespace WindowsCode.Classes
         EAST = 'E',
         WEST = 'W'
     }
-
-
+    
 }

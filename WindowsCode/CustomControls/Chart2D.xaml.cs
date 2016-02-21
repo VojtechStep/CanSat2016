@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
+using static WindowsCode.Classes.Utils;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -19,9 +16,128 @@ namespace WindowsCode.CustomControls
 {
     public sealed partial class Chart2D : UserControl
     {
+        public List<Double> Data { get; }
+
+        public Int32 XMax { get; set; }
+        public Int32 YMax { get; set; }
+
+        public Double XUnit { get; set; } = 10;
+        public Double YUnit { get; set; } = 10;
+
+        public Double XUnitMax { get; set; } = 10;
+        public Double YUnitMax { get; set; } = 10;
+
+        public Int32 XAdditionalLinesCount { get; set; } = 5;
+        public Int32 YAdditionalLinesCount { get; set; } = 5;
+
+        private Double PlotAreaWidth { get; set; }
+        private Double PlotAreaHeight { get; set; }
+
+        public Boolean Autoscale { get; set; } = true;
+
+
+        public Brush PlotAreaBackground { get; set; } = new SolidColorBrush(Color.FromArgb(255, 40, 40, 40));
+        public String GraphHeader { get; set; }
+        public Thickness PlotAreaMargin { get; set; }
+        public Double GraphStrokeThickness { get; set; } = 2;
+
+        public String XAxisLabel { get; set; }
+        public String YAxisLabel { get; set; }
+
         public Chart2D()
         {
             this.InitializeComponent();
+            Data = new List<Double>();
+            Loaded += (s, a) =>
+            {
+                Background = Background ?? new SolidColorBrush(Color.FromArgb(255, 24, 24, 24));
+                PlotAreaMargin = PlotAreaMargin.Blow(20);
+                PlotAreaWidth = ActualWidth - (PlotAreaMargin.Left + PlotAreaMargin.Right);
+                PlotAreaHeight = ActualHeight - (PlotAreaMargin.Top + PlotAreaMargin.Bottom + (GraphLabel?.ActualHeight ?? 0) + (GraphLabel?.Margin.Top ?? 0) + (GraphLabel?.Margin.Bottom ?? 0));
+                XMax = (Int32)(PlotAreaWidth / XUnit);
+                YMax = (Int32)(PlotAreaHeight / YUnit);
+                Bindings.Update();
+                AddAdditionalLines();
+            };
         }
+
+        public void Push(Double Val)
+        {
+            Data.Add(Val);
+            if (Data.Count > XMax)
+            {
+                XMax = Data.Count;
+                if (Autoscale) XUnit = Math.Min(PlotAreaWidth / XMax, XUnitMax);
+                else PlotAreaWidth = XUnit * XMax;
+            }
+            if (Val > YMax)
+            {
+                YMax = (Int32)Math.Ceiling(Val);
+                if (Autoscale) YUnit = Math.Min(PlotAreaHeight / YMax, YUnitMax);
+                else PlotAreaHeight = YUnit * YMax;
+            }
+            ReRender();
+        }
+
+        private void ReRender()
+        {
+            PlotArea.Children.Clear();
+            AddAdditionalLines();
+            for (Int32 i = 1; i < Data.Count(); i++)
+            {
+                Line l = new Line();
+                l.X1 = (i - 1) * XUnit;
+                l.X2 = i * XUnit;
+                l.Y1 = PlotAreaHeight - Data.ElementAt(i - 1) * YUnit;
+                l.Y2 = PlotAreaHeight - Data.ElementAt(i) * YUnit;
+                l.Stroke = new SolidColorBrush(Colors.Black);
+                l.Fill = new SolidColorBrush(Colors.Black);
+                l.StrokeEndLineCap = PenLineCap.Round;
+                l.StrokeThickness = GraphStrokeThickness;
+                PlotArea.Children.Add(l);
+            }
+        }
+
+        private void AddAdditionalLines()
+        {
+            Int32 XAdditionalLineSpacing = NearestToMultipleOf(XMax / XAdditionalLinesCount, 5);
+            Int32 YAdditionalLineSpacing = NearestToMultipleOf(YMax / YAdditionalLinesCount, 5);
+            Debug.WriteLine($"XSpacing: {XAdditionalLineSpacing}, YSpacing: {YAdditionalLineSpacing}");
+            for (Int32 xadd = 0; xadd < XMax; xadd += XAdditionalLineSpacing)
+            {
+                Line l = new Line();
+                l.X1 = xadd * XUnit;
+                l.X2 = xadd * XUnit;
+                l.Y1 = PlotAreaHeight;
+                l.Y2 = 0;
+                l.Stroke = new SolidColorBrush(Colors.DarkGray);
+                l.Fill = new SolidColorBrush(Colors.DarkGray);
+                l.StrokeEndLineCap = PenLineCap.Flat;
+                l.StrokeThickness = 0.5;
+                PlotArea.Children.Add(l);
+                TextBlock LineLabel = new TextBlock();
+                LineLabel.Text = l.X1.ToString();
+                
+            }
+            for (Int32 yadd = 0; yadd < YMax; yadd += YAdditionalLineSpacing)
+            {
+                Line l = new Line();
+                l.X1 = 0;
+                l.X2 = PlotAreaWidth;
+                l.Y1 = PlotAreaHeight - yadd * YUnit;
+                l.Y2 = PlotAreaHeight - yadd * YUnit;
+                l.Stroke = new SolidColorBrush(Colors.DarkGray);
+                l.Fill = new SolidColorBrush(Colors.DarkGray);
+                l.StrokeEndLineCap = PenLineCap.Flat;
+                l.StrokeThickness = 0.5;
+                PlotArea.Children.Add(l);
+            }
+        }
+
+        protected override void OnPointerReleased(PointerRoutedEventArgs e)
+        {
+            Push(Math.Pow(Data.Count(), 2));
+        }
+
     }
 }

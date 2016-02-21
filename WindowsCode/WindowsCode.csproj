@@ -26,7 +26,7 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <NoWarn>;2008</NoWarn>
+    <NoWarn>;2008;IDE0001</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -103,7 +103,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\Converters.cs" />
-    <Compile Include="Classes\CSVInfo.cs" />
+    <Compile Include="Classes\CSVData.cs" />
     <Compile Include="Classes\PageStates.cs" />
     <Compile Include="Classes\RecentItem.cs" />
     <Compile Include="Classes\Utils.cs" />
@@ -211,6 +211,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <SDKReference Include="Syncfusion Controls for UWP XAML, Version=13.4.0.53">
+      <Name>Syncfusion Controls for UWP XAML</Name>
+    </SDKReference>
     <SDKReference Include="WindowsDesktop, Version=10.0.10586.0">
       <Name>Windows Desktop Extensions for the UWP</Name>
     </SDKReference>

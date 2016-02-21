@@ -26,5 +26,8 @@
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
+
+        <comp:Chart2D x:Name="TestChart" Width="500" GraphHeader="Temp" Height="300" Grid.Row="2"/>
+        
     </Grid>
 </Page>

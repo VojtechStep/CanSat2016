@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -65,6 +67,53 @@ namespace WindowsCode.Classes
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
             foreach (var current in enumerable) action(current);
+        }
+
+        public static ObservableCollection<Point> GetTemp(this ObservableCollection<CSVData> db)
+        {
+            ObservableCollection<Point> points = new ObservableCollection<Point>();
+            for (int i = 0; i < db.Count; i++)
+            {
+                points.Add(new Point(i, db.ElementAt(i).Temperature));
+            }
+            return points;
+        }
+
+        public static ObservableCollection<Point> GetPress(this ObservableCollection<CSVData> db)
+        {
+            ObservableCollection<Point> points = new ObservableCollection<Point>();
+            for (int i = 0; i < db.Count; i++)
+            {
+                points.Add(new Point(i, db.ElementAt(i).Pressure));
+            }
+            return points;
+        }
+
+        public static Thickness Blow(this Thickness Original, Double AmountLeft, Double AmountTop, Double AmountRight, Double AmountBottom)
+        {
+            return new Thickness(Original.Left + AmountLeft, Original.Top + AmountTop, Original.Right + AmountRight, Original.Bottom + AmountBottom);
+        }
+
+        public static Thickness Blow(this Thickness Original, Double Amount)
+        {
+            return Original.Blow(Amount, Amount, Amount, Amount);
+        }
+
+        public static Thickness Shrink(this Thickness Original, Double AmountLeft, Double AmountTop, Double AmountRight, Double AmountBottom)
+        {
+            return Original.Blow(-AmountLeft, -AmountTop, -AmountRight, -AmountTop);
+        }
+
+        public static Thickness Shrink(this Thickness Original, Double Amount)
+        {
+            return Original.Shrink(Amount);
+        }
+
+        public static Int32 NearestToMultipleOf(Double Value, Int32 Multiple)
+        {
+            Double rest = Value % Multiple;
+            if (rest < Multiple / 2) return (Int32)(Value - rest);
+            return (Int32)(Value - rest + Multiple);
         }
 
     }
