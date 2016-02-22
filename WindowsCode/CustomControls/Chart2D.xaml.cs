@@ -37,7 +37,7 @@ namespace WindowsCode.CustomControls
 
 
         public Brush PlotAreaBackground { get; set; } = new SolidColorBrush(Color.FromArgb(255, 40, 40, 40));
-        public String GraphHeader { get; set; }
+        public String Header { get; set; }
         public Thickness PlotAreaMargin { get; set; }
         public Double GraphStrokeThickness { get; set; } = 2;
 
@@ -57,7 +57,7 @@ namespace WindowsCode.CustomControls
                 XMax = (Int32)(PlotAreaWidth / XUnit);
                 YMax = (Int32)(PlotAreaHeight / YUnit);
                 Bindings.Update();
-                AddAdditionalLines();
+                ReRender();
             };
         }
 
@@ -81,8 +81,8 @@ namespace WindowsCode.CustomControls
 
         private void ReRender()
         {
+            MainCanvas.Children.Clear();
             PlotArea.Children.Clear();
-            AddAdditionalLines();
             for (Int32 i = 1; i < Data.Count(); i++)
             {
                 Line l = new Line();
@@ -96,13 +96,15 @@ namespace WindowsCode.CustomControls
                 l.StrokeThickness = GraphStrokeThickness;
                 PlotArea.Children.Add(l);
             }
+            AddAdditionalLines();
+            MainCanvas.Children.Add(GraphLabel);
+            MainCanvas.Children.Add(PlotArea);
         }
 
         private void AddAdditionalLines()
         {
             Int32 XAdditionalLineSpacing = NearestToMultipleOf(XMax / XAdditionalLinesCount, 5);
             Int32 YAdditionalLineSpacing = NearestToMultipleOf(YMax / YAdditionalLinesCount, 5);
-            Debug.WriteLine($"XSpacing: {XAdditionalLineSpacing}, YSpacing: {YAdditionalLineSpacing}");
             for (Int32 xadd = 0; xadd < XMax; xadd += XAdditionalLineSpacing)
             {
                 Line l = new Line();
@@ -114,10 +116,13 @@ namespace WindowsCode.CustomControls
                 l.Fill = new SolidColorBrush(Colors.DarkGray);
                 l.StrokeEndLineCap = PenLineCap.Flat;
                 l.StrokeThickness = 0.5;
-                PlotArea.Children.Add(l);
                 TextBlock LineLabel = new TextBlock();
-                LineLabel.Text = l.X1.ToString();
-                
+                LineLabel.Text = xadd.ToString();
+                Double OffsetTop = PlotAreaHeight + PlotAreaMargin.Top + PlotAreaMargin.Bottom + 10;
+                Double OffsetLeft = l.X1 + LineLabel.DesiredSize.Width + 20;
+                LineLabel.Margin = new Thickness(OffsetLeft, OffsetTop, 0, 0);
+                PlotArea.Children.Add(l);
+                MainCanvas.Children.Add(LineLabel);
             }
             for (Int32 yadd = 0; yadd < YMax; yadd += YAdditionalLineSpacing)
             {
@@ -130,7 +135,22 @@ namespace WindowsCode.CustomControls
                 l.Fill = new SolidColorBrush(Colors.DarkGray);
                 l.StrokeEndLineCap = PenLineCap.Flat;
                 l.StrokeThickness = 0.5;
+                TextBlock LineLabel = new TextBlock();
+                LineLabel.Text = yadd.ToString();
+                LineLabel.TextAlignment = TextAlignment.Right;
+                Double OffsetTop = PlotAreaMargin.Top + PlotAreaMargin.Bottom + l.Y1 -10;
+                Double OffsetRight = PlotAreaMargin.Right + PlotAreaWidth;
+                LineLabel.Margin = new Thickness(0, OffsetTop, OffsetRight, 0);
                 PlotArea.Children.Add(l);
+                LineLabel.SizeChanged += (s, a) =>
+                {
+                    if (((TextBlock)s).ActualWidth > PlotAreaMargin.Left)
+                    {
+                        PlotAreaMargin = new Thickness(((TextBlock)s).ActualWidth, PlotAreaMargin.Top, PlotAreaMargin.Right, PlotAreaMargin.Bottom);
+                    }
+                    Bindings.Update();
+                };
+                MainCanvas.Children.Add(LineLabel);
             }
         }
 
