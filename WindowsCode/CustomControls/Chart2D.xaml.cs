@@ -20,6 +20,8 @@ namespace WindowsCode.CustomControls
 
         public Int32 XMax { get; set; }
         public Int32 YMax { get; set; }
+        public Int32 XMin { get; set; } = 0;
+        public Int32 YMin { get; set; } = 0;
 
         public Double XUnit { get; set; } = 10;
         public Double YUnit { get; set; } = 10;

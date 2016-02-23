@@ -25,6 +25,7 @@
                             <TextBlock Name="PressureLabel" Text="Pressure: " />
                             <TextBlock Name="PressureValue" Text="9998 mB"/>
                         </StackPanel>
+                        <comp:Chart2D x:Name="TempChart" Width="300" Height="300" Header="Temperature" />
                     </StackPanel>
                 </PivotItem.Content>
             </PivotItem>

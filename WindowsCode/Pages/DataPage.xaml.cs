@@ -47,7 +47,11 @@ namespace WindowsCode.Pages
         private async void Data_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             dataBuilder = new StringBuilder();
-            (from data in e.NewItems.Cast<CSVData>() where data != null select data.RawData + "\n").ForEach((raw) => dataBuilder.Append(raw));
+            e.NewItems.Cast<CSVData>().ForEach((data) =>
+            {
+                dataBuilder.Append(data.RawData + '\n');
+                TempChart.Push(data.Temperature);
+            });
             FileIO.AppendTextAsync((await StorageApplicationPermissions.FutureAccessList.GetFileAsync(DataState.OutputFileToken)), dataBuilder.ToString()).AsTask().Wait();
             DataBlock.Text += dataBuilder.ToString();
         }

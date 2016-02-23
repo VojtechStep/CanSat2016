@@ -18,6 +18,7 @@ void setup()
 {
 	Serial.begin(9600);
 	bmp.begin();
+	delay(200);
 }
 
 void loop()
