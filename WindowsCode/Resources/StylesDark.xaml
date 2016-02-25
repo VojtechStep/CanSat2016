@@ -85,6 +85,6 @@
         </Setter>
     </Style>
 
-    <SolidColorBrush x:Key="MesurementBackground" Color="#282828" />
+    <SolidColorBrush x:Key="MesurementBackground" Color="#505050" />
 
 </ResourceDictionary>

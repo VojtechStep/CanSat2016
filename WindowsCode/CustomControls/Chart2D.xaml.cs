@@ -52,7 +52,7 @@ namespace WindowsCode.CustomControls
             Data = new List<Double>();
             Loaded += (s, a) =>
             {
-                Background = Background ?? new SolidColorBrush(Color.FromArgb(255, 24, 24, 24));
+                Background = Background ?? new SolidColorBrush(Color.FromArgb(255, 20, 20, 20));
                 PlotAreaMargin = PlotAreaMargin.Blow(20);
                 PlotAreaWidth = ActualWidth - (PlotAreaMargin.Left + PlotAreaMargin.Right);
                 PlotAreaHeight = ActualHeight - (PlotAreaMargin.Top + PlotAreaMargin.Bottom + (GraphLabel?.ActualHeight ?? 0) + (GraphLabel?.Margin.Top ?? 0) + (GraphLabel?.Margin.Bottom ?? 0));
@@ -92,8 +92,8 @@ namespace WindowsCode.CustomControls
                 l.X2 = i * XUnit;
                 l.Y1 = PlotAreaHeight - Data.ElementAt(i - 1) * YUnit;
                 l.Y2 = PlotAreaHeight - Data.ElementAt(i) * YUnit;
-                l.Stroke = new SolidColorBrush(Colors.Black);
-                l.Fill = new SolidColorBrush(Colors.Black);
+                l.Stroke = new SolidColorBrush(Colors.White);
+                l.Fill = new SolidColorBrush(Colors.White);
                 l.StrokeEndLineCap = PenLineCap.Round;
                 l.StrokeThickness = GraphStrokeThickness;
                 PlotArea.Children.Add(l);
@@ -114,8 +114,8 @@ namespace WindowsCode.CustomControls
                 l.X2 = xadd * XUnit;
                 l.Y1 = PlotAreaHeight;
                 l.Y2 = 0;
-                l.Stroke = new SolidColorBrush(Colors.DarkGray);
-                l.Fill = new SolidColorBrush(Colors.DarkGray);
+                l.Stroke = new SolidColorBrush(Colors.White);
+                l.Fill = new SolidColorBrush(Colors.White);
                 l.StrokeEndLineCap = PenLineCap.Flat;
                 l.StrokeThickness = 0.5;
                 TextBlock LineLabel = new TextBlock();
@@ -133,8 +133,8 @@ namespace WindowsCode.CustomControls
                 l.X2 = PlotAreaWidth;
                 l.Y1 = PlotAreaHeight - yadd * YUnit;
                 l.Y2 = PlotAreaHeight - yadd * YUnit;
-                l.Stroke = new SolidColorBrush(Colors.DarkGray);
-                l.Fill = new SolidColorBrush(Colors.DarkGray);
+                l.Stroke = new SolidColorBrush(Colors.White);
+                l.Fill = new SolidColorBrush(Colors.White);
                 l.StrokeEndLineCap = PenLineCap.Flat;
                 l.StrokeThickness = 0.5;
                 TextBlock LineLabel = new TextBlock();

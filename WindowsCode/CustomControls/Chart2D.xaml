@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid Name="MainCanvas" Background="{x:Bind Background}" Width="{x:Bind Width}" Height="{x:Bind Height}">
+    <Grid Name="MainCanvas" Background="{ThemeResource SystemAccentColor}" Width="{x:Bind Width}" Height="{x:Bind Height}">
         <TextBlock Name="GraphLabel" Text="{x:Bind Header}" HorizontalAlignment="Center" Padding="0" Margin="5" />
         <Grid Name="PlotArea" Margin="{x:Bind PlotAreaMargin}" Background="{x:Bind PlotAreaBackground}" Width="{x:Bind PlotAreaWidth}" Height="{x:Bind PlotAreaHeight}" VerticalAlignment="Bottom"/>
     </Grid>
