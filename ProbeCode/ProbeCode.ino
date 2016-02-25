@@ -4,8 +4,6 @@
  Author:	Vojtěch
 */
 
-#include <SPI.h>
-#include <Wire.h>
 #include <qbcan.h>
 
 BMP180 bmp;
@@ -13,43 +11,47 @@ double T, P;
 
 unsigned long startMillis;
 unsigned long timeout = 5000;
-bool sending = false;
+bool sending;
+
+byte inByte;
+String command = "";
 
 char data[50];
 
 void setup()
 {
-	Serial.begin(9600);
+	Serial.begin(115200);
 	bmp.begin();
+	while (!Serial);
 	Serial.println("REBOOTING");
+	sending = false;
 }
 
 void loop()
 {
-	if (sending) {
-		startMillis = millis();
+	command = "";
+	while (Serial.available())
+	{
+		inByte = Serial.read();
+		command += (char)inByte;
+	}
+	if ((byte)command.charAt(0) == 0x67) sending = true;
+	if ((byte)command.charAt(0) == 0x68) sending = false;
+	if (sending)
+	{
 		Serial.println("START");
-		while (millis() < startMillis + timeout)
+		long now = millis();
+		while (millis() < now + 5000)
 		{
+			double T, P;
 			bmp.getData(T, P);
 			String temp = String(T, 2);
 			String pres = String(P / 1000, 5);
-
 			sprintf(data, "%s,%s,1000,1000,1000,A,1000000,N,1000000,W", temp.c_str(), pres.c_str());
 			Serial.println(data);
-			delay(500);
+			delay(200);
 		}
 		Serial.println("PAUSE");
 		delay(2000);
-	}
-	else if(Serial.available() > 0) {
-		String in = "";
-		while (Serial.available() > 0) in += char(Serial.read());
-		switch (in.charAt(0))
-		{
-		case 'S':
-			sending = true;
-			break;
-		}
 	}
 }

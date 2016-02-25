@@ -34,9 +34,8 @@ namespace WindowsCode.Pages
     public sealed partial class NewMesurementPage : Page
     {
         private ObservableCollection<DeviceInformation> _ports = new ObservableCollection<DeviceInformation>();
-        SerialDevice serialPort;
         private Boolean _connectionsAvailable = false;
-        
+
         private Int32 iteration;
 
         public NewMesurementPage()
@@ -143,67 +142,59 @@ namespace WindowsCode.Pages
             var devices = await DeviceInformation.FindAllAsync(selector);
             var device = devices[deviceIndex];
 
-            try
+
+            using (SerialDevice serialPort = await SerialDevice.FromIdAsync(device.Id.ToString()))
             {
-                serialPort = await SerialDevice.FromIdAsync(device.Id.ToString());
-            }
-            catch (Exception e) { Debug.WriteLine(e.Message); }
+                serialPort.BaudRate = 115200;
+                await serialPort.OutputStream.WriteAsync((new byte[] { 0x67 }).AsBuffer());
 
 
-            StringBuilder line = new StringBuilder();
-            Boolean listening = false;
+                StringBuilder line = new StringBuilder();
+                Boolean listening = false;
 
-            while (true)
-            {
-                var rBuffer = (new byte[1]).AsBuffer();
-                await serialPort.InputStream.ReadAsync(rBuffer, 1, InputStreamOptions.Partial);
-
-                if (rBuffer.Length > 0)
+                while (true)
                 {
-                    if ((char)rBuffer.ToArray()[0] != '\n')
+                    var rBuffer = (new byte[1]).AsBuffer();
+                    await serialPort.InputStream.ReadAsync(rBuffer, 1, InputStreamOptions.Partial);
+                    try
                     {
-                        line.Append((char)rBuffer.ToArray()[0]);
-                    }
-                    else
-                    {
-                        if (line.ToString().Contains("START"))
+                        if ((char)rBuffer.ToArray()[0] != '\n')
                         {
-                            listening = true;
-                            iteration++;
+                            line.Append((char)rBuffer.ToArray()[0]);
                         }
-                        else if (listening)
+                        else
                         {
-                            if (line.ToString().Contains("END"))
+                            if (line.ToString().Contains("START"))
                             {
-                                listening = false;
-                                CloseConnection();
-                                break;
+                                listening = true;
+                                iteration++;
                             }
-                            else if (line.ToString().Contains("PAUSE"))
+                            else if (listening)
                             {
-                                listening = false;
-                                if (iteration == 3)
+                                if (line.ToString().Contains("END"))
                                 {
                                     listening = false;
-                                    CloseConnection();
                                     break;
                                 }
+                                else if (line.ToString().Contains("PAUSE"))
+                                {
+                                    listening = false;
+                                }
+                                else
+                                {
+                                    DataState.Data.Add(new CSVData(line.ToString()));
+                                }
                             }
-                            else
-                            {
-                                DataState.Data.Add(new CSVData(line.ToString()));
-                            }
+                            line = new StringBuilder();
                         }
-                        line = new StringBuilder();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e.Message);
                     }
                 }
             }
-
         }
 
-        public void CloseConnection()
-        {
-            serialPort?.Dispose();
-        }
     }
 }
