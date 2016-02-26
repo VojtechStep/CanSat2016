@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.UI;
-using Windows.UI.Xaml.Media;
 
 namespace WindowsCode.Classes
 {
@@ -23,7 +15,8 @@ namespace WindowsCode.Classes
     {
         public static ObservableCollection<CSVData> Data = new ObservableCollection<CSVData>();
         public static String OutputFileToken;
-        public static IBuffer ConnectionInitializationCommand = (new byte[] { (byte)'S' }).AsBuffer();
+        public static IBuffer InitBuffer = (new byte[] { 0x67 }).AsBuffer();
+        public static DataStreamState CurrentStreamState;
     }
 
     public static class MapState

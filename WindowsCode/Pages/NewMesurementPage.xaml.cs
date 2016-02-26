@@ -1,28 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.SerialCommunication;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using WindowsCode.Classes;
 using Windows.Storage;
-using Windows.System;
 using Windows.Storage.Pickers;
+using System.Diagnostics;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -36,14 +25,11 @@ namespace WindowsCode.Pages
         private ObservableCollection<DeviceInformation> _ports = new ObservableCollection<DeviceInformation>();
         private Boolean _connectionsAvailable = false;
 
-        private Int32 iteration;
-
         public NewMesurementPage()
         {
             this.InitializeComponent();
             GetSerialPorts();
             FilePathSelector.RegisterPropertyChangedCallback(TextBox.TextProperty, CheckIfValid);
-            iteration = 0;
         }
 
         private void CheckIfValid(DependencyObject sender, DependencyProperty dp)
@@ -145,55 +131,62 @@ namespace WindowsCode.Pages
 
             using (SerialDevice serialPort = await SerialDevice.FromIdAsync(device.Id.ToString()))
             {
-                serialPort.BaudRate = 115200;
-                await serialPort.OutputStream.WriteAsync((new byte[] { 0x67 }).AsBuffer());
+                StringBuilder inString = new StringBuilder();
+                var rBuffer = new byte[1].AsBuffer();
 
-
-                StringBuilder line = new StringBuilder();
-                Boolean listening = false;
 
                 while (true)
                 {
-                    var rBuffer = (new byte[1]).AsBuffer();
                     await serialPort.InputStream.ReadAsync(rBuffer, 1, InputStreamOptions.Partial);
-                    try
+                    if ((char)rBuffer.ToArray()[0] != '\n') inString.Append((char)rBuffer.ToArray()[0]);
+                    else
                     {
-                        if ((char)rBuffer.ToArray()[0] != '\n')
-                        {
-                            line.Append((char)rBuffer.ToArray()[0]);
-                        }
-                        else
-                        {
-                            if (line.ToString().Contains("START"))
-                            {
-                                listening = true;
-                                iteration++;
-                            }
-                            else if (listening)
-                            {
-                                if (line.ToString().Contains("END"))
-                                {
-                                    listening = false;
-                                    break;
-                                }
-                                else if (line.ToString().Contains("PAUSE"))
-                                {
-                                    listening = false;
-                                }
-                                else
-                                {
-                                    DataState.Data.Add(new CSVData(line.ToString()));
-                                }
-                            }
-                            line = new StringBuilder();
-                        }
+                        if (inString.ToString().Contains("BOOT")) DataState.CurrentStreamState = DataStreamState.Receive;
+                        else DataState.CurrentStreamState = DataStreamState.Close;
+                        break;
                     }
-                    catch (Exception e)
+                }
+
+                VisualStateManager.GoToState((Window.Current.Content as MainPage), "Connected", false);
+
+                await serialPort.OutputStream.WriteAsync(DataState.InitBuffer);
+
+                Boolean listening = false;
+                while (DataState.CurrentStreamState == DataStreamState.Receive)
+                {
+                    await serialPort.InputStream.ReadAsync(rBuffer, 1, InputStreamOptions.Partial);
+                    if ((char)rBuffer.ToArray()[0] != '\n')
                     {
-                        Debug.WriteLine(e.Message);
+                        inString.Append((char)rBuffer.ToArray()[0]);
+                    }
+                    else
+                    {
+                        if (inString.ToString().Contains("START"))
+                        {
+                            listening = true;
+                        }
+                        else if (listening)
+                        {
+                            if (inString.ToString().Contains("END"))
+                            {
+                                listening = false;
+                                break;
+                            }
+                            else if (inString.ToString().Contains("PAUSE"))
+                            {
+                                listening = false;
+                            }
+                            else
+                            {
+                                DataState.Data.Add(new CSVData(inString.ToString()));
+                            }
+                        }
+                        inString.Clear();
                     }
                 }
             }
+            VisualStateManager.GoToState(Window.Current.Content as MainPage, "Disconnected", false);
+            Debug.WriteLine("Disconnecting");
         }
 
     }

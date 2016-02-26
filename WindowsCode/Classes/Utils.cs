@@ -129,6 +129,12 @@ namespace WindowsCode.Classes
     {
         Normal,
         Start,
-        End
+        End,
+    }
+
+    public enum DataStreamState
+    {
+        Receive,
+        Close,
     }
 }

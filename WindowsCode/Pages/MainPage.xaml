@@ -40,7 +40,7 @@
             </Button>
             <TextBlock Name="PageTitle" Margin="10 0 0 0" FontSize="15" FontWeight="Bold" Foreground="White" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"/>
         </StackPanel>
-        <SplitView Name="HamburgerMenu" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" DisplayMode="Overlay" CompactPaneLength="{StaticResource CompactPaneLength}">
+        <SplitView Name="HamburgerMenu" Grid.Row="1" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="2" DisplayMode="Overlay" CompactPaneLength="{StaticResource CompactPaneLength}">
             <SplitView.Pane>
                 <RelativePanel Name="HMRelativePanel">
                     <comps:HamburgerMenuItem x:Name="MesurementsItem" MenuItemIcon="&#xEBDE;" MenuItemLabel="Mesurements" RelativePanel.AlignTopWithPanel="True" Click="MesurementsItem_Click" />
@@ -52,8 +52,9 @@
                 <ScrollViewer Name="HamburgerMenuContentWrapper" VerticalScrollBarVisibility="Auto" Content="{Binding}"></ScrollViewer>
             </SplitView.Content>
         </SplitView>
-
-        <Rectangle x:Name="ControlAppBarBackground" Grid.Column="1" Grid.Row="2" Fill="#FFF0F0F0" Visibility="Collapsed"  />
+        <CommandBar Name="DisconnectBar" Visibility="Collapsed" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" >
+            <AppBarButton Name="DisconnectButton" Click="DisconnectButton_Click" Icon="DisconnectDrive" Content="Disconnect" />
+        </CommandBar>
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="WindowState">
@@ -65,6 +66,18 @@
                 <VisualState x:Name="Wide">
                     <VisualState.Setters>
                         <Setter Target="HamburgerMenu.DisplayMode" Value="CompactOverlay" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="ConnectionState">
+                <VisualState x:Name="Connected">
+                    <VisualState.Setters>
+                        <Setter Target="DisconnectBar.Visibility" Value="Visible" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disconnected">
+                    <VisualState.Setters>
+                        <Setter Target="DisconnectBar.Visibility" Value="Collapsed" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
