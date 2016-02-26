@@ -152,7 +152,6 @@ namespace WindowsCode
         private void DisconnectButton_Click(object sender, RoutedEventArgs e)
         {
             DataState.CurrentStreamState = DataStreamState.Close;
-            
         }
     }
 

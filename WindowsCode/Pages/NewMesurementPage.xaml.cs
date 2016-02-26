@@ -12,6 +12,8 @@ using WindowsCode.Classes;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -24,11 +26,15 @@ namespace WindowsCode.Pages
     {
         private ObservableCollection<DeviceInformation> _ports = new ObservableCollection<DeviceInformation>();
         private Boolean _connectionsAvailable = false;
+        SerialDevice serialPort;
+        DataReader dataReaderObject;
+        DataWriter dataWriterObject;
 
         public NewMesurementPage()
         {
             this.InitializeComponent();
             GetSerialPorts();
+            DataState.ReadCancellationTokenSource?.Cancel();
             FilePathSelector.RegisterPropertyChangedCallback(TextBox.TextProperty, CheckIfValid);
         }
 
@@ -128,65 +134,111 @@ namespace WindowsCode.Pages
             var devices = await DeviceInformation.FindAllAsync(selector);
             var device = devices[deviceIndex];
 
-
-            using (SerialDevice serialPort = await SerialDevice.FromIdAsync(device.Id.ToString()))
+            try
             {
-                StringBuilder inString = new StringBuilder();
-                var rBuffer = new byte[1].AsBuffer();
+                serialPort = await SerialDevice.FromIdAsync(device.Id);
+                serialPort.WriteTimeout = TimeSpan.FromMilliseconds(1000);
+                serialPort.ReadTimeout = TimeSpan.FromMilliseconds(1000);
+                serialPort.BaudRate = 9600;
+                serialPort.Parity = SerialParity.None;
+                serialPort.StopBits = SerialStopBitCount.One;
+                serialPort.DataBits = 8;
+                serialPort.Handshake = SerialHandshake.None;
 
+                DataState.ReadCancellationTokenSource = new CancellationTokenSource();
 
-                while (true)
+                Listen();
+            }
+            catch (Exception e) { Debug.WriteLine(e.Message); }
+        }
+
+        private async void Listen()
+        {
+            try
+            {
+                if (serialPort != null)
                 {
-                    await serialPort.InputStream.ReadAsync(rBuffer, 1, InputStreamOptions.Partial);
-                    if ((char)rBuffer.ToArray()[0] != '\n') inString.Append((char)rBuffer.ToArray()[0]);
-                    else
-                    {
-                        if (inString.ToString().Contains("BOOT")) DataState.CurrentStreamState = DataStreamState.Receive;
-                        else DataState.CurrentStreamState = DataStreamState.Close;
-                        break;
-                    }
-                }
+                    dataWriterObject = new DataWriter(serialPort.OutputStream);
+                    dataReaderObject = new DataReader(serialPort.InputStream);
 
-                VisualStateManager.GoToState((Window.Current.Content as MainPage), "Connected", false);
+                    Byte[] InitBuffer = new Byte[DataState.SerialReadyCall.Length];
 
-                await serialPort.OutputStream.WriteAsync(DataState.InitBuffer);
+                    await ReadAsync(DataState.ReadCancellationTokenSource.Token, InitBuffer);
+                    String InitBufferString = new String(InitBuffer.Select(p => (char)p).ToArray());
 
-                Boolean listening = false;
-                while (DataState.CurrentStreamState == DataStreamState.Receive)
-                {
-                    await serialPort.InputStream.ReadAsync(rBuffer, 1, InputStreamOptions.Partial);
-                    if ((char)rBuffer.ToArray()[0] != '\n')
+                    if (InitBufferString == DataState.SerialReadyCall)
                     {
-                        inString.Append((char)rBuffer.ToArray()[0]);
-                    }
-                    else
-                    {
-                        if (inString.ToString().Contains("START"))
-                        {
-                            listening = true;
-                        }
-                        else if (listening)
-                        {
-                            if (inString.ToString().Contains("END"))
+                        if (await WriteAsync(DataState.InitByte, true))
+                            while (true)
                             {
-                                listening = false;
-                                break;
+                                Byte[] DataBuffer = new Byte[DataState.CommandLength];
+                                await ReadAsync(DataState.ReadCancellationTokenSource.Token, DataBuffer);
+                                String InCommand = new String(DataBuffer.Select(p => (char)p).ToArray());
                             }
-                            else if (inString.ToString().Contains("PAUSE"))
-                            {
-                                listening = false;
-                            }
-                            else
-                            {
-                                DataState.Data.Add(new CSVData(inString.ToString()));
-                            }
-                        }
-                        inString.Clear();
+                        else Debug.WriteLine("Could not send init byte");
                     }
                 }
             }
-            VisualStateManager.GoToState(Window.Current.Content as MainPage, "Disconnected", false);
-            Debug.WriteLine("Disconnecting");
+            catch (Exception e)
+            {
+                if (e.GetType().Name == "TaskCanceledException")
+                {
+                    ClosePort();
+                }
+            }
+            finally
+            {
+                dataReaderObject?.DetachBuffer();
+                dataReaderObject = null;
+            }
+        }
+
+        private async Task ReadAsync(CancellationToken cancelToken, Byte[] InBuffer) => await ReadAsync(cancelToken, InBuffer, InBuffer.Length);
+
+        private async Task ReadAsync(CancellationToken cancelToken, Byte[] InBuffer, Int32 Count)
+        {
+            if (Count <= 0) throw new ArgumentException("Count must be greater than 0", "Count");
+
+            Task<UInt32> LoadAsyncTask;
+
+            UInt32 ReadBufferLength = UInt32.Parse(Count.ToString());
+            cancelToken.ThrowIfCancellationRequested();
+            dataReaderObject.InputStreamOptions = InputStreamOptions.Partial;
+            LoadAsyncTask = dataReaderObject.LoadAsync(ReadBufferLength).AsTask(cancelToken);
+
+            UInt32 bytesRead = await LoadAsyncTask;
+            if (bytesRead == Count)
+            {
+                dataReaderObject.ReadBytes(InBuffer);
+            }
+        }
+
+        private void ClosePort()
+        {
+            serialPort?.Dispose();
+            serialPort = null;
+        }
+
+
+        private async Task<Boolean> WriteAsync(Byte command) => await WriteAsync(new Byte[] { command }, false);
+
+        private async Task<Boolean> WriteAsync(Byte command, Boolean shouldDetachBuffer) => await WriteAsync(new Byte[] { command }, shouldDetachBuffer);
+
+        private async Task<Boolean> WriteAsync(Byte[] command) => await WriteAsync(command, false);
+
+        private async Task<Boolean> WriteAsync(Byte[] command, Boolean shouldDetachBuffer)
+        {
+            if (command.Length <= 0) throw new ArgumentException("Command length must be greater than 0", "command.Length");
+            Task<UInt32> StoreAsyncTask;
+            dataWriterObject.WriteBytes(command);
+            StoreAsyncTask = dataWriterObject.StoreAsync().AsTask();
+            UInt32 bytesWritten = await StoreAsyncTask;
+            if (shouldDetachBuffer)
+            {
+                dataWriterObject.DetachStream();
+                dataWriterObject = null;
+            }
+            return bytesWritten == command.Length;
         }
 
     }
