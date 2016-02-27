@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 
 namespace WindowsCode.Pages
 {
+
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
@@ -95,8 +96,10 @@ namespace WindowsCode.Pages
         private void CheckIfValid()
         {
             Boolean valid = true;
-            if (String.IsNullOrWhiteSpace(FilePathSelector.Text)) valid = false;
-            if (valid && Ports.Count <= 0) valid = false;
+            if (String.IsNullOrWhiteSpace(FilePathSelector.Text))
+                valid = false;
+            if (valid && Ports.Count <= 0)
+                valid = false;
 
             Done.IsEnabled = valid;
             PortSelector.IsEnabled = Ports.Count > 0;
@@ -130,116 +133,53 @@ namespace WindowsCode.Pages
 
         public async void StartMesurement(Int32 deviceIndex)
         {
-            var selector = SerialDevice.GetDeviceSelector();
-            var devices = await DeviceInformation.FindAllAsync(selector);
-            var device = devices[deviceIndex];
+            DataState.ReadCancellationTokenSource = new CancellationTokenSource();
+            await Communication.ConnectAsync((await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[deviceIndex].Id);
 
             try
             {
-                serialPort = await SerialDevice.FromIdAsync(device.Id);
-                serialPort.WriteTimeout = TimeSpan.FromMilliseconds(1000);
-                serialPort.ReadTimeout = TimeSpan.FromMilliseconds(1000);
-                serialPort.BaudRate = 9600;
-                serialPort.Parity = SerialParity.None;
-                serialPort.StopBits = SerialStopBitCount.One;
-                serialPort.DataBits = 8;
-                serialPort.Handshake = SerialHandshake.None;
+                Byte[] InitBuffer = new Byte[DataState.SerialReadyCall.Length];
+                await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, InitBuffer);
+                String ReceivedString = new String(InitBuffer.Select(p => (Char)p).ToArray());
 
-                DataState.ReadCancellationTokenSource = new CancellationTokenSource();
-
-                Listen();
-            }
-            catch (Exception e) { Debug.WriteLine(e.Message); }
-        }
-
-        private async void Listen()
-        {
-            try
-            {
-                if (serialPort != null)
+                if (ReceivedString == DataState.SerialReadyCall)
                 {
-                    dataWriterObject = new DataWriter(serialPort.OutputStream);
-                    dataReaderObject = new DataReader(serialPort.InputStream);
+                    VisualStateManager.GoToState(Window.Current.Content as MainPage, "Connected", true);
 
-                    Byte[] InitBuffer = new Byte[DataState.SerialReadyCall.Length];
-
-                    await ReadAsync(DataState.ReadCancellationTokenSource.Token, InitBuffer);
-                    String InitBufferString = new String(InitBuffer.Select(p => (char)p).ToArray());
-
-                    if (InitBufferString == DataState.SerialReadyCall)
+                    Boolean listening = false;
+                    while (true)
                     {
-                        if (await WriteAsync(DataState.InitByte, true))
-                            while (true)
-                            {
-                                Byte[] DataBuffer = new Byte[DataState.CommandLength];
-                                await ReadAsync(DataState.ReadCancellationTokenSource.Token, DataBuffer);
-                                String InCommand = new String(DataBuffer.Select(p => (char)p).ToArray());
-                            }
-                        else Debug.WriteLine("Could not send init byte");
+                        Byte[] DataBuffer = new Byte[DataState.CommandLength];
+                        await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, DataBuffer);
+                        if (DataBuffer[0] == DataState.ReceiveCommands["Start"])
+                        {
+                            listening = true;
+                            Debug.WriteLine("START");
+                        }
+                        else if (DataBuffer[0] == DataState.ReceiveCommands["Pause"])
+                        {
+                            listening = false;
+                            Debug.WriteLine("PAUSE");
+                        }
+                        else if (DataBuffer[0] == DataState.ReceiveCommands["End"])
+                        {
+                            listening = false;
+                            Debug.WriteLine("PAUSE");
+                            if (!DataState.ReadCancellationTokenSource.IsCancellationRequested)
+                                DataState.ReadCancellationTokenSource.Cancel();
+                        }
+                        else
+                        {
+
+                        }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                if (e.GetType().Name == "TaskCanceledException")
-                {
-                    ClosePort();
-                }
-            }
+            } catch(TaskCanceledException) { }
             finally
             {
-                dataReaderObject?.DetachBuffer();
-                dataReaderObject = null;
+                Communication.Disconnect();
+                VisualStateManager.GoToState(Window.Current.Content as MainPage, "Disconnected", true);
             }
         }
-
-        private async Task ReadAsync(CancellationToken cancelToken, Byte[] InBuffer) => await ReadAsync(cancelToken, InBuffer, InBuffer.Length);
-
-        private async Task ReadAsync(CancellationToken cancelToken, Byte[] InBuffer, Int32 Count)
-        {
-            if (Count <= 0) throw new ArgumentException("Count must be greater than 0", "Count");
-
-            Task<UInt32> LoadAsyncTask;
-
-            UInt32 ReadBufferLength = UInt32.Parse(Count.ToString());
-            cancelToken.ThrowIfCancellationRequested();
-            dataReaderObject.InputStreamOptions = InputStreamOptions.Partial;
-            LoadAsyncTask = dataReaderObject.LoadAsync(ReadBufferLength).AsTask(cancelToken);
-
-            UInt32 bytesRead = await LoadAsyncTask;
-            if (bytesRead == Count)
-            {
-                dataReaderObject.ReadBytes(InBuffer);
-            }
-        }
-
-        private void ClosePort()
-        {
-            serialPort?.Dispose();
-            serialPort = null;
-        }
-
-
-        private async Task<Boolean> WriteAsync(Byte command) => await WriteAsync(new Byte[] { command }, false);
-
-        private async Task<Boolean> WriteAsync(Byte command, Boolean shouldDetachBuffer) => await WriteAsync(new Byte[] { command }, shouldDetachBuffer);
-
-        private async Task<Boolean> WriteAsync(Byte[] command) => await WriteAsync(command, false);
-
-        private async Task<Boolean> WriteAsync(Byte[] command, Boolean shouldDetachBuffer)
-        {
-            if (command.Length <= 0) throw new ArgumentException("Command length must be greater than 0", "command.Length");
-            Task<UInt32> StoreAsyncTask;
-            dataWriterObject.WriteBytes(command);
-            StoreAsyncTask = dataWriterObject.StoreAsync().AsTask();
-            UInt32 bytesWritten = await StoreAsyncTask;
-            if (shouldDetachBuffer)
-            {
-                dataWriterObject.DetachStream();
-                dataWriterObject = null;
-            }
-            return bytesWritten == command.Length;
-        }
-
     }
 }

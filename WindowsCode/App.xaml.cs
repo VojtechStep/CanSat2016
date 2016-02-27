@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Windows.Storage;
 using System.Diagnostics;
+using WindowsCode.Classes;
 
 namespace WindowsCode
 {
@@ -145,7 +146,7 @@ namespace WindowsCode
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-
+            if(!DataState.ReadCancellationTokenSource?.IsCancellationRequested ?? false) DataState.ReadCancellationTokenSource?.Cancel();
             ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
             ApplicationDataContainer CanSatSettings = roamingSettings.CreateContainer("CanSatSettings", ApplicationDataCreateDisposition.Always);
             roamingSettings.Containers["CanSatSettings"].Values["IntTheme"] = (Window.Current.Content as MainPage).RequestedTheme == ElementTheme.Default ? 0 : ((Window.Current.Content as MainPage).RequestedTheme == ElementTheme.Dark ? 1 : 2);

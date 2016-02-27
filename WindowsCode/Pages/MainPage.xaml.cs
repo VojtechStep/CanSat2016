@@ -18,7 +18,8 @@ namespace WindowsCode
         {
             get
             {
-                if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.Contains("Desktop")) return DeviceFamily.Desktop;
+                if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.Contains("Desktop"))
+                    return DeviceFamily.Desktop;
                 return DeviceFamily.Mobile;
             }
         }
@@ -151,7 +152,26 @@ namespace WindowsCode
 
         private void DisconnectButton_Click(object sender, RoutedEventArgs e)
         {
-            DataState.CurrentStreamState = DataStreamState.Close;
+            if(!DataState.ReadCancellationTokenSource.IsCancellationRequested) DataState.ReadCancellationTokenSource.Cancel();
+        }
+
+        private async void StartMesurement_Click(Object sender, RoutedEventArgs e)
+        {
+            await Communication.WriteAsync(DataState.SendCommands["StartMesurement"]);
+            StartMesurement.Visibility = Visibility.Collapsed;
+            StopMesurement.Visibility = Visibility.Visible;
+        }
+
+        private async void RequestSample_Click(Object sender, RoutedEventArgs e)
+        {
+            await Communication.WriteAsync(DataState.SendCommands["RequestSample"]);
+        }
+
+        private async void StopMesurement_Click(Object sender, RoutedEventArgs e)
+        {
+            await Communication.WriteAsync(DataState.SendCommands["EndMesurement"]);
+            StopMesurement.Visibility = Visibility.Collapsed;
+            StartMesurement.Visibility = Visibility.Visible;
         }
     }
 

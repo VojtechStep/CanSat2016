@@ -17,16 +17,17 @@ namespace WindowsCode.Classes
             {
                 try
                 {
-                    Temperature = Double.Parse(parts[0]);
-                    Pressure = Double.Parse(parts[1]);
-                    X_Acceleration = Double.Parse(parts[2]);
-                    Y_Acceleration = Double.Parse(parts[3]);
-                    Z_Acceleration = Double.Parse(parts[4]);
-                    GPS_OK = parts[5].ToCharArray()[0] == 'A';
-                    Latitude = Double.Parse(parts[6]);
+                    UTCTime = Single.Parse(parts[0]);
+                    Temperature = Single.Parse(parts[1]);
+                    Pressure = Single.Parse(parts[2]);
+                    X_Acceleration = Single.Parse(parts[3]) * SettingsState.GRange / 1024;
+                    Y_Acceleration = Single.Parse(parts[4]) * SettingsState.GRange / 1024;
+                    Z_Acceleration = Single.Parse(parts[5]) * SettingsState.GRange / 1024;
+                    Latitude = Single.Parse(parts[6]);
                     LatitudeDirection = (Direction)parts[7].ToCharArray()[0];
-                    Longitude = Double.Parse(parts[8]);
+                    Longitude = Single.Parse(parts[8]);
                     LongitudeDirection = (Direction)parts[9].ToCharArray()[0];
+                    Altitude = Single.Parse(parts[10]);
                     RawData = input;
                 }
                 catch (Exception)
@@ -37,16 +38,17 @@ namespace WindowsCode.Classes
 
         }
 
-        public Double Temperature { get; private set; }
-        public Double Pressure { get; private set; }
-        public Double X_Acceleration { get; private set; }
-        public Double Y_Acceleration { get; private set; }
-        public Double Z_Acceleration { get; private set; }
-        public Boolean GPS_OK { get; private set; }
-        public Double Latitude { get; private set; }
+        public Single UTCTime { get; private set; }
+        public Single Temperature { get; private set; }
+        public Single Pressure { get; private set; }
+        public Single X_Acceleration { get; private set; }
+        public Single Y_Acceleration { get; private set; }
+        public Single Z_Acceleration { get; private set; }
+        public Single Latitude { get; private set; }
         public Direction LatitudeDirection { get; private set; }
-        public Double Longitude { get; private set; }
+        public Single Longitude { get; private set; }
         public Direction LongitudeDirection { get; private set; }
+        public Single Altitude { get; private set; }
         public String RawData { get; private set; }
     }
 

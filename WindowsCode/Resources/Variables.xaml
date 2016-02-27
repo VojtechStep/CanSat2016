@@ -8,6 +8,6 @@
     <x:Double x:Key="DefaultFontSize">15</x:Double>
     <x:Double x:Key="VerMajor">0</x:Double>
     <x:Double x:Key="VerMinor">3</x:Double>
-    <x:Double x:Key="BuildNum">0</x:Double>
+    <x:Double x:Key="BuildNum">3</x:Double>
 
 </ResourceDictionary>

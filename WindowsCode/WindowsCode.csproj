@@ -102,6 +102,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Classes\Communication.cs" />
     <Compile Include="Classes\Converters.cs" />
     <Compile Include="Classes\CSVData.cs" />
     <Compile Include="Classes\PageStates.cs" />
