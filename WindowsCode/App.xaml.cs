@@ -66,7 +66,7 @@ namespace WindowsCode
                 if (roamingSettings.Containers.ContainsKey("CanSatSettings"))
                 {
                     if (roamingSettings.Containers["CanSatSettings"].Values.ContainsKey("IntTheme"))
-                        mainPage.RequestedTheme = (Int32)roamingSettings.Containers["CanSatSettings"].Values["IntTheme"] == 0 ? ElementTheme.Default : ((Int32)roamingSettings.Containers["CanSatSettings"].Values["IntTheme"] == 1 ? ElementTheme.Dark : ElementTheme.Light);
+                        SettingsState.AppCurrentTheme = (Int32)roamingSettings.Containers["CanSatSettings"].Values["IntTheme"] == 0 ? ElementTheme.Default : ((Int32)roamingSettings.Containers["CanSatSettings"].Values["IntTheme"] == 1 ? ElementTheme.Dark : ElementTheme.Light);
                 }
 
 
@@ -88,6 +88,7 @@ namespace WindowsCode
 
                 }
                 // Ensure the current window is active
+                mainPage.RequestedTheme = SettingsState.AppCurrentTheme;
                 Window.Current.Activate();
 
             }
@@ -147,10 +148,7 @@ namespace WindowsCode
         {
             var deferral = e.SuspendingOperation.GetDeferral();
             if(!DataState.ReadCancellationTokenSource?.IsCancellationRequested ?? false) DataState.ReadCancellationTokenSource?.Cancel();
-            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
-            ApplicationDataContainer CanSatSettings = roamingSettings.CreateContainer("CanSatSettings", ApplicationDataCreateDisposition.Always);
-            roamingSettings.Containers["CanSatSettings"].Values["IntTheme"] = (Window.Current.Content as MainPage).RequestedTheme == ElementTheme.Default ? 0 : ((Window.Current.Content as MainPage).RequestedTheme == ElementTheme.Dark ? 1 : 2);
-
+            SettingsState.SaveTheme();
             deferral.Complete();
         }
     }

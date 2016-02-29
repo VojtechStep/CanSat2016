@@ -51,7 +51,9 @@ namespace WindowsCode.Pages
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            (Window.Current.Content as MainPage).RequestedTheme = (Theme)((ComboBox)sender).SelectedIndex == Theme.Dark ? ElementTheme.Dark : ((Theme)((ComboBox)sender).SelectedIndex == Theme.Light ? ElementTheme.Light : ElementTheme.Default);
+
+            SettingsState.AppCurrentTheme = (Theme)((ComboBox)sender).SelectedIndex == Theme.Dark ? ElementTheme.Dark : ((Theme)((ComboBox)sender).SelectedIndex == Theme.Light ? ElementTheme.Light : ElementTheme.Default);
+            (Window.Current.Content as MainPage).RequestedTheme = SettingsState.AppCurrentTheme;
         }
 
         private void SignInOD_Click(object sender, RoutedEventArgs e)

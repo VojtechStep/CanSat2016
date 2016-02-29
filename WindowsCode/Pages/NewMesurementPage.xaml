@@ -26,24 +26,26 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBox Name="FilePathSelector" Header="File" Grid.Row="0" Grid.Column="0" Margin="0 10 0 0" />
-        <Button Content="Browse" Grid.Row="0" Grid.Column="1" Margin="20 0 0 0" VerticalAlignment="Bottom" Click="Browse_Click" />
+        <TextBlock Text="File" Grid.Row="0" />
+        <TextBlock Name="FilePathSelector" Grid.Row="1" Grid.Column="0" Margin="0 10 0 0" Text="None selected" />
+        <Button Content="Browse" Grid.Row="1" Grid.Column="1" Margin="20 0 0 0" VerticalAlignment="Bottom" Click="Browse_Click" />
 
-        <ComboBox Name="PortSelector" Header="Port" Grid.Row="1" Grid.Column="0" ItemsSource="{x:Bind Ports}" VerticalAlignment="Bottom" Margin="0 10 0 0" IsEnabled="{x:Bind ConnectionsAvailable, Mode=OneWay}">
+        <ComboBox Name="PortSelector" Header="Port" Grid.Row="2" Grid.Column="0" ItemsSource="{x:Bind Ports}" VerticalAlignment="Bottom" Margin="0 10 0 0" IsEnabled="{x:Bind ConnectionsAvailable, Mode=OneWay}">
             <ComboBox.ItemTemplate>
                 <DataTemplate x:DataType="device:DeviceInformation">
                     <TextBlock Text="{x:Bind Name}" />
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
-        <Button Content="Refresh" Grid.Row="1" Grid.Column="1" Margin="20 0 0 0" VerticalAlignment="Bottom" Click="Refresh_Click" />
+        <Button Content="Refresh" Grid.Row="2" Grid.Column="1" Margin="20 0 0 0" VerticalAlignment="Bottom" Click="Refresh_Click" />
 
 
-        <Grid Margin="10 20 20 10" VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+        <Grid Margin="10 20 20 10" VerticalAlignment="Bottom" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="49*" />
                 <ColumnDefinition Width="2*" />

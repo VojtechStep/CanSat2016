@@ -25,7 +25,10 @@
                             <TextBlock Name="PressureLabel" Text="Pressure: " />
                             <TextBlock Name="PressureValue" Text="9998 mB"/>
                         </StackPanel>
-                        <comp:Chart2D x:Name="TempChart" Width="300" Height="300" Header="Temperature" />
+                        <StackPanel Orientation="Horizontal">
+                            <comp:Chart2D x:Name="TempChart" Width="300" Height="300" YMax="30" Header="Temperature" Margin="10 0 0 0" />
+                            <comp:Chart2D x:Name="PresChart" Width="300" Height="300" YMax="1000" Header="Pressure" Margin="10 0 0 0" />
+                        </StackPanel>
                     </StackPanel>
                 </PivotItem.Content>
             </PivotItem>
@@ -43,6 +46,11 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Name="ZAxisLabel" Text="Z-Axis: " />
                             <TextBlock Name="ZAxisValue" Text="10000"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <comp:Chart2D x:Name="XAccChart" Width="200" Height="200" Header="X Acceleration" Margin="10 0 0 0" />
+                            <comp:Chart2D x:Name="YAccChart" Width="200" Height="200" Header="Y Acceleration" Margin="10 0 0 0" />
+                            <comp:Chart2D x:Name="ZAccChart" Width="200" Height="200" Header="Z Acceleration" Margin="10 0 0 0" />
                         </StackPanel>
                     </StackPanel>
                 </PivotItem.Content>

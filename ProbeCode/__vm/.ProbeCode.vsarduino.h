@@ -84,4 +84,6 @@ extern "C" void __cxa_pure_virtual() {;}
 #define portInputRegister(P)
 #define portModeRegister(P)
 #include <..\ProbeCode\ProbeCode.ino>
+#include <..\ProbeCode\ADXL345.cpp>
+#include <..\ProbeCode\ADXL345.h>
 #endif

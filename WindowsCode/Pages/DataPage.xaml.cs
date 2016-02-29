@@ -31,17 +31,13 @@ namespace WindowsCode.Pages
     /// </summary>
     public sealed partial class DataPage : Page
     {
-        private ObservableCollection<Point> Temp { get { return DataState.Data.GetTemp(); } }
-
-        private ObservableCollection<Point> Press { get { return DataState.Data.GetPress(); } }
-
         StringBuilder dataBuilder = new StringBuilder();
         public DataPage()
         {
             this.InitializeComponent();
 
-            DataState.Data.CollectionChanged -= Data_CollectionChanged;
-            DataState.Data.CollectionChanged += Data_CollectionChanged;
+            MesurementState.CurrentItem.Data.CollectionChanged -= Data_CollectionChanged;
+            MesurementState.CurrentItem.Data.CollectionChanged += Data_CollectionChanged;
         }
 
         private async void Data_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -50,7 +46,16 @@ namespace WindowsCode.Pages
             e.NewItems.Cast<CSVData>().ForEach((data) =>
             {
                 dataBuilder.Append(data.RawData + '\n');
+                TemperatureValue.Text = data.Temperature.ToString();
                 TempChart.Push(data.Temperature);
+                PressureValue.Text = data.Pressure.ToString();
+                PresChart.Push(data.Pressure);
+                XAxisValue.Text = data.X_Acceleration.ToString();
+                XAccChart.Push(data.X_Acceleration);
+                YAxisValue.Text = data.Y_Acceleration.ToString();
+                YAccChart.Push(data.Y_Acceleration);
+                ZAxisValue.Text = data.Z_Acceleration.ToString();
+                ZAccChart.Push(data.Z_Acceleration);
             });
             FileIO.AppendTextAsync((await StorageApplicationPermissions.FutureAccessList.GetFileAsync(DataState.OutputFileToken)), dataBuilder.ToString()).AsTask().Wait();
             DataBlock.Text += dataBuilder.ToString();

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.SerialCommunication;
@@ -32,7 +30,7 @@ namespace WindowsCode.Classes
         }
         public static async Task ConnectAsync(String DeviceId, UInt32 BaudRate) => await ConnectAsync(DeviceId, BaudRate, TimeSpan.FromMilliseconds(1000), TimeSpan.FromMilliseconds(1000));
         public static async Task ConnectAsync(String DeviceId) => await ConnectAsync(DeviceId, 9600, TimeSpan.FromMilliseconds(1000), TimeSpan.FromMilliseconds(1000));
-        
+
         public static void AttachReader()
         {
             dataReader = new DataReader(serialPort.InputStream);
@@ -47,14 +45,12 @@ namespace WindowsCode.Classes
         {
             if (Count == 0)
                 throw new ArgumentException("Buffer length must be greater than 0", "Count");
-            Task<UInt32> LoadAsyncTask;
 
             CancelToken.ThrowIfCancellationRequested();
             dataReader.InputStreamOptions = InputStreamOptions.Partial;
-            LoadAsyncTask = dataReader.LoadAsync(Count).AsTask(CancelToken);
+            UInt32 BytesLoaded = await dataReader.LoadAsync(Count).AsTask(CancelToken);
 
-            UInt32 BytesLoaded = await LoadAsyncTask;
-            if(BytesLoaded == Count)
+            if (BytesLoaded == Count)
             {
                 dataReader.ReadBytes(InBuffer);
             }
@@ -71,7 +67,7 @@ namespace WindowsCode.Classes
             StoreAsyncTask = dataWriter.StoreAsync().AsTask();
 
             UInt32 BytesWritten = await StoreAsyncTask;
-            if(ShouldDetachBuffer)
+            if (ShouldDetachBuffer)
             {
                 dataWriter.DetachBuffer();
                 dataWriter = null;

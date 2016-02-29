@@ -13,7 +13,7 @@ namespace WindowsCode.Classes
         {
             String[] parts = input.Split(',');
 
-            if (parts.Length == 10)
+            if (parts.Length == 11)
             {
                 try
                 {

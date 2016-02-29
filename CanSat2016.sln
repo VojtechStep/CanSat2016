@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProbeACode", "ProbeACode\Pr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProbeBCode", "ProbeBCode\ProbeBCode.vcxproj", "{51C3A677-7B15-4A6D-9C87-84F32363D03C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppPrototypingProject", "CppPrototypingProject\CppPrototypingProject.vcxproj", "{D0768FED-4BEC-4153-9443-6A0F7C24C196}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -75,12 +77,23 @@ Global
 		{51C3A677-7B15-4A6D-9C87-84F32363D03C}.Release|x64.ActiveCfg = Release|Win32
 		{51C3A677-7B15-4A6D-9C87-84F32363D03C}.Release|x86.ActiveCfg = Release|Win32
 		{51C3A677-7B15-4A6D-9C87-84F32363D03C}.Release|x86.Build.0 = Release|Win32
+		{D0768FED-4BEC-4153-9443-6A0F7C24C196}.Debug|ARM.ActiveCfg = Debug|Win32
+		{D0768FED-4BEC-4153-9443-6A0F7C24C196}.Debug|x64.ActiveCfg = Debug|x64
+		{D0768FED-4BEC-4153-9443-6A0F7C24C196}.Debug|x64.Build.0 = Debug|x64
+		{D0768FED-4BEC-4153-9443-6A0F7C24C196}.Debug|x86.ActiveCfg = Debug|Win32
+		{D0768FED-4BEC-4153-9443-6A0F7C24C196}.Debug|x86.Build.0 = Debug|Win32
+		{D0768FED-4BEC-4153-9443-6A0F7C24C196}.Debug|x86.Deploy.0 = Debug|Win32
+		{D0768FED-4BEC-4153-9443-6A0F7C24C196}.Release|ARM.ActiveCfg = Release|Win32
+		{D0768FED-4BEC-4153-9443-6A0F7C24C196}.Release|x64.ActiveCfg = Release|x64
+		{D0768FED-4BEC-4153-9443-6A0F7C24C196}.Release|x64.Build.0 = Release|x64
+		{D0768FED-4BEC-4153-9443-6A0F7C24C196}.Release|x86.ActiveCfg = Release|Win32
+		{D0768FED-4BEC-4153-9443-6A0F7C24C196}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
+		SccNumberOfProjects = 7
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://vojtechstepancik.visualstudio.com/defaultcollection
 		SccLocalPath0 = .
@@ -99,5 +112,8 @@ Global
 		SccProjectUniqueName5 = ProbeBCode\\ProbeBCode.vcxproj
 		SccProjectName5 = ProbeBCode
 		SccLocalPath5 = ProbeBCode
+		SccProjectUniqueName6 = CppPrototypingProject\\CppPrototypingProject.vcxproj
+		SccProjectName6 = CppPrototypingProject
+		SccLocalPath6 = CppPrototypingProject
 	EndGlobalSection
 EndGlobal
