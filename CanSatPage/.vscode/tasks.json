@@ -1,0 +1,10 @@
+{
+	"version": "0.1.0",
+	"command": "whs",
+	"isShellCommand": true,
+	"showOutput": "always",
+	"args": ["-a", "localhost"],
+    "echoCommand": true,
+    "isWatching": true,
+    "promptOnClose": true
+}
