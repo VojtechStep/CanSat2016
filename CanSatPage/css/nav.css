@@ -1,0 +1,79 @@
+nav#TopMenu {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #222;
+}
+
+nav#TopMenu ul.HeaderWrapper {
+    list-style: none;
+    float: left;
+    height: 100%;
+    margin: 0;
+    padding: 10px 0;
+}
+
+nav#TopMenu ul.HeaderWrapper li.Header {
+    float: right;
+    display: block;
+    padding: 0;
+    margin: 2vh 30px;
+    color: white;
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+nav#TopMenu ul.NavMenu {
+    list-style: none;
+    float: right;
+    height: 100%;
+    margin: 0;
+    padding: 10px 0;
+}
+
+nav#TopMenu ul.NavMenu li.NavMenuItem {
+    float: left;
+    display: block;
+    padding: 0;
+    margin: 2vh 30px;
+}
+
+nav#TopMenu ul.NavMenu li.NavMenuItem.active {
+    border-bottom: 3px solid red;
+}
+
+nav#TopMenu ul.NavMenu li.NavMenuItem > a {
+    text-decoration: none;
+    color: white;
+}
+
+nav#TopMenu ul.NavMenu li.NavMenuItem:hover > a {
+    color: red;
+}
+
+nav#TopMenu p#HamburgerToggle {
+    color: white;
+    float: right;
+    padding: 2vh 30px;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+@media screen and (max-width: 730px)
+{
+    nav#TopMenu ul.NavMenu {
+        float: left;
+        width: 100%;
+    }
+    
+    nav#TopMenu ul.NavMenu li.NavMenuItem {
+        width: 15%;
+        margin: 2.5%;
+    }
+}

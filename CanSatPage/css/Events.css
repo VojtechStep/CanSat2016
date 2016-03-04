@@ -1,0 +1,69 @@
+div.EventsContent {
+    background: #FAFAFA;
+}
+
+div.Event {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: #F0F0F0;
+    height: 70%;
+    width: 28%;
+    margin: 1%;
+    padding: 1%;
+    float: left;
+}
+
+div.Event > .title {
+    font-weight: 600;
+    text-align: center;
+}
+
+div.Event > .time {
+    font-weight: 500;
+}
+
+div.Event > .location {
+    font-size: 1.05em;
+    font-weight: 350;
+}
+
+div.Event > .links {
+    list-style: none;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    margin: 5%;
+    padding: 0;
+}
+
+div.Event > .links > li {
+    display: block;
+    float: left;
+}
+
+div.Event > .links > li > a {
+    text-decoration: none;
+}
+
+div.Event > .links > li > a > img {
+    height: 25%;
+    width: 25%;
+}
+
+
+@media screen and (max-width: 730px)
+{
+    div.Event {
+        width: 40%;
+        margin: 2%;
+    }
+}
+
+@media screen and (max-width: 520px)
+{
+    div.Event {
+        width: 90%;
+        margin: 4%;
+    }
+}

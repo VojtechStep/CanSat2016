@@ -1,0 +1,40 @@
+div.NewsContent {
+    background: #FAFAFA;
+}
+
+div.News {
+    display: block;
+    background: #F0F0F0;
+    width: 28%;
+    min-height: 70%;
+    margin: 1%;
+    padding: 1%;
+    float: left;
+}
+
+div.News > .title {
+    font-weight: 600;
+    text-align: center;
+}
+
+div.News > .date {
+    font-weight: 500;
+}
+
+@media screen and (max-width: 730px)
+{
+    div.News {
+        width: 40%;
+        margin: 2%;
+        min-height: 50%;
+    }
+}
+
+@media screen and (max-width: 520px)
+{
+    div.News {
+        width: 90%;
+        margin: 4%;
+        min-height: unset;
+    }
+}

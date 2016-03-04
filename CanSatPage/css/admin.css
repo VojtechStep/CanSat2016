@@ -1,0 +1,20 @@
+div.News > input.title {
+    height: 2em;
+    width: 90%;
+    margin: auto 5%;
+}
+
+div.News > input.date {
+    margin: 5%;
+}
+
+div.News > textarea.content {
+    height: 200px;
+    width: 90%;
+    margin: 5%;
+}
+
+div.News > input[type="button"] {
+    width: 39.39%;
+    margin: 5%;
+}

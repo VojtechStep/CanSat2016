@@ -1,0 +1,21 @@
+footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #555;
+}
+
+footer > ul.FooterStack {
+    list-style: none;
+    float: right;
+    padding: 10px;
+    margin: 0;
+}
+
+footer > ul.FooterStack li.FooterStackItem {
+    float: left;
+    display: block;
+    color: white;
+    margin-right: 25px;
+}

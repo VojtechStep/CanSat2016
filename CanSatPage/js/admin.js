@@ -19,7 +19,7 @@ $(document).ready(() => {
     $Content = $("div.ContentViewport > div.Content");
     $Footer = $("footer");
     $Window = $(window);
-    
+
     $NavBarHeightReference = $("ul.HeaderWrapper");
 
     $NewsLink = $("#NewsLink");
@@ -80,29 +80,42 @@ $(document).ready(() => {
         }
     });
 
+
+    $("div.NewsContent > div.InnerContent").on("click", "div.News > input.save", function() {
+        var id = $(this).parent().attr("contentId");
+        var title = $(this).parent().children("input.title").attr("value");
+        var date = $(this).parent().children("input.date").attr("value");
+        var content = $(this).parent().children("textarea.content").html();
+        var jsonObj = Templates.ReverseNews(id, title, date, content);
+        console.log(jsonObj);
+        $.post("http://192.168.1.122:8080/res/data/News.json", jsonObj, (data, status) => {
+            console.log("Data uploaded");
+        }, "application/json");
+    });
+
     $Window.resize(() => {
 
         if ($Window.outerWidth() > 730) {
             $("nav#TopMenu > ul.NavMenu").css("display", "unset");
-        } else  $("nav#TopMenu > ul.NavMenu").slideUp();
+        } else $("nav#TopMenu > ul.NavMenu").slideUp();
         SetViewport();
     });
 
     $("nav#TopMenu > p#HamburgerToggle").click(() => {
         $("nav#TopMenu > ul.NavMenu").slideToggle();
     });
-    
+
     $("#SuperUberMegaTheMostHiddenAccesEver").click(() => {
-        window.location = "admin";
+        window.location = "";
     });
 
-    $.getJSON("./res/data/News.json", (data, status) => {
+    $.getJSON("./res/data/News.json", data => {
         data.forEach(element => {
             $("div.ContentViewport > div.Content > div.NewsContent > div.InnerContent").append(Templates.NewsTemplate(element));
         }, this);
     });
 
-    $.getJSON("./res/data/Events.json", (data, status) => {
+    $.getJSON("./res/data/Events.json", data => {
         data.forEach(element => {
             $("div.ContentViewport > div.Content > div.EventsContent > div.InnerContent").append(Templates.EventsTemplate(element));
         }, this);
@@ -147,11 +160,24 @@ function clearActive(selector) {
 class Templates {
     static NewsTemplate(data) {
         return (
-            `<div class="News">
-                <h2 class="title">${data.title}</h2>
-                <p class="date">${data.date}</p>
-                <p class="content">${data.content}</p>
+            `<div class="News" contentId="${data.id}">
+                <input type="text" class="title" value="${data.title}">
+                <input type="text" class="date" value="${data.date}">
+                <textarea class="content">${data.content}</textarea>
+                <input type="button" class="save" value="save">
+                <input type="button" class="discard" value="discard">
             </div>`);
+    }
+
+    static ReverseNews(id, title, date, content) {
+        return (
+            `{
+               "id": ${id},
+               "title": "${title}",
+               "date": "${date}",
+               "content": "${content}"
+           }`
+        );
     }
 
     static EventsTemplate(data) {

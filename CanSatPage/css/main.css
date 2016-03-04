@@ -1,0 +1,41 @@
+@import "./nav.css";
+@import "./footer.css";
+@import "./content.css";
+
+
+body {
+    font-family: "Segoe UI";
+    margin: 0;
+    padding: 0;
+}
+
+ul.no-style {
+    list-style: none;
+}
+
+ul.no-indent {
+    padding-left: 0;
+}
+
+.asset {
+    font-family: "Segoe MDL2 Assets";
+}
+
+.pc-collapse {
+    display: none;
+}
+
+.tablet-collapse {
+    display: initial;
+}
+
+@media screen and (max-width: 730px)
+{
+    .pc-collapse {
+        display: initial;
+    }
+    
+    .tablet-collapse {
+        display: none;
+    }
+}

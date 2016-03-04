@@ -1,0 +1,18 @@
+[
+    {
+        "id": 0,
+        "title": "Regionální kolo EXPO SCIENCE AMAVET",
+        "time": "10.-11.3.2016",
+        "place": "Výstavní centrum IDEON, Pardubice",
+        "facebook": "",
+        "website": "http://www.amavet.cz/"
+    },
+    {
+        "id": 1,
+        "title": "Národní kolo CanSat",
+        "time": "25.-26.3.2016",
+        "place": "Letiště Kladno",
+        "facebook": "https://www.facebook.com/events/1528761154087334/",
+        "website": "http://www.esero.scientica.cz/cansat"
+    }
+]
