@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WindowsCode.Pages"
     xmlns:comp="using:WindowsCode.CustomControls"
+    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -70,6 +71,7 @@
                             <TextBlock Name="LaltitudeLabel" Text="Laltitude: " />
                             <TextBlock Name="LaltitudeValue" Text="300 m"/>
                         </StackPanel>
+                        <maps:MapControl Name="ProbeLocation" Width="400" Height="300" ZoomLevel="14" Style="Terrain" MapServiceToken="tRdFETJbn4yQ5bIFq9Me~xzTZlss7SuCvQOO-Q6ThDw~Ap211aSco-aK81mUT93xL6B-vTcXiFU5YegzhBFKmBpRUr1pND3cB2nuW0AoIC25" />
                     </StackPanel>
                 </PivotItem.Content>
             </PivotItem>

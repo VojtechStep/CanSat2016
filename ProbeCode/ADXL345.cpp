@@ -17,9 +17,9 @@ void ADXL345::readAcceleration(short* x, short* y, short* z)
 	byte buffer[6];
 	readFrom(0x53, 0x32, 6, buffer);
 
-	*x = (((short)buffer[1]) << 8) | buffer[0];
-	*y = (((short)buffer[3]) << 8) | buffer[2];
-	*z = (((short)buffer[5]) << 8) | buffer[4];
+	(*x) = (((int)buffer[1]) << 8) | buffer[0];
+	(*y) = (((int)buffer[3]) << 8) | buffer[2];
+	(*z) = (((int)buffer[5]) << 8) | buffer[4];
 }
 
 void ADXL345::setRange(const byte& rng)

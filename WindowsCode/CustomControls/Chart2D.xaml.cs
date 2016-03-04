@@ -50,13 +50,14 @@ namespace WindowsCode.CustomControls
         {
             this.InitializeComponent();
             Data = new List<Double>();
-            Loaded += (s, a) => {
+            Loaded += (s, a) =>
+            {
                 Background = Background ?? new SolidColorBrush(Color.FromArgb(255, 20, 20, 20));
                 PlotAreaMargin = PlotAreaMargin.Blow(20);
-                PlotAreaWidth = ActualWidth - (PlotAreaMargin.Left + PlotAreaMargin.Right);
-                PlotAreaHeight = ActualHeight - (PlotAreaMargin.Top + PlotAreaMargin.Bottom + (GraphLabel?.ActualHeight ?? 0) + (GraphLabel?.Margin.Top ?? 0) + (GraphLabel?.Margin.Bottom ?? 0));
-                XMax = (Int32)(PlotAreaWidth / XUnit) + XMin;
-                YMax = (Int32)(PlotAreaHeight / YUnit) + YMin;
+                PlotAreaWidth = Width - (PlotAreaMargin.Left + PlotAreaMargin.Right);
+                PlotAreaHeight = Height - (PlotAreaMargin.Top + PlotAreaMargin.Bottom + (GraphLabel?.ActualHeight ?? 0) + (GraphLabel?.Margin.Top ?? 0) + (GraphLabel?.Margin.Bottom ?? 0));
+                XMax = (Int32)(PlotAreaWidth / XUnit);
+                YMax = (Int32)(PlotAreaHeight / YUnit);
                 Bindings.Update();
                 ReRender();
             };
@@ -65,18 +66,20 @@ namespace WindowsCode.CustomControls
         public void Push(Double Val)
         {
             Data.Add(Val);
-            XMax = Math.Max(XMax, Data.Count);
-            if (Autoscale)
-                XUnit = Math.Min(PlotAreaWidth / XMax, XUnitMax);
-            else
-                PlotAreaWidth = XUnit * XMax;
 
-            YMax = (Int32)Math.Max(YMax, Val);
-            YMin = (Int32)Math.Min(YMin, Val);
-            if (Autoscale)
+            XMax = (Int32)(PlotAreaWidth / XUnit);
+            YMax = (Int32)(PlotAreaHeight / YUnit);
+
+            if (Data.Count > XMax)
+            {
+                XMax = Data.Count;
+                XUnit = Math.Min(PlotAreaWidth / XMax, XUnitMax);
+            }
+            if (Val > YMax)
+            {
+                YMax = (Int32)Math.Ceiling(Val);
                 YUnit = Math.Min(PlotAreaHeight / YMax, YUnitMax);
-            else
-                PlotAreaHeight = YUnit * YMax;
+            }
             ReRender();
         }
 
@@ -106,7 +109,7 @@ namespace WindowsCode.CustomControls
         {
             Int32 XAdditionalLineSpacing = NearestToMultipleOf(XMax / XAdditionalLinesCount, 5);
             Int32 YAdditionalLineSpacing = NearestToMultipleOf(YMax / YAdditionalLinesCount, 5);
-            for (Int32 xadd = XMin; xadd < XMax; xadd += XAdditionalLineSpacing)
+            for (Int32 xadd = 0; xadd < XMax; xadd += XAdditionalLineSpacing)
             {
                 Line l = new Line();
                 l.X1 = xadd * XUnit;
@@ -125,7 +128,7 @@ namespace WindowsCode.CustomControls
                 PlotArea.Children.Add(l);
                 MainCanvas.Children.Add(LineLabel);
             }
-            for (Int32 yadd = YMin; yadd < YMax; yadd += YAdditionalLineSpacing)
+            for (Int32 yadd = 0; yadd < YMax; yadd += YAdditionalLineSpacing)
             {
                 Line l = new Line();
                 l.X1 = 0;
@@ -138,25 +141,28 @@ namespace WindowsCode.CustomControls
                 l.StrokeThickness = 0.5;
                 TextBlock LineLabel = new TextBlock();
                 LineLabel.Text = yadd.ToString();
-                LineLabel.TextAlignment = TextAlignment.Left;
-                Double OffsetTop = PlotAreaMargin.Top + PlotAreaMargin.Bottom + l.Y1 - 10;
+                LineLabel.TextAlignment = TextAlignment.Right;
+                Double OffsetTop = PlotAreaMargin.Top + PlotAreaMargin.Bottom + l.Y1 -10;
                 Double OffsetRight = PlotAreaMargin.Right + PlotAreaWidth;
-                LineLabel.Margin = new Thickness(5, OffsetTop, 0, 0);
+                LineLabel.Margin = new Thickness(0, OffsetTop, OffsetRight, 0);
                 PlotArea.Children.Add(l);
-                LineLabel.SizeChanged += (s, a) => {
-                    Double TextWidth = ((TextBlock)s).FontSize * ((TextBlock)s).Text.Length * 2 / 3;
-                    if (TextWidth > PlotAreaMargin.Left)
-                    {
-                        PlotAreaMargin = new Thickness(TextWidth, PlotAreaMargin.Top, PlotAreaMargin.Right, PlotAreaMargin.Bottom);
-                    }
-                    Bindings.Update();
-                };
+                //LineLabel.SizeChanged += (s, a) =>
+                //{
+                //    Double TextWidth = ((TextBlock)s).FontSize * ((TextBlock)s).Text.Length * 2 / 3;
+                //    if (TextWidth > PlotAreaMargin.Left)
+                //    {
+                //        PlotAreaMargin = new Thickness(TextWidth, PlotAreaMargin.Top, PlotAreaMargin.Right, PlotAreaMargin.Bottom);
+                //    }
+                //    Bindings.Update();
+                //};
                 MainCanvas.Children.Add(LineLabel);
             }
         }
+
         protected override void OnPointerReleased(PointerRoutedEventArgs e)
         {
-            Push(Math.Pow(Data.Count, 2) + 20);
+            Push(Math.Pow(Data.Count(), 2));
         }
+
     }
 }

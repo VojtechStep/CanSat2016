@@ -38,7 +38,7 @@ namespace WindowsCode.Classes
             return Color.FromArgb(color.A, (Byte)(255 - color.R), (Byte)(255 - color.G), (Byte)(255 - color.B));
         }
 
-        public static SolidColorBrush Invert (this SolidColorBrush brush)
+        public static SolidColorBrush Invert(this SolidColorBrush brush)
         {
             return new SolidColorBrush(Invert(brush.Color));
         }
@@ -49,7 +49,8 @@ namespace WindowsCode.Classes
             {
                 return Application.Current.RequestedTheme == ApplicationTheme.Dark ? ElementTheme.Dark : ElementTheme.Light;
             }
-            else return (Window.Current.Content as MainPage).RequestedTheme;
+            else
+                return (Window.Current.Content as MainPage).RequestedTheme;
         }
 
         public static Windows.Storage.ApplicationDataCompositeValue ToDataCompositeValue(this MesurementItem ri)
@@ -66,7 +67,8 @@ namespace WindowsCode.Classes
 
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
-            foreach (var current in enumerable) action(current);
+            foreach (var current in enumerable)
+                action(current);
         }
 
         public static ObservableCollection<Point> GetTemp(this ObservableCollection<CSVData> db)
@@ -112,7 +114,8 @@ namespace WindowsCode.Classes
         public static Int32 NearestToMultipleOf(Double Value, Int32 Multiple)
         {
             Double rest = Value % Multiple;
-            if (rest < Multiple / 2) return (Int32)(Value - rest);
+            if (rest < Multiple / 2 && Value != rest)
+                return (Int32)(Value - rest);
             return (Int32)(Value - rest + Multiple);
         }
 
@@ -124,7 +127,7 @@ namespace WindowsCode.Classes
         Dark,
         Light,
     }
-    
+
     public enum QueryPosition
     {
         Normal,

@@ -3,6 +3,12 @@
  Created:	2/13/2016 9:43:30 PM
  Author:	Vojtěch && Jacob (Vojtěch is first, because he actually works)
 
+ SD Write speed: 1Mb / 48508mS = 0.0206 Mb/S
+
+ Serial: PC
+ Serial1: GPS
+ Serial2: Camera subsystem
+
  Packet Structure:
  **|Type|**|Name|******|Unit|*********|Data Decomposition|*****************************************************|Length|*|Comment|************
  *  Byte	PacketStart	[]			= 0x08																		1b							*
@@ -21,47 +27,46 @@
  ********************************************************************************************************************************************
 */
 
+#include <SD.h>
 #include "ADXL345.h"
 #include <RFM69.h>			//Radio
 #include <BMP180.h>			//Temp & Pres
 
-#define COMMANDLENGTH 34
-
-byte data[COMMANDLENGTH];
 bool sending;
 bool repeat;
 String gpsIn;
+String backupFileName;
 
-const byte packetStartCommand = 0x08;
-const byte packetEndCommand = 0x09;
+const int GPSPin = 7;
 
-const byte initCommand[COMMANDLENGTH] { 0x04 };
-const byte startCommand[COMMANDLENGTH] { 0x05 };
-const byte pauseCommand[COMMANDLENGTH] { 0x06 };
-const byte endCommand[COMMANDLENGTH] { 0x07 };
+
+const byte broadcastInitMessage = 0x04;
+const byte mesurementStartMessage = 0x05;
+const byte mesurementPauseMessage = 0x06;
+const byte mesurementEndMessage = 0x07;
+const byte packetStartMessage = 0x08;
+const byte packetEndMessage = 0x09;
+const byte takeAndSaveImageMessage = 0x0A;
+
+const byte startMesCommand = 0x67;
+const byte endMesCommand = 0x68;
+const byte sendSampleCommand = 0x69;
+const byte takeImageCommand = 0x6A;
 
 BMP180 bmp;
 ADXL345 adxl;
 
-String readGps();
-
-union longdouble
-{
-	long l;
-	double d;
-};
-
 void setup()
 {
+	pinMode(GPSPin, OUTPUT);
+	digitalWrite(GPSPin, HIGH);
 	Serial.begin(115200);
 	Serial1.begin(4800);
 	bmp.begin();
 	adxl.begin();
 	adxl.setRange(RNG_16G);
-	Serial.write(initCommand, 1);
-	while (Serial1.available())
-		if (Serial1.read() == '\r')
-			break;
+	SD.begin();
+	Serial.write(broadcastInitMessage);
 }
 
 void loop()
@@ -70,162 +75,121 @@ void loop()
 	while (Serial.available())
 	{
 		byte inByte = Serial.read();
-		if (inByte == 0x67)
+		if (inByte == startMesCommand)
 		{
 			sending = true;
 			repeat = true;
 		}
-		if (inByte == 0x68) sending = false;
-		if (inByte == 0x69)
+		if (inByte == endMesCommand)
+		{
+			sending = false;
+			repeat = false;
+		}
+		if (inByte == sendSampleCommand)
 		{
 			sending = true;
 			repeat = false;
 		}
+		if (inByte == takeImageCommand)
+		{
+			takeImage();
+		}
 	}
+
+	gpsIn = "";
+
+	while (gpsIn.length() < 6 || gpsIn.substring(0, 6) != "$GPGGA")
+	{
+		byte inByte = Serial1.read();
+		if ((char)inByte == '$')
+		{
+			gpsIn = (char)inByte + Serial1.readStringUntil('\r');
+		}
+	}
+	if (!backupFileName)
+	{
+		setupSD();
+	}
+
 	//Write Output
 	if (sending)
 	{
 		sending = repeat;
-		Serial.write(startCommand, COMMANDLENGTH);
-		longdouble utcTime;
-		utcTime.d = 161229.487;
-		longdouble temp;
-		longdouble pres;
+		Serial.write(mesurementStartMessage);
+		double utcTime;
+		double temp;
+		double pres;
 		short xacc;
 		short yacc;
 		short zacc;
-		longdouble lat;
-		lat.d = 12158.3416;
-		char ns = 'N';
-		longdouble lon;
-		lon.d = 12158.3416;
-		char ew = 'W';
-		longdouble alt;
-		alt.d = 18.423;
+		double lat;
+		char ns;
+		double lon;
+		char ew;
+		double alt;
 
-		bmp.getData(temp.d, pres.d);
+		utcTime = atof(split(gpsIn, ',', 1).c_str());
+		bmp.getData(temp, pres);
 		adxl.readAcceleration(&xacc, &yacc, &zacc);
+		lat = atof(split(gpsIn, ',', 2).c_str());
+		ns = split(gpsIn, ',', 3)[0];
+		lon = atof(split(gpsIn, ',', 4).c_str());
+		ew = split(gpsIn, ',', 5)[0];
+		alt = atof(split(gpsIn, ',', 9).c_str());
 
-		while (gpsIn.substring(0, 6) != "$GPGGA")
-			gpsIn = readGps();
-		Serial.println(gpsIn);
-/*
-		data[0] = packetStartCommand;
-		data[1] = (utcTime.l & 0xFF000000) >> 24;
-		data[2] = (utcTime.l & 0x00FF0000) >> 16;
-		data[3] = (utcTime.l & 0x0000FF00) >> 8;
-		data[4] = (utcTime.l & 0x000000FF);
-		data[5] = (temp.l & 0xFF000000) >> 24;
-		data[6] = (temp.l & 0x00FF0000) >> 16;
-		data[7] = (temp.l & 0x0000FF00) >> 8;
-		data[8] = (temp.l & 0x000000FF);
-		data[9] = (pres.l & 0xFF000000) >> 24;
-		data[10] = (pres.l & 0x00FF0000) >> 16;
-		data[11] = (pres.l & 0x0000FF00) >> 8;
-		data[12] = (pres.l & 0x000000FF);
-		data[13] = (xacc & 0xFF00) >> 8;
-		data[14] = (xacc & 0x00FF);
-		data[15] = (yacc & 0xFF00) >> 8;
-		data[16] = (yacc & 0x00FF);
-		data[17] = (zacc & 0xFF00) >> 8;
-		data[18] = (zacc & 0x00FF);
-		data[19] = (lat.l & 0xFF000000) >> 24;
-		data[20] = (lat.l & 0x00FF0000) >> 16;
-		data[21] = (lat.l & 0x0000FF00) >> 8;
-		data[22] = (lat.l & 0x000000FF);
-		data[23] = ns;
-		data[24] = (lon.l & 0xFF000000) >> 24;
-		data[25] = (lon.l & 0x00FF0000) >> 16;
-		data[26] = (lon.l & 0x0000FF00) >> 8;
-		data[27] = (lon.l & 0x000000FF);
-		data[28] = ew;
-		data[29] = (alt.l & 0xFF000000) >> 24;
-		data[30] = (alt.l & 0x00FF0000) >> 16;
-		data[31] = (alt.l & 0x0000FF00) >> 8;
-		data[32] = (alt.l & 0x000000FF);
-		data[33] = packetEndCommand;
-		Serial.write(data, COMMANDLENGTH);*/
-		Serial.write(packetStartCommand);
-		Serial.print(String(utcTime.d) + "," + String(temp.d) + "," + String(pres.d) + "," + String(xacc) + "," + String(yacc) + "," + String(zacc) + "," + String(lat.d) + "," + String(ns) + "," + String(lon.d) + "," + String(ew) + "," + String(alt.d));
-		Serial.write(packetEndCommand);
+		String msg = String(utcTime) + "," + String(temp) + "," + String(pres) + "," + String(xacc) + "," + String(yacc) + "," + String(zacc) + "," + String(lat) + "," + String(ns) + "," + String(lon) + "," + String(ew) + "," + String(alt);
 
-		Serial.write(sending ? pauseCommand : endCommand, COMMANDLENGTH);
+		Serial.write(packetStartMessage);
+		Serial.print(msg);
+		Serial.write(packetEndMessage);
 
-		delay(900);
+		Serial.write(sending ? mesurementPauseMessage : mesurementEndMessage);
+
+#if Serial2Implemented
+		saveData(msg);
+#else
+		File dataFile = SD.open(backupFileName, FILE_WRITE);
+		dataFile.println(msg);
+		dataFile.close();
+#endif
 	}
 }
 
-String readGps()
+void setupSD()
 {
-	String inString;
-	while (Serial1.available())
+	backupFileName = split(gpsIn, ',', 1).substring(0, 4) + ".csv";
+	if (SD.exists(backupFileName)) SD.remove(backupFileName);
+	File dataFile = SD.open(backupFileName, FILE_WRITE);
+	dataFile.println("UTC Time[hhmmss.ss], Temperature[\u00B0C], Pressure[mB], X Acceleration[Gs], Y Acceleration[Gs], Z Acceleration[Gs], Latitude[dddmm.mm], N / S Indicator, Longitude[dddmm.mm], W / E Indicator, Altitude[m]");
+	dataFile.close();
+}
+
+String split(String data, char separator, int index)
+{
+	int found = 0;
+	int strIndex[] = {
+		0, -1 };
+	int maxIndex = data.length() - 1;
+	for (int i = 0; i <= maxIndex && found <= index; i++)
 	{
-		byte inByte = Serial1.read();
-		inString.concat((char)inByte);
+		if (data.charAt(i) == separator || i == maxIndex)
+		{
+			found++;
+			strIndex[0] = strIndex[1] + 1;
+			strIndex[1] = (i == maxIndex) ? i + 1 : i;
+		}
 	}
-	return inString;
+	return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
-
-/*
-const long utcTimeL = *reinterpret_cast<long*>(&utcTime);
-Serial.println(utcTimeL, BIN);
-double temp = 25.23;
-const bool* tempB = reinterpret_cast<bool*>(&temp);
-double pres = 995.60;
-const bool* presB = reinterpret_cast<bool*>(&pres);
-short  xacc = 128;
-short  yacc = 128;
-short  zacc = 128;
-double lat = 3723.2475;
-const bool* latB = reinterpret_cast<bool*>(&lat);
-char   ns = 'N';
-double lon = 12158.3416;
-const bool* lonB = reinterpret_cast<bool*>(&lon);
-char   ew = 'W';
-double alt = 18.423;
-const bool* altB = reinterpret_cast<bool*>(&alt);
-data[ 0] = _byteFromBoolArray(utcTimeB, 0);
-data[ 1] = _byteFromBoolArray(utcTimeB, 8);
-data[ 2] = _byteFromBoolArray(utcTimeB, 16);
-data[ 3] = _byteFromBoolArray(utcTimeB, 24);
-data[ 4] = _byteFromBoolArray(tempB, 24);
-data[ 5] = _byteFromBoolArray(tempB, 16);
-data[ 6] = _byteFromBoolArray(tempB, 8);
-data[ 7] = _byteFromBoolArray(tempB, 0);
-data[ 8] = _byteFromBoolArray(presB, 24);
-data[ 9] = _byteFromBoolArray(presB, 16);
-data[10] = _byteFromBoolArray(presB, 8);
-data[11] = _byteFromBoolArray(presB, 0);
-data[12] = ((byte)xacc >> 8);
-data[13] = ((byte)xacc >> 0);
-data[14] = ((byte)yacc >> 8);
-data[15] = ((byte)yacc >> 0);
-data[16] = ((byte)zacc >> 8);
-data[17] = ((byte)zacc >> 0);
-data[18] = _byteFromBoolArray(latB, 24);
-data[19] = _byteFromBoolArray(latB, 16);
-data[20] = _byteFromBoolArray(latB, 8);
-data[21] = _byteFromBoolArray(latB, 0);
-data[22] = (byte)ns;
-data[23] = _byteFromBoolArray(lonB, 24);
-data[24] = _byteFromBoolArray(lonB, 16);
-data[25] = _byteFromBoolArray(lonB, 8);
-data[26] = _byteFromBoolArray(lonB, 0);
-data[27] = (byte)ew;
-data[28] = _byteFromBoolArray(altB, 24);
-data[29] = _byteFromBoolArray(altB, 16);
-data[30] = _byteFromBoolArray(altB, 8);
-data[31] = _byteFromBoolArray(altB, 0);
-
-//Serial.println("25.23,0.99560,1000,1000,1000,A,1000000,N,1000000,W");
-byte temp[4];
-int k = 32;
-while (k != 0)
+void saveData(String msg)
 {
-	temp[k / 8] = utcTimeL >> k;
-	k -= 8;
+	Serial2.write(packetStartMessage);
+	Serial2.print(msg);
+	Serial2.write(packetEndMessage);
 }
-for (int j = 0; j < 4; j++)Serial.print(temp[j], BIN);
-Serial.println();
-*/
+
+void takeImage()
+{
+	Serial2.write(takeAndSaveImageMessage);
+}
