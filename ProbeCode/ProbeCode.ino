@@ -32,6 +32,8 @@
 #include <RFM69.h>			//Radio
 #include <BMP180.h>			//Temp & Pres
 
+#define Serial3Implemented
+
 bool sending;
 bool repeat;
 String gpsIn;
@@ -62,10 +64,11 @@ void setup()
 	digitalWrite(GPSPin, HIGH);
 	Serial.begin(115200);
 	Serial1.begin(4800);
+	Serial3.begin(9600);
 	bmp.begin();
 	adxl.begin();
 	adxl.setRange(RNG_16G);
-	SD.begin();
+	//SD.begin();
 	Serial.write(broadcastInitMessage);
 }
 
@@ -108,7 +111,7 @@ void loop()
 	}
 	if (!backupFileName)
 	{
-		setupSD();
+		//setupSD();
 	}
 
 	//Write Output
@@ -145,7 +148,7 @@ void loop()
 
 		Serial.write(sending ? mesurementPauseMessage : mesurementEndMessage);
 
-#if Serial2Implemented
+#if defined(Serial3Implemented)
 		saveData(msg);
 #else
 		File dataFile = SD.open(backupFileName, FILE_WRITE);
@@ -184,12 +187,12 @@ String split(String data, char separator, int index)
 
 void saveData(String msg)
 {
-	Serial2.write(packetStartMessage);
-	Serial2.print(msg);
-	Serial2.write(packetEndMessage);
+	Serial3.write(packetStartMessage);
+	Serial3.print(msg);
+	Serial3.write(packetEndMessage);
 }
 
 void takeImage()
 {
-	Serial2.write(takeAndSaveImageMessage);
+	Serial3.write(takeAndSaveImageMessage);
 }
