@@ -1,20 +1,35 @@
-div.News > input.title {
-    height: 2em;
-    width: 90%;
-    margin: auto 5%;
+input[type="button"].addNews {
+    display: block;
+    background: #F0F0F0;
+    width: 28%;
+    min-height: 70%;
+    margin: 1%;
+    padding: 1%;
+    float: left;
 }
 
-div.News > input.date {
+input.title, input.name, div.Profile > input.profilePic  {
+    height: 2em;
+    width: 90%;
+    margin: 5%;
+    float: left;
+}
+
+div.News > input.date, div.Profile > input.age{
     margin: 5%;
 }
 
-div.News > textarea.content {
+textarea.content, textarea.desc {
     height: 200px;
     width: 90%;
     margin: 5%;
 }
 
-div.News > input[type="button"] {
-    width: 39.39%;
+div.News > input[type="button"], div.AboutComp > input[type="button"], div.Profile  > input[type="button"] {
+    width: 30%;
     margin: 5%;
+}
+
+div.News > input[type="button"].delete, div.AboutComp > input[type="button"].delete, div.Profile  > input[type="button"].delete  {
+    float: right;
 }

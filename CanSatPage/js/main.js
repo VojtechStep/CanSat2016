@@ -19,7 +19,7 @@ $(document).ready(() => {
     $Content = $("div.ContentViewport > div.Content");
     $Footer = $("footer");
     $Window = $(window);
-    
+
     $NavBarHeightReference = $("ul.HeaderWrapper");
 
     $NewsLink = $("#NewsLink");
@@ -29,6 +29,8 @@ $(document).ready(() => {
     $AboutUsLink = $("#AboutUsLink");
 
     SetViewport();
+
+    $.ajaxSetup({ cache: false });
 
     $NewsLink.click(() => {
         $Content.animate({
@@ -84,30 +86,40 @@ $(document).ready(() => {
 
         if ($Window.outerWidth() > 730) {
             $("nav#TopMenu > ul.NavMenu").css("display", "unset");
-        } else  $("nav#TopMenu > ul.NavMenu").slideUp();
+        } else $("nav#TopMenu > ul.NavMenu").slideUp();
         SetViewport();
     });
 
     $("nav#TopMenu > p#HamburgerToggle").click(() => {
         $("nav#TopMenu > ul.NavMenu").slideToggle();
     });
-    
+
     $("#SuperUberMegaTheMostHiddenAccesEver").click(() => {
         window.location = "admin";
     });
 
-    $.getJSON("./res/data/News.json", (data, status) => {
-        data.forEach(element => {
-            $("div.ContentViewport > div.Content > div.NewsContent > div.InnerContent").append(Templates.NewsTemplate(element));
-        }, this);
-    });
-
-    $.getJSON("./res/data/Events.json", (data, status) => {
-        data.forEach(element => {
-            $("div.ContentViewport > div.Content > div.EventsContent > div.InnerContent").append(Templates.EventsTemplate(element));
-        }, this);
-    });
+    $.getJSON("/res/data/News", data => data.forEach(element => addNews(element)));
+    $.getJSON("/res/data/AboutComp", data => data.forEach(element => addAboutComp(element)));
+    $.getJSON("/res/data/Events", data => data.forEach(element => addEvent(element)));
+    $.getJSON("/res/data/AboutUs", data => data.forEach(element => addAboutUs(element)));
 });
+
+function addNews(data) {
+
+    $("div.ContentViewport > div.Content > div.NewsContent > div.InnerContent").prepend(Templates.NewsTemplate(data));
+}
+
+function addAboutComp(data) {
+    $("div.ContentViewport > div.Content > div.AboutCompContent > div.InnerContent").prepend(Templates.AboutCompTemplate(data));
+}
+
+function addEvent(data) {
+    $("div.ContentViewport > div.Content > div.EventsContent > div.InnerContent").prepend(Templates.EventsTemplate(data));
+}
+
+function addAboutUs(data) {
+    $("div.ContentViewport > div.Content > div.AboutUsContent > div.InnerContent").prepend(Templates.AboutUsTemplate(data));
+}
 
 function SetViewport() {
     $ContentViewport.css({
@@ -154,6 +166,15 @@ class Templates {
             </div>`);
     }
 
+    static AboutCompTemplate(data) {
+        return (
+            `<div class="AboutComp">
+                <h1 class="title">${data.title}</h1>
+                <p class="content">${data.content}</p>
+            </div>`
+        );
+    }
+
     static EventsTemplate(data) {
         var linksObject = "";
 
@@ -174,5 +195,16 @@ class Templates {
                 <p class="location">${data.place}</p>` +
             linksObject + `
             </div>`);
+    }
+
+    static AboutUsTemplate(data) {
+        return (
+            `<div class="Profile">
+                <img class="profilePic" src="${data.imageUrl}" alt="Profile Pic">
+                <h4 class="name">${data.name}</h4>
+                <p class="age">${data.age}</p>
+                <p class="desc">${data.desc}</p>
+            </div>`
+        );
     }
 };

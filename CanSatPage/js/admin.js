@@ -2,10 +2,10 @@
 
 var $ContentViewport;
 var $Content;
-var $Footer;
 var $Window;
 
 var $NavBarHeightReference;
+var $FooterHeightReference;
 
 var $NewsLink;
 var $AboutCompLink;
@@ -17,7 +17,7 @@ $(document).ready(() => {
 
     $ContentViewport = $("div.ContentViewport");
     $Content = $("div.ContentViewport > div.Content");
-    $Footer = $("footer");
+    $FooterHeightReference = $("ul.FooterStack");
     $Window = $(window);
 
     $NavBarHeightReference = $("ul.HeaderWrapper");
@@ -29,6 +29,8 @@ $(document).ready(() => {
     $AboutUsLink = $("#AboutUsLink");
 
     SetViewport();
+
+    $.ajaxSetup({ cache: false });
 
     $NewsLink.click(() => {
         $Content.animate({
@@ -46,7 +48,6 @@ $(document).ready(() => {
             $("nav#TopMenu > ul.NavMenu").slideToggle();
     });
 
-    $EventsLink = $("#EventsLink");
     $("#EventsLink").click(() => {
         $Content.animate({
             "margin-left": $Window.outerWidth() * 2 * -1
@@ -81,16 +82,76 @@ $(document).ready(() => {
     });
 
 
+    $("div.NewsContent > div.InnerContent").on("click", "div.News > input.delete", function() {
+        $.ajax({
+            type: "DELETE",
+            url: `/res/data/News/${$(this).closest("div.News").attr("contentId")}`,
+            success: data => $(`div.News[contentId="${data}"]`).animate({ width: 0 }, 400, function() { $(this).remove() })
+        });
+    });
+
     $("div.NewsContent > div.InnerContent").on("click", "div.News > input.save", function() {
-        var id = $(this).parent().attr("contentId");
-        var title = $(this).parent().children("input.title").attr("value");
-        var date = $(this).parent().children("input.date").attr("value");
-        var content = $(this).parent().children("textarea.content").html();
-        var jsonObj = Templates.ReverseNews(id, title, date, content);
-        console.log(jsonObj);
-        $.post("http://192.168.1.122:8080/res/data/News.json", jsonObj, (data, status) => {
-            console.log("Data uploaded");
-        }, "application/json");
+        var $parentDiv = $(this).closest('div.News');
+        var jsonObj = {
+            title: $parentDiv.find("input.title").val(),
+            date: $parentDiv.find("input.date").val(),
+            content: $parentDiv.find("textarea.content").html()
+        };
+
+        $.ajax({
+            type: "PUT",
+            url: `res/data/News/${$parentDiv.attr("contentId")}`,
+            data: jsonObj,
+            success: data => console.log("Upload complete")
+        });
+    });
+
+    $('div.NewsContent > div.InnerContent > input[type="button"].addNews').click(() => {
+        let date = new Date();
+        let news = {
+            date: `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`,
+            title: "Title",
+            content: "Content"
+        };
+        $.ajax({
+            method: "POST",
+            url: "/res/data/News",
+            contentType: "application/json",
+            data: news,
+            success: data => addNews(data)
+        });
+    });
+    
+    $('div.AboutCompContent > div.InnerContent').on('click', 'div.AboutComp > input.save', function() {
+        var $parentDiv = $(this).closest('div.AboutComp');
+        var jsonObj = {
+            title: $parentDiv.find("input.title").val(),
+            content: $parentDiv.find("textarea.content").html()
+        };
+        
+        $.ajax({
+            type: "PUT",
+            url: 'res/data/AboutComp/0',
+            data: jsonObj,
+            success: data => console.log("Upload complete")
+        });
+    });
+    
+    $("div.AboutUsContent > div.InnerContent").on("click", "div.Profile > input.save", function() {
+        var $parentDiv = $(this).closest('div.Profile');
+        var jsonObj = {
+            imageUrl: $parentDiv.find("input.profilePic").val(),
+            name: $parentDiv.find("input.name").val(),
+            age: $parentDiv.find("input.age").val(),
+            desc: $parentDiv.find("textarea.desc").html()
+        };
+
+        $.ajax({
+            type: "PUT",
+            url: `res/data/AboutUs/${$parentDiv.attr("contentId")}`,
+            data: jsonObj,
+            success: data => console.log("Upload complete")
+        });
     });
 
     $Window.resize(() => {
@@ -107,26 +168,37 @@ $(document).ready(() => {
 
     $("#SuperUberMegaTheMostHiddenAccesEver").click(() => {
         window.location = "";
+
     });
 
-    $.getJSON("./res/data/News.json", data => {
-        data.forEach(element => {
-            $("div.ContentViewport > div.Content > div.NewsContent > div.InnerContent").append(Templates.NewsTemplate(element));
-        }, this);
-    });
-
-    $.getJSON("./res/data/Events.json", data => {
-        data.forEach(element => {
-            $("div.ContentViewport > div.Content > div.EventsContent > div.InnerContent").append(Templates.EventsTemplate(element));
-        }, this);
-    });
+    $.getJSON("/res/data/News", data => data.forEach(element => addNews(element)));
+    $.getJSON("/res/data/AboutComp", data => data.forEach(element => addAboutComp(element)));
+    $.getJSON("/res/data/Events", data => data.forEach(element => addEvent(element)));
+    $.getJSON("/res/data/AboutUs", data => data.forEach(element => addAboutUs(element)));
 });
+
+function addNews(data) {
+
+    $("div.ContentViewport > div.Content > div.NewsContent > div.InnerContent > input.addNews").after(Templates.NewsTemplate(data));
+}
+
+function addAboutComp(data) {
+    $("div.ContentViewport > div.Content > div.AboutCompContent > div.InnerContent").prepend(Templates.AboutCompTemplate(data));
+}
+
+function addEvent(data) {
+    $("div.ContentViewport > div.Content > div.EventsContent > div.InnerContent").prepend(Templates.EventsTemplate(data));
+}
+
+function addAboutUs(data) {
+    $("div.ContentViewport > div.Content > div.AboutUsContent > div.InnerContent").prepend(Templates.AboutUsTemplate(data));
+}
 
 function SetViewport() {
     $ContentViewport.css({
-        "top": `${$NavBarHeightReference.outerHeight() / $Window.outerHeight() * 100}vh`,
-        "margin-bottom": `${$Footer.outerHeight() / $Window.outerHeight() * 100}vh`,
-        "height": `${($Window.outerHeight() - $NavBarHeightReference.outerHeight() - $Footer.outerHeight()) / $Window.outerHeight() * 100}vh`
+        "top": $NavBarHeightReference.outerHeight(),
+        "margin-bottom": `${$FooterHeightReference.outerHeight() / $Window.outerHeight() * 100}vh`,
+        "height": `${($Window.outerHeight() - $NavBarHeightReference.outerHeight() - $FooterHeightReference.outerHeight()) / $Window.outerHeight() * 100}vh`
     });
 
     $Content.css("width", 5 * $Window.outerWidth());
@@ -165,18 +237,17 @@ class Templates {
                 <input type="text" class="date" value="${data.date}">
                 <textarea class="content">${data.content}</textarea>
                 <input type="button" class="save" value="save">
-                <input type="button" class="discard" value="discard">
+                <input type="button" class="delete" value="delete">
             </div>`);
     }
 
-    static ReverseNews(id, title, date, content) {
+    static AboutCompTemplate(data) {
         return (
-            `{
-               "id": ${id},
-               "title": "${title}",
-               "date": "${date}",
-               "content": "${content}"
-           }`
+            `<div class="AboutComp">
+                <input type="text" class="title" value="${data.title}">
+                <textarea class="content">${data.content}</textarea>
+                <input type="button" class="save" value="save">
+            </div>`
         );
     }
 
@@ -200,5 +271,17 @@ class Templates {
                 <p class="location">${data.place}</p>` +
             linksObject + `
             </div>`);
+    }
+    
+    static AboutUsTemplate(data) {
+        return (
+            `<div class="Profile" contentId="${data.id}">
+                <input type="text" class="profilePic" value="${data.imageUrl}">
+                <input type="text" class="name" value="${data.name}">
+                <input type="text" class="age" value="${data.age}">
+                <textarea class="desc">${data.desc}</textarea>
+                <input type="button" class="save" value="save">
+            </div>`
+        );
     }
 };

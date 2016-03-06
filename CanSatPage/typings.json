@@ -2,6 +2,7 @@
   "dependencies": {},
   "devDependencies": {},
   "ambientDependencies": {
-    "jquery": "github:DefinitelyTyped/DefinitelyTyped/jquery/jquery.d.ts#661fc869669af796c6048483e999dce5732eed72"
+    "jquery": "github:DefinitelyTyped/DefinitelyTyped/jquery/jquery.d.ts#661fc869669af796c6048483e999dce5732eed72",
+    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#48c1e3c1d6baefa4f1a126f188c27c4fefd36bff"
   }
 }
