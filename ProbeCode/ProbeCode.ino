@@ -37,7 +37,6 @@
 bool sending;
 bool repeat;
 String gpsIn;
-String backupFileName;
 
 const int GPSPin = 7;
 
@@ -109,10 +108,7 @@ void loop()
 			gpsIn = (char)inByte + Serial1.readStringUntil('\r');
 		}
 	}
-	if (!backupFileName)
-	{
-		//setupSD();
-	}
+	
 
 	//Write Output
 	if (sending)
@@ -158,15 +154,6 @@ void loop()
 	}
 }
 
-void setupSD()
-{
-	backupFileName = split(gpsIn, ',', 1).substring(0, 4) + ".csv";
-	if (SD.exists(backupFileName)) SD.remove(backupFileName);
-	File dataFile = SD.open(backupFileName, FILE_WRITE);
-	dataFile.println("UTC Time[hhmmss.ss], Temperature[\u00B0C], Pressure[mB], X Acceleration[Gs], Y Acceleration[Gs], Z Acceleration[Gs], Latitude[dddmm.mm], N / S Indicator, Longitude[dddmm.mm], W / E Indicator, Altitude[m]");
-	dataFile.close();
-}
-
 String split(String data, char separator, int index)
 {
 	int found = 0;
@@ -183,13 +170,6 @@ String split(String data, char separator, int index)
 		}
 	}
 	return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
-}
-
-void saveData(String msg)
-{
-	Serial3.write(packetStartMessage);
-	Serial3.print(msg);
-	Serial3.write(packetEndMessage);
 }
 
 void takeImage()

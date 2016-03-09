@@ -9,16 +9,43 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProbeCode", "ProbeCode\Prob
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GroundStationCode", "GroundStationCode\GroundStationCode.vcxproj", "{4718EF5E-0E17-446F-94D2-95ED607AEEC4}"
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "CanSatPage", "CanSatPage", "{3C697F35-ED09-45F2-A52B-5FA1979CE41A}"
+	ProjectSection(WebsiteProperties) = preProject
+		SccProjectName = "SAK"
+		SccAuxPath = "SAK"
+		SccLocalPath = "SAK"
+		SccProvider = "SAK"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_50297"
+		Debug.AspNetCompiler.PhysicalPath = "CanSatPage\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_50297\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_50297"
+		Release.AspNetCompiler.PhysicalPath = "CanSatPage\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_50297\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "50297"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|ARM = Release|ARM
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|ARM.ActiveCfg = Debug|ARM
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|ARM.Build.0 = Debug|ARM
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -28,6 +55,7 @@ Global
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|x86.ActiveCfg = Debug|x86
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|x86.Build.0 = Debug|x86
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|x86.Deploy.0 = Debug|x86
+		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|Any CPU.ActiveCfg = Release|x86
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|ARM.ActiveCfg = Release|ARM
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|ARM.Build.0 = Release|ARM
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|ARM.Deploy.0 = Release|ARM
@@ -37,30 +65,50 @@ Global
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|x86.ActiveCfg = Release|x86
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|x86.Build.0 = Release|x86
 		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|x86.Deploy.0 = Release|x86
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|ARM.ActiveCfg = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x64.ActiveCfg = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Deploy.0 = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Any CPU.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|ARM.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x64.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|ARM.ActiveCfg = Debug|Win32
 		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|x64.ActiveCfg = Debug|Win32
 		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|x86.ActiveCfg = Debug|Win32
 		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|x86.Build.0 = Debug|Win32
 		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|x86.Deploy.0 = Debug|Win32
+		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Release|Any CPU.ActiveCfg = Release|Win32
 		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Release|ARM.ActiveCfg = Release|Win32
 		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Release|x64.ActiveCfg = Release|Win32
 		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Release|x86.ActiveCfg = Release|Win32
 		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Release|x86.Build.0 = Release|Win32
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Debug|ARM.Build.0 = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Debug|x64.Build.0 = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Debug|x86.Build.0 = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Release|ARM.ActiveCfg = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Release|ARM.Build.0 = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Release|x64.ActiveCfg = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Release|x64.Build.0 = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Release|x86.ActiveCfg = Debug|Any CPU
+		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Release|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://vojtechstepancik.visualstudio.com/defaultcollection
 		SccLocalPath0 = .
@@ -73,5 +121,10 @@ Global
 		SccProjectUniqueName3 = GroundStationCode\\GroundStationCode.vcxproj
 		SccProjectName3 = GroundStationCode
 		SccLocalPath3 = GroundStationCode
+		SccWebProject4 = true
+		SccProjectUniqueName4 = CanSatPage
+		SccProjectName4 = CanSatPage
+		SccLocalPath4 = CanSatPage
+		SccProjectEnlistmentChoice4 = 2
 	EndGlobalSection
 EndGlobal
