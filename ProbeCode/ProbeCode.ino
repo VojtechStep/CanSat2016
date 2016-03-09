@@ -27,7 +27,11 @@
  ********************************************************************************************************************************************
 */
 
-#include <SD.h>
+/*
+	Serial - PC / Companion -- 115200
+	Serial1 - GPS -- 4800
+*/
+
 #include "ADXL345.h"
 #include <RFM69.h>			//Radio
 #include <BMP180.h>			//Temp & Pres
@@ -36,9 +40,9 @@
 
 bool sending;
 bool repeat;
+byte inByte;
+byte gpsInByte;
 String gpsIn;
-
-const int GPSPin = 7;
 
 
 const byte broadcastInitMessage = 0x04;
@@ -57,17 +61,15 @@ const byte takeImageCommand = 0x6A;
 BMP180 bmp;
 ADXL345 adxl;
 
+
 void setup()
 {
-	pinMode(GPSPin, OUTPUT);
-	digitalWrite(GPSPin, HIGH);
-	Serial.begin(115200);
+	Serial.begin(9600);
 	Serial1.begin(4800);
-	Serial3.begin(9600);
+	Serial2.begin(9600);
 	bmp.begin();
 	adxl.begin();
 	adxl.setRange(RNG_16G);
-	//SD.begin();
 	Serial.write(broadcastInitMessage);
 }
 
@@ -76,7 +78,7 @@ void loop()
 //Read Input
 	while (Serial.available())
 	{
-		byte inByte = Serial.read();
+		inByte = Serial.read();
 		if (inByte == startMesCommand)
 		{
 			sending = true;
@@ -92,29 +94,27 @@ void loop()
 			sending = true;
 			repeat = false;
 		}
-		if (inByte == takeImageCommand)
-		{
-			takeImage();
-		}
 	}
 
+	//Get GPS
 	gpsIn = "";
 
 	while (gpsIn.length() < 6 || gpsIn.substring(0, 6) != "$GPGGA")
 	{
-		byte inByte = Serial1.read();
+		gpsInByte = Serial1.read();
 		if ((char)inByte == '$')
 		{
-			gpsIn = (char)inByte + Serial1.readStringUntil('\r');
+			gpsIn = (char)gpsInByte + Serial1.readStringUntil('\r');
+
 		}
 	}
-	
 
 	//Write Output
 	if (sending)
 	{
 		sending = repeat;
 		Serial.write(mesurementStartMessage);
+		//Define mes variables
 		double utcTime;
 		double temp;
 		double pres;
@@ -127,6 +127,9 @@ void loop()
 		char ew;
 		double alt;
 
+		
+
+		//Get other values
 		utcTime = atof(split(gpsIn, ',', 1).c_str());
 		bmp.getData(temp, pres);
 		adxl.readAcceleration(&xacc, &yacc, &zacc);
@@ -136,21 +139,19 @@ void loop()
 		ew = split(gpsIn, ',', 5)[0];
 		alt = atof(split(gpsIn, ',', 9).c_str());
 
+		//Join them together
 		String msg = String(utcTime) + "," + String(temp) + "," + String(pres) + "," + String(xacc) + "," + String(yacc) + "," + String(zacc) + "," + String(lat) + "," + String(ns) + "," + String(lon) + "," + String(ew) + "," + String(alt);
 
+		//Write Packet Start
 		Serial.write(packetStartMessage);
+		//Write packet
 		Serial.print(msg);
+		//Write Packet End
 		Serial.write(packetEndMessage);
 
+		//Write pause or end
 		Serial.write(sending ? mesurementPauseMessage : mesurementEndMessage);
 
-#if defined(Serial3Implemented)
-		saveData(msg);
-#else
-		File dataFile = SD.open(backupFileName, FILE_WRITE);
-		dataFile.println(msg);
-		dataFile.close();
-#endif
 	}
 }
 
@@ -170,9 +171,4 @@ String split(String data, char separator, int index)
 		}
 	}
 	return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
-}
-
-void takeImage()
-{
-	Serial3.write(takeAndSaveImageMessage);
 }

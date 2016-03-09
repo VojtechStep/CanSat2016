@@ -34,6 +34,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "CanSatPage", "CanSatPage", 
 		SlnRelativePath = "CanSatPage\"
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CompanionCode", "CompanionCode\CompanionCode.vcxproj", "{46E64651-1F59-463F-9138-08A3BC499737}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,12 +106,22 @@ Global
 		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Release|x64.Build.0 = Debug|Any CPU
 		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Release|x86.ActiveCfg = Debug|Any CPU
 		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Release|x86.Build.0 = Debug|Any CPU
+		{46E64651-1F59-463F-9138-08A3BC499737}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{46E64651-1F59-463F-9138-08A3BC499737}.Debug|ARM.ActiveCfg = Debug|Win32
+		{46E64651-1F59-463F-9138-08A3BC499737}.Debug|x64.ActiveCfg = Debug|Win32
+		{46E64651-1F59-463F-9138-08A3BC499737}.Debug|x86.ActiveCfg = Debug|Win32
+		{46E64651-1F59-463F-9138-08A3BC499737}.Debug|x86.Build.0 = Debug|Win32
+		{46E64651-1F59-463F-9138-08A3BC499737}.Release|Any CPU.ActiveCfg = Release|Win32
+		{46E64651-1F59-463F-9138-08A3BC499737}.Release|ARM.ActiveCfg = Release|Win32
+		{46E64651-1F59-463F-9138-08A3BC499737}.Release|x64.ActiveCfg = Release|Win32
+		{46E64651-1F59-463F-9138-08A3BC499737}.Release|x86.ActiveCfg = Release|Win32
+		{46E64651-1F59-463F-9138-08A3BC499737}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://vojtechstepancik.visualstudio.com/defaultcollection
 		SccLocalPath0 = .
@@ -127,5 +139,8 @@ Global
 		SccProjectName4 = CanSatPage
 		SccLocalPath4 = CanSatPage
 		SccProjectEnlistmentChoice4 = 2
+		SccProjectUniqueName5 = CompanionCode\\CompanionCode.vcxproj
+		SccProjectName5 = CompanionCode
+		SccLocalPath5 = CompanionCode
 	EndGlobalSection
 EndGlobal

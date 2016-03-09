@@ -138,7 +138,7 @@ namespace WindowsCode.Pages
         {
             DataState.ReadCancellationTokenSource?.Cancel();
             DataState.ReadCancellationTokenSource = new CancellationTokenSource();
-            await Communication.ConnectAsync((await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[deviceIndex].Id, 115200, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(2000));
+            await Communication.ConnectAsync((await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[deviceIndex].Id);
 
             try
             {

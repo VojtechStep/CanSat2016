@@ -164,7 +164,7 @@ namespace WindowsCode
 
         private async void RequestSample_Click(Object sender, RoutedEventArgs e)
         {
-            await Communication.WriteAsync(DataState.SendCommands["RequestSample"]);
+            await Communication.WriteAsync(0x69);
         }
 
         private async void StopMesurement_Click(Object sender, RoutedEventArgs e)
