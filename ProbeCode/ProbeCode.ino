@@ -1,4 +1,9 @@
-﻿/*
+﻿#include <BMP180.h>
+#include <qbcan.h>
+#include <RFM69.h>
+#include <RFM69registers.h>
+
+/*
  Name:		ProbeCode.ino
  Created:	2/13/2016 9:43:30 PM
  Author:	Vojtěch && Jacob (Vojtěch is first, because he actually works)
@@ -32,9 +37,10 @@
 	Serial1 - GPS -- 4800
 */
 
-#include "ADXL345.h"
+//#include "ADXL345.h"
 #include <RFM69.h>			//Radio
 #include <BMP180.h>			//Temp & Pres
+
 
 #define Serial3Implemented
 
@@ -68,8 +74,8 @@ void setup()
 	Serial1.begin(4800);
 	Serial2.begin(9600);
 	bmp.begin();
-	adxl.begin();
-	adxl.setRange(RNG_16G);
+	//adxl.begin();
+	//adxl.setRange(RNG_16G);
 	Serial.write(broadcastInitMessage);
 }
 
@@ -118,9 +124,9 @@ void loop()
 		double utcTime;
 		double temp;
 		double pres;
-		short xacc;
-		short yacc;
-		short zacc;
+		//short xacc;
+		//short yacc;
+		//short zacc;
 		double lat;
 		char ns;
 		double lon;
@@ -151,6 +157,7 @@ void loop()
 
 		//Write pause or end
 		Serial.write(sending ? mesurementPauseMessage : mesurementEndMessage);
+		Serial2.write(sending ? mesurementPauseMessage : mesurementEndMessage);
 
 	}
 }

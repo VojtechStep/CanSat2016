@@ -4,6 +4,10 @@
  Author:	Adalbert
 */
 
+#include <RFM69registers.h>
+#include <RFM69.h>
+#include <qbcan.h>
+#include <BMP180.h>
 #include <SD.h>
 
 /*

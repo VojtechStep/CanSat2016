@@ -2,7 +2,7 @@
 // 
 // 
 
-#include "ADXL345.h"
+#include "ADXL345.h"\
 
 void ADXL345::begin()
 {

@@ -75,6 +75,11 @@
                     </StackPanel>
                 </PivotItem.Content>
             </PivotItem>
+            <PivotItem Header="Camera">
+                <PivotItem.Content>
+                    <TextBlock Name="test" Text="text"/>
+                </PivotItem.Content>
+            </PivotItem>
         </Pivot>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" Grid.Row="1">
             <TextBlock Name="DataBlock" />

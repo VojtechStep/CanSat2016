@@ -117,7 +117,7 @@ namespace WindowsCode.Pages
         {
             String[] PathComponents = FilePath.Split('\\');
             String Name = PathComponents[PathComponents.Length - 1];
-            String Location = FilePath.Remove(FilePath.Length - Name.Length);
+            string Location = FilePath.Remove(FilePath.Length - Name.Length);
             MesurementItem item = new MesurementItem()
             {
                 Location = Location,
@@ -142,12 +142,12 @@ namespace WindowsCode.Pages
 
             try
             {
-                Byte[] InitBuffer = new Byte[1];
+                byte[] InitBuffer = new Byte[1];
                 await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, InitBuffer);
 
-                if (InitBuffer[0] == DataState.ReceiveCommands["Init"])
+                if (InitBuffer[0] == DataState.ReceiveCommands["0x04"])
                 {
-                    VisualStateManager.GoToState(Window.Current.Content as MainPage, "Connected", false);
+                    VisualStateManager.GoToState(Window.Current.Content as MainPage, "Connected", true);
 
                     StringBuilder line = new StringBuilder();
                     Byte[] DataBuffer = new Byte[1];
@@ -156,11 +156,11 @@ namespace WindowsCode.Pages
                     {
                         await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, DataBuffer);
 
-                        if (DataBuffer[0] == DataState.ReceiveCommands["PacketStart"])
+                        if (DataBuffer[0] == DataState.ReceiveCommands["0x04"])
                         {
                             line = new StringBuilder();
                         }
-                        else if (DataBuffer[0] == DataState.ReceiveCommands["PacketEnd"])
+                        else if (DataBuffer[0] == DataState.ReceiveCommands["0x07"])
                         {
                             MesurementState.CurrentItem.Data.Add(new CSVData(line.ToString()));
                             Debug.WriteLine(line.ToString());
@@ -178,7 +178,7 @@ namespace WindowsCode.Pages
             finally
             {
                 Communication.Disconnect();
-                VisualStateManager.GoToState(Window.Current.Content as MainPage, "Disconnected", true);
+                VisualStateManager.GoToState(Window.Current.Content as MainPage, "Disconnected", false);
             }
         }
     }

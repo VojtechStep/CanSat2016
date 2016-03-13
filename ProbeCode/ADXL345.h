@@ -1,3 +1,5 @@
+#include <Wire.h>
+
 // ADXL345.h
 
 #ifndef _ADXL345_h
@@ -8,8 +10,6 @@
 #else
 #include "WProgram.h"
 #endif
-
-#include "Wire.h"
 
 #define RNG_2G 0
 #define RNG_4G 1
