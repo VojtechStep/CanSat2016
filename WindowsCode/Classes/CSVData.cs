@@ -60,17 +60,22 @@ namespace WindowsCode.Classes
         {
             get
             {
-                Double Minutes = Double.Parse(Latitude.ToString().Substring(Latitude.ToString().Length - 5));
-                return (Latitude - Minutes) / (Math.Pow(10, Latitude.ToString().Length - 5)) + (Minutes / 60);
+                if (Latitude > Math.Pow(10, 5))
+                {
+                    Double Minutes = Double.Parse(Latitude.ToString().Substring(Latitude.ToString().Length - 5));
+                    return (Latitude - Minutes) / (Math.Pow(10, Latitude.ToString().Length - 5)) + (Minutes / 60);
+                } return 0;
             }
         }
         public Double LongitudeInDegrees
         {
             get
             {
-
-                Double Minutes = Double.Parse(Longitude.ToString().Substring(Longitude.ToString().Length - 5));
-                return (Longitude - Minutes) / (Math.Pow(10, Longitude.ToString().Length - 5)) + (Minutes / 60);
+                if (Longitude > Math.Pow(10, 5))
+                {
+                    Double Minutes = Double.Parse(Longitude.ToString().Substring(Longitude.ToString().Length - 5));
+                    return (Longitude - Minutes) / (Math.Pow(10, Longitude.ToString().Length - 5)) + (Minutes / 60);
+                } return 0;
             }
         }
     }

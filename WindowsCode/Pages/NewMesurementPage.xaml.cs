@@ -145,7 +145,7 @@ namespace WindowsCode.Pages
                 byte[] InitBuffer = new Byte[1];
                 await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, InitBuffer);
 
-                if (InitBuffer[0] == DataState.ReceiveCommands["0x04"])
+                if (InitBuffer[0] == 0x04)
                 {
                     VisualStateManager.GoToState(Window.Current.Content as MainPage, "Connected", true);
 
@@ -156,11 +156,11 @@ namespace WindowsCode.Pages
                     {
                         await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, DataBuffer);
 
-                        if (DataBuffer[0] == DataState.ReceiveCommands["0x04"])
+                        if (DataBuffer[0] == 0x08)
                         {
                             line = new StringBuilder();
                         }
-                        else if (DataBuffer[0] == DataState.ReceiveCommands["0x07"])
+                        else if (DataBuffer[0] == 0x09)
                         {
                             MesurementState.CurrentItem.Data.Add(new CSVData(line.ToString()));
                             Debug.WriteLine(line.ToString());

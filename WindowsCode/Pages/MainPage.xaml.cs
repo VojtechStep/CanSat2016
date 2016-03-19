@@ -157,7 +157,7 @@ namespace WindowsCode
 
         private async void StartMesurement_Click(Object sender, RoutedEventArgs e)
         {
-            await Communication.WriteAsync(DataState.SendCommands["0x67"]);
+            await Communication.WriteAsync(0x67);
             StartMesurement.Visibility = Visibility.Collapsed;
             StopMesurement.Visibility = Visibility.Visible;
         }
@@ -169,7 +169,7 @@ namespace WindowsCode
 
         private async void StopMesurement_Click(Object sender, RoutedEventArgs e)
         {
-            await Communication.WriteAsync(DataState.SendCommands["EndMesurement"]);
+            await Communication.WriteAsync(0x68);
             StopMesurement.Visibility = Visibility.Collapsed;
             StartMesurement.Visibility = Visibility.Visible;
         }
