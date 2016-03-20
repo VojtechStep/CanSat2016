@@ -16,6 +16,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CompanionCode.ino" />
+    <None Include="..\..\..\..\..\..\Documents\Arduino\CameraFull\CameraFull.ino">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.CompanionCode.vsarduino.h">
