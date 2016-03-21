@@ -16,13 +16,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CompanionCode.ino" />
-    <None Include="..\..\..\..\..\..\Documents\Arduino\CameraFull\CameraFull.ino">
-      <Filter>Source Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.CompanionCode.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
