@@ -24,6 +24,7 @@ File camFile;
 
 void setup() {
 	Serial.begin(38400);
+	Serial.println(' ');
 	while (!Serial)
 		; //waiting for serial port to connect
 	Serial.println("Serial connection established.");
@@ -36,13 +37,16 @@ void setup() {
 	}
 	Serial.println("done.");
 
-	Serial.print("Setting up camera... ");
+	Serial.print("Setting up camera");
 	camSerial.begin(115200);
 	delay(100);
+	Serial.print('.');
 	SendResetCmd();
 	delay(2000);
+	Serial.print('.');
 	SetBaudCmd(0x2A);
 	delay(500);
+	Serial.print('.');
 	camSerial.begin(38400);
 	delay(100);
 	Serial.println("done.");
