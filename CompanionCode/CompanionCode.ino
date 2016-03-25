@@ -28,7 +28,11 @@ byte inByte;
 void setup()
 {
 	Serial.begin(115200);
-	SD.begin();
+	if (!SD.begin())
+	{
+		return;
+	}
+	
 }
 
 // the loop function runs over and over again until power down or reset

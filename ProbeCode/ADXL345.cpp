@@ -1,8 +1,6 @@
-// 
-// 
-// 
-
-#include "ADXL345.h"\
+#include "ADXL345.h"
+#include "Arduino.h"
+#include <Wire.h>
 
 void ADXL345::begin()
 {
