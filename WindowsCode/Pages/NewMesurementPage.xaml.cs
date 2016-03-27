@@ -139,12 +139,12 @@ namespace WindowsCode.Pages
             DataState.ReadCancellationTokenSource?.Cancel();
             DataState.ReadCancellationTokenSource = new CancellationTokenSource();
             await Communication.ConnectAsync((await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[deviceIndex].Id);
-
+            Debug.WriteLine("Connected");
             try
             {
                 byte[] InitBuffer = new Byte[1];
                 await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, InitBuffer);
-
+                Debug.WriteLine(InitBuffer[0]);
                 if (InitBuffer[0] == 0x04)
                 {
                     VisualStateManager.GoToState(Window.Current.Content as MainPage, "Connected", true);
@@ -155,7 +155,7 @@ namespace WindowsCode.Pages
                     while (true)
                     {
                         await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, DataBuffer);
-
+                        Debug.WriteLine(DataBuffer[0]);
                         if (DataBuffer[0] == 0x08)
                         {
                             line = new StringBuilder();

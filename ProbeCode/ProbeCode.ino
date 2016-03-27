@@ -37,8 +37,18 @@
 #include <RFM69.h>			//Radio
 #include <BMP180.h>			//Temp & Pres
 
+#define BUFFER_LENGTH 64
+
 
 #define Serial3Implemented
+#define RFM_CS_PIN 10
+#define RFM_INT_PIN 3
+#define RFM_INT_NUM 5
+
+#define NODEID 2
+#define NETWORKID 9
+#define GATEWAYID 12
+#define ENCRYPTKEY "AlmightyLobsters"
 
 bool sending;
 bool repeat;
@@ -62,25 +72,29 @@ const byte takeImageCommand = 0x6A;
 
 BMP180 bmp;
 ADXL345 adxl;
+RFM69 radio(RFM_CS_PIN, RFM_INT_PIN, true, RFM_INT_NUM);
 
+char payload[BUFFER_LENGTH];
 
 void setup()
 {
-	Serial.begin(9600);
 	Serial1.begin(4800);
 	Serial2.begin(9600);
 	bmp.begin();
 	adxl.begin();
 	adxl.setRange(3); //RNG_16G
-	Serial.write(broadcastInitMessage);
+	radio.initialize(FREQUENCY, NODEID, NETWORKID);
+	radio.setHighPower();
+	radio.encrypt(ENCRYPTKEY);
+	radio.send(GATEWAYID, &broadcastInitMessage, 1);
 }
 
 void loop()
 {
 //Read Input
-	while (Serial.available())
+	if(radio.receiveDone())
 	{
-		inByte = Serial.read();
+		inByte = radio.DATA[0];
 		if (inByte == startMesCommand)
 		{
 			sending = true;
@@ -97,7 +111,7 @@ void loop()
 			repeat = false;
 		}
 	}
-
+	
 	//Get GPS
 	gpsIn = "";
 
@@ -115,7 +129,7 @@ void loop()
 	if (sending)
 	{
 		sending = repeat;
-		Serial.write(mesurementStartMessage);
+		//Serial.write(mesurementStartMessage);
 		//Define mes variables
 		double utcTime;
 		double temp;
@@ -135,6 +149,9 @@ void loop()
 		utcTime = atof(split(gpsIn, ',', 1).c_str());
 		bmp.getData(temp, pres);
 		adxl.readAcceleration(&xacc, &yacc, &zacc);
+		xacc *= 16 / 1024;
+		yacc *= 16 / 1024;
+		zacc *= 16 / 1024;
 		lat = atof(split(gpsIn, ',', 2).c_str());
 		ns = split(gpsIn, ',', 3)[0];
 		lon = atof(split(gpsIn, ',', 4).c_str());
@@ -144,16 +161,25 @@ void loop()
 		//Join them together
 		String msg = String(utcTime) + "," + String(temp) + "," + String(pres) + "," + String(xacc) + "," + String(yacc) + "," + String(zacc) + "," + String(lat) + "," + String(ns) + "," + String(lon) + "," + String(ew) + "," + String(alt);
 
+
+
 		//Write Packet Start
-		Serial.write(packetStartMessage);
+		payload[0] = packetStartMessage;
+		Serial2.write(packetStartMessage);
 		//Write packet
-		Serial.print(msg);
+		for (int i = 0; i < BUFFER_LENGTH - 3; i++)
+		{
+			payload[i + 1] = msg[i];
+		}
+		radio.send(GATEWAYID, payload, BUFFER_LENGTH);
+		Serial2.print(msg);
 		//Write Packet End
-		Serial.write(packetEndMessage);
+		payload[BUFFER_LENGTH - 1] = packetEndMessage;
+		Serial2.write(packetEndMessage);
 
 		//Write pause or end
-		Serial.write(sending ? mesurementPauseMessage : mesurementEndMessage);
-		Serial2.write(sending ? mesurementPauseMessage : mesurementEndMessage);
+		//Serial.write(sending ? mesurementPauseMessage : mesurementEndMessage);
+		//Serial2.write(sending ? mesurementPauseMessage : mesurementEndMessage);
 
 	}
 }

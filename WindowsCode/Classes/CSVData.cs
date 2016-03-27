@@ -20,9 +20,9 @@ namespace WindowsCode.Classes
                     UTCTime = Single.Parse(parts[0]);
                     Temperature = Single.Parse(parts[1]);
                     Pressure = Single.Parse(parts[2]);
-                    X_Acceleration = Single.Parse(parts[3]) * SettingsState.GRange / 1024;
-                    Y_Acceleration = Single.Parse(parts[4]) * SettingsState.GRange / 1024;
-                    Z_Acceleration = Single.Parse(parts[5]) * SettingsState.GRange / 1024;
+                    X_Acceleration = Single.Parse(parts[3]);
+                    Z_Acceleration = Single.Parse(parts[5]);
+                    Y_Acceleration = Single.Parse(parts[4]);
                     Latitude = Single.Parse(parts[6]);
                     if (parts[7].Count() > 0)
                         LatitudeDirection = (Direction)parts[7].ElementAt(0);
