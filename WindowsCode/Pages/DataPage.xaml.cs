@@ -85,11 +85,11 @@ namespace WindowsCode.Pages
                 //ZAccChart.Push(data.Z_Acceleration);
             });
 
-            TemperatureValue.Text = e.NewItems.Cast<CSVData>().Last().Temperature.ToString() + " °C";
-            PressureValue.Text = e.NewItems.Cast<CSVData>().Last().Pressure.ToString() + " mB";
-            XAxisValue.Text = e.NewItems.Cast<CSVData>().Last().X_Acceleration.ToString();
-            YAxisValue.Text = e.NewItems.Cast<CSVData>().Last().Y_Acceleration.ToString();
-            ZAxisValue.Text = e.NewItems.Cast<CSVData>().Last().Z_Acceleration.ToString();
+            //TemperatureValue.Text = e.NewItems.Cast<CSVData>().Last().Temperature.ToString() + " °C";
+            //PressureValue.Text = e.NewItems.Cast<CSVData>().Last().Pressure.ToString() + " mB";
+            //XAxisValue.Text = e.NewItems.Cast<CSVData>().Last().X_Acceleration.ToString();
+            //YAxisValue.Text = e.NewItems.Cast<CSVData>().Last().Y_Acceleration.ToString();
+            //ZAxisValue.Text = e.NewItems.Cast<CSVData>().Last().Z_Acceleration.ToString();
 
             FileIO.AppendTextAsync((await StorageApplicationPermissions.FutureAccessList.GetFileAsync(DataState.OutputFileToken)), dataBuilder.ToString()).AsTask().Wait();
             DataBlock.Text += dataBuilder.ToString();
@@ -103,7 +103,7 @@ namespace WindowsCode.Pages
                 var position = await geolocator.GetGeopositionAsync().AsTask(token);
                 ProbeLocation.Center = position.Coordinate.Point;
             }
-            catch (TaskCanceledException) { }
+            catch (Exception) { }
         }
 
         private async void UpdateMap(CancellationToken token)
@@ -118,7 +118,7 @@ namespace WindowsCode.Pages
                 }
             }
             catch (TaskCanceledException) { }
-            catch (OperationCanceledException) { }
+            catch (Exception) { }
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

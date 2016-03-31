@@ -138,41 +138,37 @@ namespace WindowsCode.Pages
         {
             DataState.ReadCancellationTokenSource?.Cancel();
             DataState.ReadCancellationTokenSource = new CancellationTokenSource();
-            await Communication.ConnectAsync((await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[deviceIndex].Id);
+            String deviceId = (await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[deviceIndex].Id;
+            await Communication.ConnectAsync(deviceId, 115200);
             Debug.WriteLine("Connected");
             try
             {
                 byte[] InitBuffer = new Byte[1];
-                await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, InitBuffer);
+                while (InitBuffer[0] != 0x04)
+                    await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, InitBuffer);
                 Debug.WriteLine(InitBuffer[0]);
-                if (InitBuffer[0] == 0x04)
+                VisualStateManager.GoToState(Window.Current.Content as MainPage, "Connected", true);
+
+                StringBuilder line = new StringBuilder();
+                Byte[] DataBuffer = new Byte[1];
+
+                while (true)
                 {
-                    VisualStateManager.GoToState(Window.Current.Content as MainPage, "Connected", true);
-
-                    StringBuilder line = new StringBuilder();
-                    Byte[] DataBuffer = new Byte[1];
-
-                    while (true)
+                    await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, DataBuffer);
+                    if (DataBuffer[0] == 0x08)
                     {
-                        await Communication.ReadAsync(DataState.ReadCancellationTokenSource.Token, DataBuffer);
-                        Debug.WriteLine(DataBuffer[0]);
-                        if (DataBuffer[0] == 0x08)
-                        {
-                            line = new StringBuilder();
-                        }
-                        else if (DataBuffer[0] == 0x09)
-                        {
-                            MesurementState.CurrentItem.Data.Add(new CSVData(line.ToString()));
-                            Debug.WriteLine(line.ToString());
-                        }
-                        else
-                        {
-                            line.Append((Char)DataBuffer[0]);
-                        }
+                        line = new StringBuilder();
+                    }
+                    else if (DataBuffer[0] == 0x09)
+                    {
+                        MesurementState.CurrentItem.Data.Add(new CSVData(line.ToString()));
+                        Debug.WriteLine(line.ToString());
+                    }
+                    else
+                    {
+                        line.Append((Char)DataBuffer[0]);
                     }
                 }
-                else
-                    Debugger.Break();
             }
             catch (TaskCanceledException) { }
             finally

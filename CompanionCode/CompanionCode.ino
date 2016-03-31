@@ -3,15 +3,12 @@
  Created:	3/9/2016 9:50:59 AM
 */
 
-#include <SoftwareSerial.h>
+#include <SD.h>
 #include "ADXL345.h"
 #include <RFM69registers.h>
 #include <RFM69.h>
 #include <qbcan.h>
 #include <BMP180.h>
-#include <SD.h>
-
-#define LOG(x) Serial.println(x)
 
 /*
 	Serial - Debug/Probe -- 115200
@@ -19,38 +16,30 @@
 	Serial2 - Camera
 */
 
-#define Serial3Implemented
-#define RFM_CS_PIN 10
-#define RFM_INT_PIN 3
-#define RFM_INT_NUM 5
 
-#define NODEID 2
-#define NETWORKID 9
-#define GATEWAYID 12
+#define NODEID 10
+#define NETWORKID 169
+#define GATEWAYID 8
 #define ENCRYPTKEY "AlmightyLobsters"
 
-bool sending = true;
-bool repeat = true;
+bool sending = true, repeat = true;
 byte inByte;
-byte gpsInByte;
 String gpsIn;
+String msgBuffer;
 
+long curMillis;
 
 const byte broadcastInitMessage = 0x04;
-const byte mesurementStartMessage = 0x05;
-const byte mesurementPauseMessage = 0x06;
-const byte mesurementEndMessage = 0x07;
 const byte packetStartMessage = 0x08;
 const byte packetEndMessage = 0x09;
-const byte takeAndSaveImageMessage = 0x0A;
 
 const byte startMesCommand = 0x67;
 const byte endMesCommand = 0x68;
 const byte sendSampleCommand = 0x69;
-const byte takeImageCommand = 0x6A;
 
 BMP180 bmp;
 ADXL345 adxl;
+RFM69 radio;
 
 File logFile;
 
@@ -82,11 +71,8 @@ void StopTakePhotoCmd();
 
 void setup()
 {
-	Serial.begin(115200);
-	pinMode(10, OUTPUT);
 	if (!SD.begin(4))
 	{
-		Serial.println("SD not found.");
 		while (1);
 	}
 	Serial1.begin(4800);
@@ -94,37 +80,46 @@ void setup()
 	bmp.begin();
 	adxl.begin();
 	adxl.setRange(3);
-	Serial.write(broadcastInitMessage);
+  radio.initialize(FREQUENCY, NODEID, NETWORKID);
+  radio.setHighPower();
+  radio.encrypt(ENCRYPTKEY);
 	delay(100);
 	SendResetCmd();
-	delay(2000);
+	curMillis = millis();
+  while(millis() < curMillis + 2000)
+  {
+    mainLoopThrough();
+  }
 	SetBaudCmd(0x2A);
 	delay(500);
 	Serial2.begin(38400);
-	delay(100);
+	radio.send(GATEWAYID, &broadcastInitMessage, 1);
 }
 
 // the loop function runs over and over again until power down or reset
 void loop()
 {
-	Serial.println("Start of an iteration.");
 	EndFlag = 0;
 	SendResetCmd();
-	delay(3000);
-	//Camera set, start receiving data
-	LOG("Shooting img...");
+  curMillis = millis();
+  while(millis() < curMillis + 3000)
+  {
+    mainLoopThrough();
+  }
 	SendTakePhotoCmd();
-	delay(3000);
+  curMillis = millis();
+  while(millis() < curMillis + 3000)
+  {
+    mainLoopThrough();
+  }
 	while (Serial2.available() > 0)
 	{
 		incomingbyte = Serial2.read();
 	}
-	Serial.println("Creating file...");
 	String name = "pic" + String(iteration) + ".jpg";
-	while (SD.exists(name) && name.length() < 12) name = name.substring(0, name.length() - 4) + "n" + ".jpg";
 	if (SD.exists(name))	SD.remove(name);
 	camFile = SD.open(name, FILE_WRITE);
-	LOG("Starting subMainLoop...");
+	msgBuffer = "";
 	while (!EndFlag)
 	{
 		mainLoopThrough();
@@ -136,7 +131,6 @@ void loop()
 		while (Serial2.available() > 0)
 		{
 			incomingbyte = Serial2.read();
-			Serial.print(String(incomingbyte) + " ");
 			k++;
 			delay(1); //250 for regular
 			if ((k > 5) && (j < 32) && (!EndFlag))
@@ -150,25 +144,18 @@ void loop()
 				count++;
 			}
 		}
-		Serial.println();
 		for (l = 0; l < count; l++)
 			camFile.write(a[l]);
 	}
-	LOG("Final check");
 	iteration++;
-	if (iteration > 2) {
-		Serial.println("The end.");
-		while (1);
-	}
-	LOG("Check donne!");
 }
 
 
 void mainLoopThrough() {
 	//Computer In
-	while (Serial.available() > 0)
+	if(radio.receiveDone())
 	{
-		inByte = Serial.read();
+		inByte = radio.DATA[0];
 		if (inByte == startMesCommand)
 		{
 			sending = true;
@@ -212,9 +199,7 @@ void mainLoopThrough() {
 
 					String msg = String(utcTime) + "," + String(temp) + "," + String(pres) + "," + String(xacc) + "," + String(yacc) + "," + String(zacc) + "," + String(lat) + "," + String(ns) + "," + String(lon) + "," + String(ew) + "," + String(alt);
 
-					Serial.write(packetStartMessage);
-					Serial.print(msg);
-					Serial.write(packetEndMessage);
+          radio.send(GATEWAYID, ((char)packetStartMessage + msg + (char)packetEndMessage).c_str(), msg.length() + 2);
 					logFile = SD.open("data.log", FILE_WRITE);
 					logFile.print(msg);
 					logFile.close();
