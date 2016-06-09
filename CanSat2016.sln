@@ -36,6 +36,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "CanSatPage", "CanSatPage", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CompanionCode", "CompanionCode\CompanionCode.vcxproj", "{46E64651-1F59-463F-9138-08A3BC499737}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsApp2.0", "WindowsApp2.0\WindowsApp2.0.csproj", "{13900792-A140-4872-9725-3E444C521B9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -116,12 +118,32 @@ Global
 		{46E64651-1F59-463F-9138-08A3BC499737}.Release|x64.ActiveCfg = Release|Win32
 		{46E64651-1F59-463F-9138-08A3BC499737}.Release|x86.ActiveCfg = Release|Win32
 		{46E64651-1F59-463F-9138-08A3BC499737}.Release|x86.Build.0 = Release|Win32
+		{13900792-A140-4872-9725-3E444C521B9F}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{13900792-A140-4872-9725-3E444C521B9F}.Debug|ARM.ActiveCfg = Debug|ARM
+		{13900792-A140-4872-9725-3E444C521B9F}.Debug|ARM.Build.0 = Debug|ARM
+		{13900792-A140-4872-9725-3E444C521B9F}.Debug|ARM.Deploy.0 = Debug|ARM
+		{13900792-A140-4872-9725-3E444C521B9F}.Debug|x64.ActiveCfg = Debug|x64
+		{13900792-A140-4872-9725-3E444C521B9F}.Debug|x64.Build.0 = Debug|x64
+		{13900792-A140-4872-9725-3E444C521B9F}.Debug|x64.Deploy.0 = Debug|x64
+		{13900792-A140-4872-9725-3E444C521B9F}.Debug|x86.ActiveCfg = Debug|x86
+		{13900792-A140-4872-9725-3E444C521B9F}.Debug|x86.Build.0 = Debug|x86
+		{13900792-A140-4872-9725-3E444C521B9F}.Debug|x86.Deploy.0 = Debug|x86
+		{13900792-A140-4872-9725-3E444C521B9F}.Release|Any CPU.ActiveCfg = Release|x86
+		{13900792-A140-4872-9725-3E444C521B9F}.Release|ARM.ActiveCfg = Release|ARM
+		{13900792-A140-4872-9725-3E444C521B9F}.Release|ARM.Build.0 = Release|ARM
+		{13900792-A140-4872-9725-3E444C521B9F}.Release|ARM.Deploy.0 = Release|ARM
+		{13900792-A140-4872-9725-3E444C521B9F}.Release|x64.ActiveCfg = Release|x64
+		{13900792-A140-4872-9725-3E444C521B9F}.Release|x64.Build.0 = Release|x64
+		{13900792-A140-4872-9725-3E444C521B9F}.Release|x64.Deploy.0 = Release|x64
+		{13900792-A140-4872-9725-3E444C521B9F}.Release|x86.ActiveCfg = Release|x86
+		{13900792-A140-4872-9725-3E444C521B9F}.Release|x86.Build.0 = Release|x86
+		{13900792-A140-4872-9725-3E444C521B9F}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
+		SccNumberOfProjects = 7
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://vojtechstepancik.visualstudio.com/defaultcollection
 		SccLocalPath0 = .
@@ -142,5 +164,8 @@ Global
 		SccProjectUniqueName5 = CompanionCode\\CompanionCode.vcxproj
 		SccProjectName5 = CompanionCode
 		SccLocalPath5 = CompanionCode
+		SccProjectUniqueName6 = WindowsApp2.0\\WindowsApp2.0.csproj
+		SccProjectName6 = WindowsApp2.0
+		SccLocalPath6 = WindowsApp2.0
 	EndGlobalSection
 EndGlobal
