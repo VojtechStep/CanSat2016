@@ -7,7 +7,53 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <Storyboard x:Name="OpenOpenAnimation">
+            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="OpenGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind OpenGridTranslateX}">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="ConnectGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind ConnectGridTranslateX}">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </Page.Resources>
+    
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="None">
+        <Grid Name="OpenGrid" Width="{Binding ActualWidth, Mode=OneWay}" ManipulationMode="None">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
+            <Grid Name="OpenGridOptions" Background="Cyan">
+                <TextBlock VerticalAlignment="Center" Text="OpenGridOptions" HorizontalAlignment="Center" Margin="10" />
+            </Grid>
+            <Grid Name="OpenGridControl" Grid.Column="1" Background="Teal" ManipulationStarted="GridControlManipulationStarted"  ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" ManipulationMode="TranslateX" IsTapEnabled="True" Tapped="GridControlTapped">
+                <TextBlock VerticalAlignment="Center" Text="&#xEC50;" FontFamily="Segoe MDL2 Assets" Foreground="DarkOrange"  HorizontalAlignment="Right" Margin="10" />
+            </Grid>
+            <Grid.RenderTransform>
+                <TranslateTransform />
+            </Grid.RenderTransform>
+        </Grid>
+        <Grid Name="ConnectGrid" Width="{Binding ActualWidth, Mode=OneWay}" ManipulationMode="TranslateX">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Name="ConnectGridControl" Background="Orange" ManipulationStarted="GridControlManipulationStarted" ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" ManipulationMode="TranslateX" IsTapEnabled="True" Tapped="GridControlTapped">
+                <TextBlock VerticalAlignment="Center" Text="OpenGridControl" Margin="10" />
+            </Grid>
+            <Grid Name="ConnectGridOptions" Grid.Column="1" Background="DarkOrange">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="OpenGridOptions" Margin="10" />
+            </Grid>
+            <Grid.RenderTransform>
+                <TranslateTransform />
+            </Grid.RenderTransform>
+        </Grid>
     </Grid>
 </Page>
