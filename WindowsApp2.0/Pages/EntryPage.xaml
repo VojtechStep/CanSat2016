@@ -31,6 +31,30 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
+        <Storyboard x:Name="OpenFileViewAnimation">
+            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="OpenGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind OpenFileViewTranslateX}">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="OpenGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)" To="{x:Bind OpenFileViewTranslateY}">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Name="ConnectModuleViewAnimation">
+            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="ConnectGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind ConnectModuleViewTranslateX}">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="ConnectGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)" To="{x:Bind ConnectModuleViewTranslateY}">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
         <Style x:Key="ConnectButtonStyle" TargetType="Button">
             <Style.Setters>
                 <Setter Property="Template">
@@ -117,6 +141,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <Grid Name="OpenGridOptions" Background="#2BD9AE">
@@ -137,17 +163,17 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="File:" Grid.Column="1" Grid.Row="1" Margin="0 0 0 10" Foreground="#009696" />
+                <TextBlock Text="File:" Grid.Column="1" Grid.Row="1" Margin="0 0 0 10" />
 
                 <Border Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Background="#95C87D" Margin="0 0 17 0" Padding="5">
-                    <TextBlock Name="SelectedFileLabel" Text="None Selected" VerticalAlignment="Center" FontStyle="Italic" Foreground="#009688" />
+                    <TextBlock Name="SelectedFileLabel" Text="None Selected" VerticalAlignment="Center" FontStyle="Italic" />
                 </Border>
 
-                <Button Grid.Column="4" Grid.Row="2" VerticalAlignment="Center" Style="{StaticResource OpenButtonStyle}" Content="Browse" Tag="&#xE1A5;" Margin="-17 0 2 0" />
+                <Button Grid.Column="4" Grid.Row="2" VerticalAlignment="Center" Content="Browse" Tag="&#xE1A5;" Margin="-17 0 2 0" Tapped="BrowseOpenTapped" />
 
-                <Button Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="4" Style="{StaticResource OpenButtonStyle}" Content="Cancel" Tag="&#xE10A;" Click="CancelDataSelection" />
+                <Button Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="4" Content="Cancel" Tag="&#xE10A;" Tapped="CancelDataSelection" />
 
-                <Button Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="4" Style="{StaticResource OpenButtonStyle}" Content="Open" Tag="&#xE10B;" />
+                <Button Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="4" Content="Open" Tag="&#xE10B;" Tapped="OpenFileTapped" />
             </Grid>
 
             <Grid Name="OpenGridControl" Background="#009688" ManipulationStarted="GridControlManipulationStarted"  ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" IsTapEnabled="True" Tapped="GridControlTapped">
@@ -157,6 +183,10 @@
                 </StackPanel>
             </Grid>
 
+            <Grid Name="OpenFileView" Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="#FF0000">
+                <TextBlock Text="Opening File" />
+            </Grid>
+            
             <Grid.RenderTransform>
                 <TranslateTransform />
             </Grid.RenderTransform>
@@ -169,6 +199,8 @@
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -200,15 +232,15 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Save To:" Grid.Column="1" Grid.Row="1" Margin="0 0 0 10" Foreground="#FF2D00" />
+                <TextBlock Text="Save To:" Grid.Column="1" Grid.Row="1" Margin="0 0 0 10" />
 
                 <Border Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Background="#95C87D" Margin="0 0 17 0" Padding="5">
-                    <TextBlock Name="SaveToFileLabel" Text="None Selected" VerticalAlignment="Center" FontStyle="Italic" Foreground="#FF2D00" />
+                    <TextBlock Name="SaveToFileLabel" Text="None Selected" VerticalAlignment="Center" FontStyle="Italic" />
                 </Border>
 
-                <Button Grid.Column="4" Grid.Row="2" VerticalAlignment="Center" Style="{StaticResource ConnectButtonStyle}" Content="Browse" Tag="&#xE1DA;" Margin="-17 0 2 0" />
+                <Button Grid.Column="4" Grid.Row="2" VerticalAlignment="Center" Content="Browse" Tag="&#xE1DA;" Margin="-17 0 2 0" />
                 
-                <TextBlock Text="Port:" Grid.Column="1" Grid.Row="3" Margin="0 10 0 10" Foreground="#FF2D00" />
+                <TextBlock Text="Port:" Grid.Column="1" Grid.Row="3" Margin="0 10 0 10" />
 
                 <ComboBox Name="PortSelector"  Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="4" Background="#95C87D" VerticalAlignment="Center" ItemsSource="{x:Bind Ports}" IsEnabled="{x:Bind PortAvailable, Mode=OneWay}">
                     <ComboBox.ItemTemplate>
@@ -218,13 +250,17 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
                 
-                <Button Grid.Column="4" Grid.Row="4" VerticalAlignment="Center" Style="{StaticResource ConnectButtonStyle}" Content="Refresh" Tag="&#xE117;" Margin="-18 0 2 0" Click="RefreshRequested" />
+                <Button Grid.Column="4" Grid.Row="4" VerticalAlignment="Center" Content="Refresh" Tag="&#xE117;" Margin="-18 0 2 0" Tapped="RefreshRequested" />
                 
-                <Button Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="6" Style="{StaticResource ConnectButtonStyle}" Content="Cancel" Tag="&#xE10A;" Click="CancelDataSelection" />
+                <Button Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="6" Content="Cancel" Tag="&#xE10A;" Tapped="CancelDataSelection" />
 
-                <Button Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="6" Style="{StaticResource ConnectButtonStyle}" Content="Connect" Tag="&#xE10B;" />
+                <Button Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="6" Content="Connect" Tag="&#xE10B;" Tapped="OpenFileTapped" />
             </Grid>
 
+            <Grid Name="ConnectModuleView" Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="#00FF00">
+                <TextBlock Text="Connecting to module" />
+            </Grid>
+            
             <Grid.RenderTransform>
                 <TranslateTransform />
             </Grid.RenderTransform>
