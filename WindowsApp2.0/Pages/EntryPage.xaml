@@ -9,52 +9,26 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+
+        <!--#region Animations -->
         <Storyboard x:Name="DataSelectionAnimation">
-            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="OpenGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind OpenGridTranslateX}">
+            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="MainGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind ViewTranslateX}">
                 <DoubleAnimation.EasingFunction>
                     <ExponentialEase />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="ConnectGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind ConnectGridTranslateX}">
-                <DoubleAnimation.EasingFunction>
-                    <ExponentialEase />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="OpenGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)" To="{x:Bind OpenGridTranslateY}">
-                <DoubleAnimation.EasingFunction>
-                    <ExponentialEase />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="ConnectGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)" To="{x:Bind ConnectGridTranslateY}">
+            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="MainGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)" To="{x:Bind ViewTranslateY}">
                 <DoubleAnimation.EasingFunction>
                     <ExponentialEase />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
-        <Storyboard x:Name="OpenFileViewAnimation">
-            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="OpenGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind OpenFileViewTranslateX}">
-                <DoubleAnimation.EasingFunction>
-                    <ExponentialEase />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="OpenGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)" To="{x:Bind OpenFileViewTranslateY}">
-                <DoubleAnimation.EasingFunction>
-                    <ExponentialEase />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
+        <Storyboard x:Name="OpeningFileIconAnimation">
+            <DoubleAnimation Duration="0:0:1" Storyboard.TargetName="OpeningFileIcon" Storyboard.TargetProperty="(TextBlock.RenderTransform).(RotateTransform.Angle)" To="360" RepeatBehavior="Forever" />
         </Storyboard>
-        <Storyboard x:Name="ConnectModuleViewAnimation">
-            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="ConnectGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind ConnectModuleViewTranslateX}">
-                <DoubleAnimation.EasingFunction>
-                    <ExponentialEase />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="ConnectGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)" To="{x:Bind ConnectModuleViewTranslateY}">
-                <DoubleAnimation.EasingFunction>
-                    <ExponentialEase />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-        </Storyboard>
+        <!--#endregion-->
+
+        <!--#region Styles-->
         <Style x:Key="ConnectButtonStyle" TargetType="Button">
             <Style.Setters>
                 <Setter Property="Template">
@@ -129,205 +103,213 @@
                 </Setter>
             </Style.Setters>
         </Style>
+        <!--#endregion-->
+
     </Page.Resources>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid Name="OpenGrid">
+    <Grid Name="MainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <!--#region Column and Row Definitions-->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <!--#endregion-->
+
+        <!--#region File Part-->
+        <Grid Name="OpenFileOptions" Background="#2BD9AE">
+
+            <!--#region Column and Row Definitions-->
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <!--#endregion-->
+
+            <!--#region File Controls-->
+            <TextBlock Text="File:" Grid.Column="1" Grid.Row="1" Margin="0 0 0 10" />
+
+            <Border Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Background="#E0F2F1" Margin="0 0 17 0" Padding="5">
+                <TextBlock Name="SelectedFileLabel" Text="None Selected" VerticalAlignment="Center" FontStyle="Italic" />
+            </Border>
+
+            <Button Grid.Column="4" Grid.Row="2" VerticalAlignment="Center" Content="Browse" Tag="&#xE1A5;" Margin="-17 0 2 0" Tapped="BrowseOpenTapped" />
+
+            <Button Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="4" Content="Cancel" Tag="&#xE10A;" Tapped="CancelDataSelection" />
+
+            <Button Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="4" Content="Open" Tag="&#xE10B;" Tapped="ShowDataRequested" />
+            <!--#endregion-->
+
+        </Grid>
+
+        <Grid Name="OpenFileControl" Background="#009688" ManipulationDelta="GridControlManipulationDelta" ManipulationCompleted="GridControlManipulationCompleted" IsTapEnabled="True" Tapped="GridControlTapped">
+            <StackPanel Name="OpenGridControlLabel" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                <TextBlock Text="&#xEC50;" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#FF9800" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center"/>
+                <TextBlock Text="OPEN" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" Foreground="#FF9800" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid Name="OpenFileView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                <TextBlock Name="OpeningFileIcon" Text="&#xE895;" FontFamily="Segoe MDL2 Assets" Foreground="#009688" FontSize="40" VerticalAlignment="Center" HorizontalAlignment="Center" RenderTransformOrigin="0.5 0.5" Margin="20">
+                    <TextBlock.RenderTransform>
+                        <RotateTransform />
+                    </TextBlock.RenderTransform>
+                </TextBlock>
+                <TextBlock Text="Opening File..." HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#009688" />
+            </StackPanel>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Module Part-->
+        <Grid Name="ConnectModuleControl" Background="#FF9800" ManipulationDelta="GridControlManipulationDelta" ManipulationCompleted="GridControlManipulationCompleted" IsTapEnabled="True" Tapped="GridControlTapped">
+            <StackPanel Name="ConnectGridControlLabel" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="&#xE99A;" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#009688" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center"></TextBlock>
+                <TextBlock Text="CONNECT" FontFamily="Segoe UI" FontSize="48" Foreground="#009688" FontWeight="Bold" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center"></TextBlock>
+            </StackPanel>
+        </Grid>
+
+        <Grid Name="ConnectModuleOptions" Background="#FFB74D">
+
+            <!--#region Column and Row Definitions-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-            <Grid Name="OpenGridOptions" Background="#2BD9AE">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <TextBlock Text="File:" Grid.Column="1" Grid.Row="1" Margin="0 0 0 10" />
-
-                <Border Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Background="#E0F2F1" Margin="0 0 17 0" Padding="5">
-                    <TextBlock Name="SelectedFileLabel" Text="None Selected" VerticalAlignment="Center" FontStyle="Italic" />
-                </Border>
-
-                <Button Grid.Column="4" Grid.Row="2" VerticalAlignment="Center" Content="Browse" Tag="&#xE1A5;" Margin="-17 0 2 0" Tapped="BrowseOpenTapped" />
-
-                <Button Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="4" Content="Cancel" Tag="&#xE10A;" Tapped="CancelDataSelection" />
-
-                <Button Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="4" Content="Open" Tag="&#xE10B;" Tapped="OpenFileTapped" />
-            </Grid>
-
-            <Grid Name="OpenGridControl" Background="#009688" ManipulationStarted="GridControlManipulationStarted" ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" IsTapEnabled="True" Tapped="GridControlTapped">
-                <StackPanel Name="OpenGridControlLabel" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" >
-                    <TextBlock Text="&#xEC50;" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#FF9800" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center"/>
-                    <TextBlock Text="OPEN" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" Foreground="#FF9800" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center"/>
-                </StackPanel>
-            </Grid>
-
-            <Grid Name="OpenFileView" Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
-                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                    <TextBlock Text="&#xE895;" FontFamily="Segoe MDL2 Assets" Foreground="#009688" FontSize="40" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,20,20,20"/>
-                    <TextBlock Text="Opening File..." HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#009688" />
-                </StackPanel>
-            </Grid>
-
-            <Grid.RenderTransform>
-                <TranslateTransform />
-            </Grid.RenderTransform>
-
-        </Grid>
-        <Grid Name="ConnectGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+            <!--#endregion-->
 
-            <Grid Name="ConnectGridControl" Background="#FF9800"  ManipulationStarted="GridControlManipulationStarted" ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" IsTapEnabled="True" Tapped="GridControlTapped">
-                <StackPanel Name="ConnectGridControlLabel" Orientation="Vertical">
-                    <TextBlock Text="&#xE99A;" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#009688" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center"></TextBlock>
-                    <TextBlock Text="CONNECT" FontFamily="Segoe UI" FontSize="48" Foreground="#009688" FontWeight="Bold" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center"></TextBlock>
-                </StackPanel>
-            </Grid>
+            <!--#region Module Options-->
 
-            <Grid Name="ConnectGridOptions" Background="#FFB74D">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <TextBlock Text="Save To:" Grid.Column="1" Grid.Row="1" Margin="0 0 0 10" />
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+            <Border Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Background="#FFF3E0" Margin="0 0 17 0" Padding="5">
+                <TextBlock Name="SaveToFileLabel" Text="None Selected" VerticalAlignment="Center" FontStyle="Italic" />
+            </Border>
 
-                <TextBlock Text="Save To:" Grid.Column="1" Grid.Row="1" Margin="0 0 0 10" />
+            <Button Grid.Column="4" Grid.Row="2" VerticalAlignment="Center" Content="Browse" Tag="&#xE1DA;" Margin="-17 0 2 0" />
 
-                <Border Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Background="#FFF3E0" Margin="0 0 17 0" Padding="5">
-                    <TextBlock Name="SaveToFileLabel" Text="None Selected" VerticalAlignment="Center" FontStyle="Italic" />
-                </Border>
+            <TextBlock Text="Port:" Grid.Column="1" Grid.Row="3" Margin="0 10 0 10" />
 
-                <Button Grid.Column="4" Grid.Row="2" VerticalAlignment="Center" Content="Browse" Tag="&#xE1DA;" Margin="-17 0 2 0" />
+            <ComboBox Name="PortSelector"  Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="4" Background="#95C87D" VerticalAlignment="Center" ItemsSource="{x:Bind Ports}" IsEnabled="{x:Bind PortAvailable, Mode=OneWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="devices:DeviceInformation">
+                        <TextBlock Text="{x:Bind Name}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
 
-                <TextBlock Text="Port:" Grid.Column="1" Grid.Row="3" Margin="0 10 0 10" />
+            <Button Grid.Column="4" Grid.Row="4" VerticalAlignment="Center" Content="Refresh" Tag="&#xE117;" Margin="-18 0 2 0" Tapped="RefreshRequested" />
 
-                <ComboBox Name="PortSelector"  Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="4" Background="#95C87D" VerticalAlignment="Center" ItemsSource="{x:Bind Ports}" IsEnabled="{x:Bind PortAvailable, Mode=OneWay}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate x:DataType="devices:DeviceInformation">
-                            <TextBlock Text="{x:Bind Name}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+            <Button Grid.Column="1" Grid.Row="6" Content="Cancel" Tag="&#xE10A;" Tapped="CancelDataSelection" VerticalAlignment="Top" />
 
-                <Button Grid.Column="4" Grid.Row="4" VerticalAlignment="Center" Content="Refresh" Tag="&#xE117;" Margin="-18 0 2 0" Tapped="RefreshRequested" />
-
-                <Button Grid.Column="1" Grid.Row="6" Content="Cancel" Tag="&#xE10A;" Tapped="CancelDataSelection" VerticalAlignment="Top" />
-
-                <Button Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="6" Content="Connect" Tag="&#xE10B;" Tapped="OpenFileTapped" />
-            </Grid>
-
-            <Grid Name="ConnectModuleView" Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
-                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                    <TextBlock Text="&#xE895;" FontFamily="Segoe MDL2 Assets" Foreground="#FF9800" FontSize="40" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,20,20,20"/>
-                    <TextBlock Text="Connecting to module..." HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF9800" />
-                </StackPanel>
-            </Grid>
-
-            <Grid.RenderTransform>
-                <TranslateTransform />
-            </Grid.RenderTransform>
-
+            <Button Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="6" Content="Connect" Tag="&#xE10B;" Tapped="ShowDataRequested" />
+            <!--#endregion-->
+            
         </Grid>
+
+        <Grid Name="ConnectModuleView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                <TextBlock Text="&#xE895;" FontFamily="Segoe MDL2 Assets" Foreground="#FF9800" FontSize="40" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,20,20,20"/>
+                <TextBlock Text="Connecting to module..." HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF9800" />
+            </StackPanel>
+        </Grid>
+        <!--#endregion-->
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="WidthStates">
                 <VisualState x:Name="Wide">
                     <VisualState.Setters>
-                        <Setter Target="OpenGridOptions.(Grid.Row)" Value="0" />
-                        <Setter Target="OpenGridOptions.(Grid.RowSpan)" Value="2" />
-                        <Setter Target="OpenGridOptions.(Grid.Column)" Value="0" />
-                        <Setter Target="OpenGridOptions.(Grid.ColumnSpan)" Value="1" />
-                        <Setter Target="OpenGridControl.(Grid.Row)" Value="0" />
-                        <Setter Target="OpenGridControl.(Grid.RowSpan)" Value="2" />
-                        <Setter Target="OpenGridControl.(Grid.Column)" Value="1" />
-                        <Setter Target="OpenGridControl.(Grid.ColumnSpan)" Value="1" />
-                        <Setter Target="OpenGridControl.ManipulationMode" Value="TranslateX" />
-                        <Setter Target="ConnectGridControl.(Grid.Row)" Value="0" />
-                        <Setter Target="ConnectGridControl.(Grid.RowSpan)" Value="2" />
-                        <Setter Target="ConnectGridControl.(Grid.Column)" Value="0" />
-                        <Setter Target="ConnectGridControl.(Grid.ColumnSpan)" Value="1" />
-                        <Setter Target="ConnectGridControl.ManipulationMode" Value="TranslateX" />
-                        <Setter Target="ConnectGridOptions.(Grid.Row)" Value="0" />
-                        <Setter Target="ConnectGridOptions.(Grid.RowSpan)" Value="2" />
-                        <Setter Target="ConnectGridOptions.(Grid.Column)" Value="1" />
-                        <Setter Target="ConnectGridOptions.(Grid.ColumnSpan)" Value="1" />
-                        <Setter Target="OpenGridControlLabel.VerticalAlignment" Value="Center" />
-                        <Setter Target="OpenGridControlLabel.HorizontalAlignment" Value="Center" />
-                        <Setter Target="ConnectGridControlLabel.VerticalAlignment" Value="Center" />
-                        <Setter Target="ConnectGridControlLabel.HorizontalAlignment" Value="Center" />
+                        <!--#region Regrouping on resize-->
+                        <Setter Target="OpenFileOptions.(Grid.Row)" Value="0" />
+                        <Setter Target="OpenFileOptions.(Grid.RowSpan)" Value="2" />
+                        <Setter Target="OpenFileOptions.(Grid.Column)" Value="0" />
+                        <Setter Target="OpenFileOptions.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="OpenFileControl.(Grid.Row)" Value="0" />
+                        <Setter Target="OpenFileControl.(Grid.RowSpan)" Value="2" />
+                        <Setter Target="OpenFileControl.(Grid.Column)" Value="1" />
+                        <Setter Target="OpenFileControl.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="ConnectModuleControl.(Grid.Row)" Value="0" />
+                        <Setter Target="ConnectModuleControl.(Grid.RowSpan)" Value="2" />
+                        <Setter Target="ConnectModuleControl.(Grid.Column)" Value="2" />
+                        <Setter Target="ConnectModuleControl.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="ConnectModuleOptions.(Grid.Row)" Value="0" />
+                        <Setter Target="ConnectModuleOptions.(Grid.RowSpan)" Value="2" />
+                        <Setter Target="ConnectModuleOptions.(Grid.Column)" Value="3" />
+                        <Setter Target="ConnectModuleOptions.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="OpenFileView.(Grid.Row)" Value="2" />
+                        <Setter Target="OpenFileView.(Grid.Column)" Value="0" />
+                        <Setter Target="ConnectModuleView.(Grid.Row)" Value="2" />
+                        <Setter Target="ConnectModuleView.(Grid.Column)" Value="2" />
+                        <!--#endregion-->
+                        <Setter Target="OpenFileControl.ManipulationMode" Value="TranslateX" />
+                        <Setter Target="ConnectModuleControl.ManipulationMode" Value="TranslateX" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Narrow">
                     <VisualState.Setters>
-                        <Setter Target="OpenGridOptions.(Grid.Column)" Value="0" />
-                        <Setter Target="OpenGridOptions.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="OpenGridOptions.(Grid.Row)" Value="0" />
-                        <Setter Target="OpenGridOptions.(Grid.RowSpan)" Value="1" />
-                        <Setter Target="OpenGridControl.(Grid.Column)" Value="0" />
-                        <Setter Target="OpenGridControl.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="OpenGridControl.(Grid.Row)" Value="1" />
-                        <Setter Target="OpenGridControl.(Grid.RowSpan)" Value="1" />
-                        <Setter Target="OpenGridControl.ManipulationMode" Value="TranslateY" />
-                        <Setter Target="ConnectGridControl.(Grid.Column)" Value="0" />
-                        <Setter Target="ConnectGridControl.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="ConnectGridControl.(Grid.Row)" Value="0" />
-                        <Setter Target="ConnectGridControl.(Grid.RowSpan)" Value="1" />
-                        <Setter Target="ConnectGridControl.ManipulationMode" Value="TranslateY" />
-                        <Setter Target="ConnectGridOptions.(Grid.Column)" Value="0" />
-                        <Setter Target="ConnectGridOptions.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="ConnectGridOptions.(Grid.Row)" Value="1" />
-                        <Setter Target="ConnectGridOptions.(Grid.RowSpan)" Value="1" />
-                        <Setter Target="OpenGridControlLabel.VerticalAlignment" Value="Center" />
-                        <Setter Target="OpenGridControlLabel.HorizontalAlignment" Value="Center" />
-                        <Setter Target="ConnectGridControlLabel.VerticalAlignment" Value="Center" />
-                        <Setter Target="ConnectGridControlLabel.HorizontalAlignment" Value="Center" />
+                        <!--#region Regrouping on resize-->
+                        <Setter Target="OpenFileOptions.(Grid.Column)" Value="2" />
+                        <Setter Target="OpenFileOptions.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="OpenFileOptions.(Grid.Row)" Value="0" />
+                        <Setter Target="OpenFileOptions.(Grid.RowSpan)" Value="1" />
+                        <Setter Target="OpenFileControl.(Grid.Column)" Value="2" />
+                        <Setter Target="OpenFileControl.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="OpenFileControl.(Grid.Row)" Value="1" />
+                        <Setter Target="OpenFileControl.(Grid.RowSpan)" Value="1" />
+                        <Setter Target="ConnectModuleControl.(Grid.Column)" Value="2" />
+                        <Setter Target="ConnectModuleControl.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="ConnectModuleControl.(Grid.Row)" Value="2" />
+                        <Setter Target="ConnectModuleControl.(Grid.RowSpan)" Value="1" />
+                        <Setter Target="ConnectModuleOptions.(Grid.Column)" Value="2" />
+                        <Setter Target="ConnectModuleOptions.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="ConnectModuleOptions.(Grid.Row)" Value="3" />
+                        <Setter Target="ConnectModuleOptions.(Grid.RowSpan)" Value="1" />
+                        <Setter Target="OpenFileView.(Grid.Column)" Value="0" />
+                        <Setter Target="OpenFileView.(Grid.Row)" Value="0" />
+                        <Setter Target="ConnectModuleView.(Grid.Column)" Value="0" />
+                        <Setter Target="ConnectModuleView.(Grid.Row)" Value="2" />
+                        <!--#endregion-->
+                        <Setter Target="OpenFileControl.ManipulationMode" Value="TranslateY" />
+                        <Setter Target="ConnectModuleControl.ManipulationMode" Value="TranslateY" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
+        <Grid.RenderTransform>
+            <TranslateTransform />
+        </Grid.RenderTransform>
     </Grid>
 </Page>

@@ -148,6 +148,11 @@
       <HintPath>DLLs\Utils.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="WindowsMobile, Version=10.0.14332.0">
+      <Name>Windows Mobile Extensions for the UWP</Name>
+    </SDKReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '15.0' ">
     <VisualStudioVersion>15.0</VisualStudioVersion>
   </PropertyGroup>
