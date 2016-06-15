@@ -15,6 +15,7 @@ using Windows.Foundation.Metadata;
 using Windows.UI.ViewManagement;
 using Windows.UI;
 using Windows.ApplicationModel.Core;
+using System.Diagnostics;
 
 namespace WindowsApp2._0
 {
@@ -58,7 +59,7 @@ namespace WindowsApp2._0
                 DataSelectionAnimation.Begin();
             }
         }
-        
+
         private LayoutState CurrentLayout => DesiredSize.Width >= 720
                                                 ? LayoutState.Wide
                                                 : (DesiredSize.Width > 0
@@ -98,11 +99,14 @@ namespace WindowsApp2._0
         {
             InitializeComponent();
             SizeChanged += (s, e) => Recompose(e.NewSize);
+            OpenHint.Completed += (s, e) => Debug.WriteLine("OpenHint animation completed");
             Loaded += (s, e) =>
             {
                 Recompose(DesiredSize);
                 CurrentState = DataSelectionState.None;
+                OpenHint.Begin();
             };
+            //OpenHint.Completed += (s, e) => (OpenFileControlLabel.Foreground as LinearGradientBrush).GradientStops[1].Offset = 0;
             HideStatBar();
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
             ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Colors.White;
@@ -171,7 +175,7 @@ namespace WindowsApp2._0
             if (e.IsInertial) e.Complete();
             e.Handled = true;
         }
-        
+
         private void GridControlTapped(Object sender, TappedRoutedEventArgs e)
         {
             CurrentState = (sender as Grid)?.Name == "OpenFileControl"
@@ -231,7 +235,7 @@ namespace WindowsApp2._0
         }
 
         private void CancelDataSelection(Object sender, TappedRoutedEventArgs e) => CurrentState = DataSelectionState.None;
-        
+
         private void ShowDataRequested(Object sender, TappedRoutedEventArgs e)
         {
             Button buttonObject = sender as Button;

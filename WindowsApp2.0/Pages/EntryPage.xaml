@@ -23,6 +23,11 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
+        <Storyboard x:Name="OpenHint">
+            <ColorAnimation  Storyboard.TargetName="OpenFileControlLabel"
+                            Storyboard.TargetProperty = "(TextBlock.Foreground).(LinearGradientBrush.GradientStops)[0].(GradientStop.Color)"
+                            From="Red" To="Orange" Duration="0:0:5"/>
+        </Storyboard>
         <Storyboard x:Name="OpeningFileIconAnimation">
             <DoubleAnimation Duration="0:0:1" Storyboard.TargetName="OpeningFileIcon" Storyboard.TargetProperty="(TextBlock.RenderTransform).(RotateTransform.Angle)" To="360" RepeatBehavior="Forever" />
         </Storyboard>
@@ -107,6 +112,33 @@
 
     </Page.Resources>
 
+    <Page.Triggers>
+        <EventTrigger RoutedEvent="Page.Loaded">
+            <EventTrigger.Actions>
+                <BeginStoryboard>
+                    <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                        <ColorAnimation  Storyboard.TargetName="Canvas1"
+                            Storyboard.TargetProperty = "(Canvas.Background).(LinearGradientBrush.GradientStops)[0].(GradientStop.Color)"
+                            From="Red" To="Orange" Duration="0:0:5"/>
+                        <ColorAnimation Storyboard.TargetName="Canvas1"
+                              Storyboard.TargetProperty = "(Canvas.Background).(LinearGradientBrush.GradientStops)[1].(GradientStop.Color)"
+                              From="Orange" To="Green" Duration="0:0:5"/>
+                        <ColorAnimation Storyboard.TargetName="Canvas1"
+                              Storyboard.TargetProperty = "(Canvas.Background).(LinearGradientBrush.GradientStops)[2].(GradientStop.Color)"
+                              From="Green" To="Blue" Duration="0:0:5"/>
+                        <ColorAnimation Storyboard.TargetName="Canvas1"
+                              Storyboard.TargetProperty = "(Canvas.Background).(LinearGradientBrush.GradientStops)[3].(GradientStop.Color)"
+                              From="Blue" To="Black" Duration="0:0:5"/>
+                        <ColorAnimation Storyboard.TargetName="Canvas1"
+                              Storyboard.TargetProperty = "(Canvas.Background).(LinearGradientBrush.GradientStops)[4].(GradientStop.Color)"
+                              From="Black" To="Red" Duration="0:0:5"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger.Actions>
+        </EventTrigger>
+    </Page.Triggers>
+
+
     <Grid Name="MainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
         <!--#region Column and Row Definitions-->
@@ -164,8 +196,27 @@
         <Grid Name="OpenFileControl" Background="#009688" ManipulationDelta="GridControlManipulationDelta" ManipulationCompleted="GridControlManipulationCompleted" IsTapEnabled="True" Tapped="GridControlTapped">
             <StackPanel Name="OpenGridControlLabel" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" >
                 <TextBlock Text="&#xEC50;" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#FF9800" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center"/>
-                <TextBlock Text="OPEN" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" Foreground="#FF9800" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center"/>
+                <TextBlock Name="OpenFileControlLabel" Text="OPEN" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" VerticalAlignment="Center" Margin="10" HorizontalAlignment="Center">
+                    <TextBlock.Foreground>
+                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                            <GradientStop Color="#FF9800" Offset="0" />
+                            <GradientStop Color="#00FF00" Offset="0.5" />
+                            <GradientStop Color="#FF9800" Offset="1" />
+                        </LinearGradientBrush>
+                    </TextBlock.Foreground>
+                </TextBlock>
             </StackPanel>
+            <Canvas Name="Canvas1" >
+                <Canvas.Background>
+                    <LinearGradientBrush  >
+                        <GradientStop Color="Red" Offset="0.0" />
+                        <GradientStop Color="Orange" Offset="0.40" />
+                        <GradientStop Color="Green" Offset="0.60" />
+                        <GradientStop Color="Blue" Offset="0.80" />
+                        <GradientStop Color="Black" Offset="1.00" />
+                    </LinearGradientBrush >
+                </Canvas.Background>
+            </Canvas>
         </Grid>
 
         <Grid Name="OpenFileView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
@@ -237,7 +288,7 @@
 
             <Button Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="6" Content="Connect" Tag="&#xE10B;" Tapped="ShowDataRequested" />
             <!--#endregion-->
-            
+
         </Grid>
 
         <Grid Name="ConnectModuleView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
