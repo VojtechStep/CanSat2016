@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using Utils;
+using Windows.ApplicationModel.Core;
+using Windows.Devices.Enumeration;
+using Windows.Devices.SerialCommunication;
 using Windows.Foundation;
+using Windows.Foundation.Metadata;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.UI;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.Devices.Enumeration;
-using Windows.Devices.SerialCommunication;
-using Windows.Storage;
-using Windows.Storage.Pickers;
-using Windows.UI.Core;
-using Utils;
-using Windows.Foundation.Metadata;
-using Windows.UI.ViewManagement;
-using Windows.UI;
-using Windows.ApplicationModel.Core;
-using System.Diagnostics;
 
 namespace WindowsApp2._0
 {
@@ -24,51 +23,44 @@ namespace WindowsApp2._0
 
         #region Properties, varables and stuff
 
-        private Size _internalWindowSize;
+        Size _internalWindowSize;
 
-        private String loadFileToken;
-        private String saveFileToken;
+        String loadFileToken;
+        String saveFileToken;
 
-        private DataSelectionState _currentState = DataSelectionState.None;
+        DataSelectionState _currentState = DataSelectionState.None;
 
-        private DataSelectionState CurrentState
+        DataSelectionState CurrentState
         {
             get { return _currentState; }
             set
             {
                 _currentState = value;
-                switch (value)
-                {
-                    case DataSelectionState.Open:
-                        OpenPageOpen();
-                        break;
-                    case DataSelectionState.Connect:
-                        ConnectPageOpen();
-                        break;
-                    case DataSelectionState.OpenView:
-                        FileViewPageOpen();
-                        break;
-                    case DataSelectionState.ConnectView:
-                        ConnectModulePageOpen();
-                        break;
-                    default:
-                        EntryViewOpen();
-                        break;
-                }
+                if (value == DataSelectionState.Open)
+                    OpenPageOpen();
+                else if (value == DataSelectionState.Connect)
+                    ConnectPageOpen();
+                else if (value == DataSelectionState.OpenView)
+                    FileViewPageOpen();
+                else if (value == DataSelectionState.ConnectView)
+                    ConnectModulePageOpen();
+                else
+                    EntryViewOpen();
                 Bindings.Update();
                 DataSelectionAnimation.Begin();
+                AdjustTitleBar();
             }
         }
 
-        private LayoutState CurrentLayout => DesiredSize.Width >= 720
+        LayoutState CurrentLayout => DesiredSize.Width >= 720
                                                 ? LayoutState.Wide
                                                 : (DesiredSize.Width > 0
                                                     ? LayoutState.Narrow
                                                     : LayoutState.None);
 
-        private LayoutState _previousLayout;
+        LayoutState _previousLayout;
 
-        private Double? ViewTranslateX => CurrentLayout == LayoutState.Wide
+        Double? ViewTranslateX => CurrentLayout == LayoutState.Wide
                                             ? (CurrentState == DataSelectionState.None
                                                 ? -_internalWindowSize.Width / 2
                                                 : (CurrentState == DataSelectionState.Connect || CurrentState == DataSelectionState.ConnectView
@@ -78,7 +70,7 @@ namespace WindowsApp2._0
                                                 ? -_internalWindowSize.Width
                                                 : 0);
 
-        private Double? ViewTranslateY => CurrentLayout == LayoutState.Narrow
+        Double? ViewTranslateY => CurrentLayout == LayoutState.Narrow
                                             ? (CurrentState == DataSelectionState.None
                                                 ? -_internalWindowSize.Height / 2
                                                 : (CurrentState == DataSelectionState.Connect || CurrentState == DataSelectionState.ConnectView
@@ -88,9 +80,9 @@ namespace WindowsApp2._0
                                                 ? -_internalWindowSize.Height
                                                 : 0);
 
-        private List<DeviceInformation> Ports { get; set; } = new List<DeviceInformation>();
+        List<DeviceInformation> Ports { get; set; } = new List<DeviceInformation>();
 
-        private Boolean PortAvailable => Ports?.Count > 0;
+        Boolean PortAvailable => Ports?.Count > 0;
 
         #endregion
 
@@ -99,14 +91,12 @@ namespace WindowsApp2._0
         {
             InitializeComponent();
             SizeChanged += (s, e) => Recompose(e.NewSize);
-            OpenHint.Completed += (s, e) => Debug.WriteLine("OpenHint animation completed");
             Loaded += (s, e) =>
             {
                 Recompose(DesiredSize);
-                CurrentState = DataSelectionState.None;
-                OpenHint.Begin();
+                //! Change to DataSelectionState.None after debugging
+                CurrentState = DataSelectionState.OpenView;
             };
-            //OpenHint.Completed += (s, e) => (OpenFileControlLabel.Foreground as LinearGradientBrush).GradientStops[1].Offset = 0;
             HideStatBar();
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
             ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Colors.White;
@@ -115,7 +105,7 @@ namespace WindowsApp2._0
             ApplicationView.GetForCurrentView().TitleBar.ButtonPressedForegroundColor = Colors.White;
         }
 
-        private async void ShowStatBar()
+        async void ShowStatBar()
         {
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
@@ -123,7 +113,7 @@ namespace WindowsApp2._0
             }
         }
 
-        private async void HideStatBar()
+        async void HideStatBar()
         {
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
@@ -131,25 +121,44 @@ namespace WindowsApp2._0
             }
         }
 
-        private void Recompose(Size newSize)
+        void Recompose(Size newSize)
         {
             _internalWindowSize = newSize;
             MainGrid.Width = 2 * _internalWindowSize.Width;
             MainGrid.Height = 2 * _internalWindowSize.Height;
             (MainGrid.RenderTransform as TranslateTransform).X = ViewTranslateX.Value;
             (MainGrid.RenderTransform as TranslateTransform).Y = ViewTranslateY.Value;
-            if (CurrentLayout != _previousLayout)
-            {
-                VisualStateManager.GoToState(this, CurrentLayout.ToString(), false);
-                _previousLayout = CurrentLayout;
-            }
+            if (CurrentLayout == _previousLayout) return;
+            VisualStateManager.GoToState(this, CurrentLayout.ToString(), false);
+            AdjustTitleBar();
+            _previousLayout = CurrentLayout;
+        }
+
+        void AdjustTitleBar()
+        {
+            ApplicationView.GetForCurrentView().TitleBar.BackgroundColor =
+                ApplicationView.GetForCurrentView().TitleBar.ButtonBackgroundColor = CurrentLayout == LayoutState.Wide
+                                                                                        ? (CurrentState == DataSelectionState.Open || CurrentState == DataSelectionState.OpenView
+                                                                                            ? (OpenFileControl.Background as SolidColorBrush).Color
+                                                                                            : (CurrentState == DataSelectionState.Connect || CurrentState == DataSelectionState.ConnectView)
+                                                                                                ? (ConnectModuleControl.Background as SolidColorBrush).Color
+                                                                                                : Colors.Black)
+                                                                                        : (CurrentState == DataSelectionState.Open
+                                                                                            ? (OpenFileOptions.Background as SolidColorBrush).Color
+                                                                                            : (CurrentState == DataSelectionState.OpenView
+                                                                                                ? (OpenFileControl.Background as SolidColorBrush).Color
+                                                                                                : (CurrentState == DataSelectionState.Connect || CurrentState == DataSelectionState.ConnectView
+                                                                                                    ? (ConnectModuleControl.Background as SolidColorBrush).Color
+                                                                                                    : Colors.Black)));
+            ApplicationView.GetForCurrentView().TitleBar.ButtonHoverBackgroundColor = ApplicationView.GetForCurrentView().TitleBar.ButtonBackgroundColor.Value.Lighten(30);
+            ApplicationView.GetForCurrentView().TitleBar.ButtonPressedBackgroundColor = ApplicationView.GetForCurrentView().TitleBar.ButtonBackgroundColor.Value.Lighten(50);
         }
 
         #endregion
 
         #region Control stuff
 
-        private void GridControlManipulationCompleted(Object sender, ManipulationCompletedRoutedEventArgs e)
+        void GridControlManipulationCompleted(Object sender, ManipulationCompletedRoutedEventArgs e)
         {
             Grid controlGrid = sender as Grid;
             if (controlGrid == null) return;
@@ -164,7 +173,7 @@ namespace WindowsApp2._0
                                 : DataSelectionState.None);
         }
 
-        private void GridControlManipulationDelta(Object sender, ManipulationDeltaRoutedEventArgs e)
+        void GridControlManipulationDelta(Object sender, ManipulationDeltaRoutedEventArgs e)
         {
             Grid controlGrid = sender as Grid;
             if (controlGrid == null) return;
@@ -176,7 +185,7 @@ namespace WindowsApp2._0
             e.Handled = true;
         }
 
-        private void GridControlTapped(Object sender, TappedRoutedEventArgs e)
+        void GridControlTapped(Object sender, TappedRoutedEventArgs e)
         {
             CurrentState = (sender as Grid)?.Name == "OpenFileControl"
                                ? (CurrentState == DataSelectionState.None
@@ -190,53 +199,48 @@ namespace WindowsApp2._0
         #endregion
 
         #region Navigation stuff
-
-        private void OpenPageOpen()
+        void EntryViewOpen()
         {
-            ApplicationView.GetForCurrentView().TitleBar.BackgroundColor = ApplicationView.GetForCurrentView().TitleBar.ButtonBackgroundColor = (OpenFileOptions.Background as SolidColorBrush).Color;
-            ApplicationView.GetForCurrentView().TitleBar.ButtonHoverBackgroundColor = (OpenFileOptions.Background as SolidColorBrush).Color.Lighten(30);
-            ApplicationView.GetForCurrentView().TitleBar.ButtonPressedBackgroundColor = (OpenFileOptions.Background as SolidColorBrush).Color.Lighten(50);
-            OpeningFileIconAnimation.Begin();
+
         }
 
-        private void ConnectPageOpen()
+        void OpenPageOpen()
         {
-            ApplicationView.GetForCurrentView().TitleBar.BackgroundColor = ApplicationView.GetForCurrentView().TitleBar.ButtonBackgroundColor = (ConnectModuleControl.Background as SolidColorBrush).Color;
-            ApplicationView.GetForCurrentView().TitleBar.ButtonHoverBackgroundColor = (ConnectModuleOptions.Background as SolidColorBrush).Color.Lighten(30);
-            ApplicationView.GetForCurrentView().TitleBar.ButtonPressedBackgroundColor = (ConnectModuleOptions.Background as SolidColorBrush).Color.Lighten(50);
+
+        }
+
+        void ConnectPageOpen()
+        {
             LoadSerialPorts();
         }
-
-        private void EntryViewOpen()
+        void FileViewPageOpen()
         {
-            ApplicationView.GetForCurrentView().TitleBar.BackgroundColor = ApplicationView.GetForCurrentView().TitleBar.ButtonBackgroundColor = Colors.Black;
-            ApplicationView.GetForCurrentView().TitleBar.ButtonHoverBackgroundColor = Colors.Black.Lighten(30);
-            ApplicationView.GetForCurrentView().TitleBar.ButtonPressedBackgroundColor = Colors.Black.Lighten(50);
+            OpeningFileIconAnimation.Begin();
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+            SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
+            OpeningFileIconAnimation.Stop();
+            OpeningFileLoader.Visibility = Visibility.Collapsed;
+            FileDataView.Visibility = Visibility.Visible;
+        }
+        void ConnectModulePageOpen()
+        {
+            ConnectingModuleIconAnimation.Begin();
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+            SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
         }
 
-        private void GoBackToDataSelect(object o, BackRequestedEventArgs e)
+        void GoBackToDataSelect(object o, BackRequestedEventArgs e)
         {
             CurrentState = CurrentState == DataSelectionState.OpenView ? DataSelectionState.Open : (CurrentState == DataSelectionState.ConnectView ? DataSelectionState.Connect : DataSelectionState.None);
             OpeningFileIconAnimation.Stop();
+            ConnectingModuleIconAnimation.Stop();
             SystemNavigationManager.GetForCurrentView().BackRequested -= GoBackToDataSelect;
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
         }
 
-        private void ConnectModulePageOpen()
-        {
-            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
-            SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
-        }
+        void CancelDataSelection(Object sender, TappedRoutedEventArgs e) => CurrentState = DataSelectionState.None;
 
-        private void FileViewPageOpen()
-        {
-            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
-            SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
-        }
-
-        private void CancelDataSelection(Object sender, TappedRoutedEventArgs e) => CurrentState = DataSelectionState.None;
-
-        private void ShowDataRequested(Object sender, TappedRoutedEventArgs e)
+        void ShowDataRequested(Object sender, TappedRoutedEventArgs e)
         {
             Button buttonObject = sender as Button;
             if (buttonObject == null) return;
@@ -247,9 +251,9 @@ namespace WindowsApp2._0
 
         #region Serial stuff
 
-        private void RefreshRequested(Object sender, TappedRoutedEventArgs e) => LoadSerialPorts();
+        void RefreshRequested(Object sender, TappedRoutedEventArgs e) => LoadSerialPorts();
 
-        private async void LoadSerialPorts()
+        async void LoadSerialPorts()
         {
             Ports.Clear();
             var selector = SerialDevice.GetDeviceSelector();
@@ -266,7 +270,7 @@ namespace WindowsApp2._0
 
         #region File stuff
 
-        private async void BrowseOpenTapped(Object sender, TappedRoutedEventArgs e)
+        async void BrowseOpenTapped(Object sender, TappedRoutedEventArgs e)
         {
             FileOpenPicker openPicker = new FileOpenPicker
             {
@@ -278,12 +282,10 @@ namespace WindowsApp2._0
                 }
             };
             StorageFile loadFile = await openPicker.PickSingleFileAsync();
-            if (loadFile != null)
-            {
-                //loadFileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(loadFile);
-                SelectedFileLabel.Text = loadFile.Path;
-                ToolTipService.SetToolTip(SelectedFileLabel, loadFile.Path);
-            }
+            if (loadFile == null) return;
+            loadFileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(loadFile);
+            SelectedFileLabel.Text = loadFile.Path;
+            ToolTipService.SetToolTip(SelectedFileLabel, loadFile.Path);
         }
 
         #endregion

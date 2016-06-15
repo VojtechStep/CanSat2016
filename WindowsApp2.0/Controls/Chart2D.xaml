@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="WindowsApp2._0.Controls.Chart2D"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:WindowsApp2._0.Controls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <RelativePanel Name="MainGrid" MinWidth="100" MinHeight="75">
+
+        <Canvas Name="PlotArea" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignTopWithPanel="True" Margin="5 10 10 5" />
+
+        <Grid Name="XAxisLabels" RelativePanel.AlignLeftWith="PlotArea" RelativePanel.AlignRightWith="PlotArea" RelativePanel.Below="PlotArea" />
+
+        <Grid Name="YAxisLabels" RelativePanel.AlignBottomWith="PlotArea" RelativePanel.AlignTopWith="PlotArea" RelativePanel.LeftOf="PlotArea" />
+
+    </RelativePanel>
+
+</UserControl>
