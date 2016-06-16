@@ -288,9 +288,9 @@
                     <TextBlock Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Text="Y Acceleration" />
                     <TextBlock Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="2" Text="Z Acceleration" />
 
-                    <controls:Chart2D x:Name="XAccChart" Grid.Row="3" Grid.ColumnSpan="2" Margin="5" Background="LightGray" />
-                    <controls:Chart2D x:Name="YAccChart" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Background="LightGray" />
-                    <controls:Chart2D x:Name="ZAccChart" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" Margin="5" Background="LightGray" />
+                    <controls:Chart2D x:Name="XAccChart" Grid.Row="3" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" />
+                    <controls:Chart2D x:Name="YAccChart" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688"/>
+                    <controls:Chart2D x:Name="ZAccChart" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" />
                     <StackPanel Grid.Row="3" Grid.Column="6">
                         <StackPanel Margin="5" Orientation="Horizontal">
                             <TextBlock Name="XAccIndicatorValue" Text="0" />
@@ -331,13 +331,27 @@
                 </Grid>
             </ScrollViewer>
             <!--#region BottomAppBar-->
-            <Grid  Name="BottomAppBarGrid" Height="48" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#009688" Opacity="0.7">
-                <Slider Width="400" />
-                <StackPanel Orientation="Horizontal">
-                    <Button Name="Play"/>
-                    <Button Name="Stop"/>
-                    <Button Name="FasterSlower"/>
-                    <!-- Needs to be changed, just defining mine ideas...-->
+            <Grid  Name="BottomAppBarGrid" Height="48" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#009688" Opacity="0.9" >
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="00:00:00" Foreground="#FF9800" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0,0,0" Height="Auto"  Grid.ColumnSpan="1" FontSize="20" FontFamily="Segoe UI" FontWeight="SemiBold"/>
+                <Slider Width="Auto" VerticalAlignment="Center" Grid.ColumnSpan="1" Grid.Column="1" Foreground="#FF9800" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
+                    <Button Name="Play" Height="48" Width="48">
+                        <TextBlock Text="&#xE102;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#FF9800" />
+                    </Button>
+                    <Button Name="Stop" Height="48" Width="48">
+                        <TextBlock Text="&#xE103;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#FF9800" />
+                    </Button>
+                    <Button Name="Settings" Height="48" Width="48">
+                        <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#FF9800" />
+                    </Button>
+                    <!-- If someone think, it's bad solution, ask Vojta...-->
                 </StackPanel>
             </Grid>
             <!--#endregion-->
