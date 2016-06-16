@@ -123,6 +123,7 @@
     <None Include="WindowsApp2.0_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\BadgeLogo.scale-400.png" />
     <Content Include="DLLs\Converters.dll" />
     <Content Include="DLLs\Converters.pdb" />
     <Content Include="DLLs\Utils.dll" />

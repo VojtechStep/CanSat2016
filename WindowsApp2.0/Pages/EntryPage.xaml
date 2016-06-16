@@ -11,6 +11,7 @@
 
     <Page.Resources>
 
+        
         <!--#region Animations-->
         <Storyboard x:Name="DataSelectionAnimation">
             <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="MainGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind ViewTranslateX}">
@@ -191,8 +192,8 @@
         <Grid.RenderTransform>
             <TranslateTransform />
         </Grid.RenderTransform>
-
-        <!--#region File Part-->
+      
+            <!--#region File Part-->
         <Grid Name="OpenFileOptions" Background="#2BD9AE">
 
             <!--#region Column and Row Definitions-->
@@ -329,6 +330,17 @@
 
                 </Grid>
             </ScrollViewer>
+            <!--#region BottomAppBar-->
+            <Grid  Name="BottomAppBarGrid" Height="48" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#009688" Opacity="0.7">
+                <Slider Width="400" />
+                <StackPanel Orientation="Horizontal">
+                    <Button Name="Play"/>
+                    <Button Name="Stop"/>
+                    <Button Name="FasterSlower"/>
+                    <!-- Needs to be changed, just defining mine ideas...-->
+                </StackPanel>
+            </Grid>
+            <!--#endregion-->
         </Grid>
         <!--#endregion-->
 
@@ -402,6 +414,9 @@
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF9800" Text="Connecting to module..." />
             </StackPanel>
         </Grid>
+
         <!--#endregion-->
+
     </Grid>
+
 </Page>
