@@ -270,7 +270,7 @@
                     <TextBlock Grid.ColumnSpan="3" Text="Temperature" />
                     <TextBlock Grid.Column="3" Grid.ColumnSpan="3" Text="Pressure" />
 
-                    <controls:Chart2D x:Name="TemperatureChart" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" Background="LightGray" PlotAreaBackground="Gray"/>
+                    <controls:Chart2D x:Name="TemperatureChart" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" Background="LightGray" PlotAreaBackground="Gray" />
                     <controls:Chart2D x:Name="PressureChart" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" Margin="5" Background="LightGray" />
                     <StackPanel Grid.Row="1" Grid.Column="6">
                         <StackPanel Margin="5" Orientation="Horizontal">

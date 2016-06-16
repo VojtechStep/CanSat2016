@@ -110,6 +110,7 @@
     <Compile Include="Controls\Chart2D.xaml.cs">
       <DependentUpon>Chart2D.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Pages\EntryPage.xaml.cs">
       <DependentUpon>EntryPage.xaml</DependentUpon>
     </Compile>

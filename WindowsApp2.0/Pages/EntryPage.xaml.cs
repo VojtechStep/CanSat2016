@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Utils;
 using Windows.ApplicationModel.Core;
 using Windows.Devices.Enumeration;
@@ -80,7 +81,7 @@ namespace WindowsApp2._0
                                                 ? -_internalWindowSize.Height
                                                 : 0);
 
-        List<DeviceInformation> Ports { get; set; } = new List<DeviceInformation>();
+        List<DeviceInformation> Ports { get; } = new List<DeviceInformation>();
 
         Boolean PortAvailable => Ports?.Count > 0;
 
@@ -105,7 +106,7 @@ namespace WindowsApp2._0
             ApplicationView.GetForCurrentView().TitleBar.ButtonPressedForegroundColor = Colors.White;
         }
 
-        async void ShowStatBar()
+        async Task ShowStatBar()
         {
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
@@ -113,7 +114,7 @@ namespace WindowsApp2._0
             }
         }
 
-        async void HideStatBar()
+        async Task HideStatBar()
         {
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
@@ -160,22 +161,22 @@ namespace WindowsApp2._0
 
         void GridControlManipulationCompleted(Object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            Grid controlGrid = sender as Grid;
+            var controlGrid = sender as Grid;
             if (controlGrid == null) return;
 
             CurrentState = controlGrid.Name == "OpenFileControl" &&
-                            ((CurrentLayout == LayoutState.Wide && (e.Velocities.Linear.X > 0 || (e.Velocities.Linear.X == 0 && (MainGrid.RenderTransform as TranslateTransform).X >= -_internalWindowSize.Width / 4)))
-                            || (CurrentLayout == LayoutState.Narrow && (e.Velocities.Linear.Y > 0 || (e.Velocities.Linear.Y == 0 && (MainGrid.RenderTransform as TranslateTransform).Y >= -_internalWindowSize.Height / 4))))
+                            ((CurrentLayout == LayoutState.Wide && (e.Velocities.Linear.X > 0 || (Math.Abs(e.Velocities.Linear.X) < 0 && (MainGrid.RenderTransform as TranslateTransform).X >= -_internalWindowSize.Width / 4)))
+                            || (CurrentLayout == LayoutState.Narrow && (e.Velocities.Linear.Y > 0 || (Math.Abs(e.Velocities.Linear.Y) < 0 && (MainGrid.RenderTransform as TranslateTransform).Y >= -_internalWindowSize.Height / 4))))
                             ? DataSelectionState.Open
-                            : (controlGrid.Name == "ConnectModuleControl" && ((CurrentLayout == LayoutState.Wide && (e.Velocities.Linear.X < 0 || (e.Velocities.Linear.X == 0 && (MainGrid.RenderTransform as TranslateTransform).X <= 3 * -_internalWindowSize.Width / 4)))
-                                || (CurrentLayout == LayoutState.Narrow && (e.Velocities.Linear.Y < 0 || (e.Velocities.Linear.Y == 0 && (MainGrid.RenderTransform as TranslateTransform).Y <= 3 * -_internalWindowSize.Height / 4))))
+                            : (controlGrid.Name == "ConnectModuleControl" && ((CurrentLayout == LayoutState.Wide && (e.Velocities.Linear.X < 0 || (Math.Abs(e.Velocities.Linear.X) < 0 && (MainGrid.RenderTransform as TranslateTransform).X <= 3 * -_internalWindowSize.Width / 4)))
+                                || (CurrentLayout == LayoutState.Narrow && (e.Velocities.Linear.Y < 0 || (Math.Abs(e.Velocities.Linear.Y) < 0 && (MainGrid.RenderTransform as TranslateTransform).Y <= 3 * -_internalWindowSize.Height / 4))))
                                 ? DataSelectionState.Connect
                                 : DataSelectionState.None);
         }
 
         void GridControlManipulationDelta(Object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            Grid controlGrid = sender as Grid;
+            var controlGrid = sender as Grid;
             if (controlGrid == null) return;
 
             (MainGrid.RenderTransform as TranslateTransform).X = CurrentLayout == LayoutState.Wide ? MathUtils.Limit((MainGrid.RenderTransform as TranslateTransform).X + e.Delta.Translation.X, controlGrid.Name == "OpenFileControl" ? -_internalWindowSize.Width / 2 : -_internalWindowSize.Width, controlGrid.Name == "OpenFileControl" ? 0 : -_internalWindowSize.Width / 2) : -_internalWindowSize.Width;
@@ -221,6 +222,10 @@ namespace WindowsApp2._0
             OpeningFileIconAnimation.Stop();
             OpeningFileLoader.Visibility = Visibility.Collapsed;
             FileDataView.Visibility = Visibility.Visible;
+            for(Int32 i = 0; i < 6; i++)
+            {
+                //TemperatureChart.Push(i, Math.Sqrt(i));
+            }
         }
         void ConnectModulePageOpen()
         {
@@ -242,7 +247,7 @@ namespace WindowsApp2._0
 
         void ShowDataRequested(Object sender, TappedRoutedEventArgs e)
         {
-            Button buttonObject = sender as Button;
+            var buttonObject = sender as Button;
             if (buttonObject == null) return;
             CurrentState = (String) buttonObject.Content == "Open" ? DataSelectionState.OpenView : ((String) buttonObject.Content == "Connect" ? DataSelectionState.ConnectView : DataSelectionState.None);
         }
@@ -251,9 +256,9 @@ namespace WindowsApp2._0
 
         #region Serial stuff
 
-        void RefreshRequested(Object sender, TappedRoutedEventArgs e) => LoadSerialPorts();
+        async void RefreshRequested(Object sender, TappedRoutedEventArgs e) => await LoadSerialPorts();
 
-        async void LoadSerialPorts()
+        async Task LoadSerialPorts()
         {
             Ports.Clear();
             var selector = SerialDevice.GetDeviceSelector();
@@ -272,7 +277,7 @@ namespace WindowsApp2._0
 
         async void BrowseOpenTapped(Object sender, TappedRoutedEventArgs e)
         {
-            FileOpenPicker openPicker = new FileOpenPicker
+            var openPicker = new FileOpenPicker
             {
                 SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
                 FileTypeFilter = {
