@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Utils;
 using Windows.ApplicationModel.Core;
@@ -37,16 +41,25 @@ namespace WindowsApp2._0
             set
             {
                 _currentState = value;
-                if (value == DataSelectionState.Open)
-                    OpenPageOpen();
-                else if (value == DataSelectionState.Connect)
-                    ConnectPageOpen();
-                else if (value == DataSelectionState.OpenView)
-                    FileViewPageOpen();
-                else if (value == DataSelectionState.ConnectView)
-                    ConnectModulePageOpen();
-                else
-                    EntryViewOpen();
+                switch (value)
+                {
+                    case DataSelectionState.Open:
+                        OpenPageOpen();
+                        break;
+                    case DataSelectionState.Connect:
+                        ConnectPageOpen();
+                        break;
+                    case DataSelectionState.OpenView:
+                        FileViewPageOpen();
+                        break;
+                    case DataSelectionState.ConnectView:
+                        ConnectModulePageOpen();
+                        break;
+                    default:
+                        EntryViewOpen();
+                        break;
+                }
+
                 Bindings.Update();
                 DataSelectionAnimation.Begin();
                 AdjustTitleBar();
@@ -80,10 +93,13 @@ namespace WindowsApp2._0
                                             : (CurrentState == DataSelectionState.OpenView || CurrentState == DataSelectionState.ConnectView
                                                 ? -_internalWindowSize.Height
                                                 : 0);
+        
 
         List<DeviceInformation> Ports { get; } = new List<DeviceInformation>();
 
         Boolean PortAvailable => Ports?.Count > 0;
+
+        Task EmptyTask => new Task(() => { });
 
         #endregion
 
@@ -95,9 +111,10 @@ namespace WindowsApp2._0
             Loaded += (s, e) =>
             {
                 Recompose(DesiredSize);
-                //! Change to DataSelectionState.None after debugging
-                CurrentState = DataSelectionState.OpenView;
+                CurrentState = DataSelectionState.None;
             };
+            HintRight.Completed += (s, e) => HintLeft.Begin();
+            HintDown.Completed += (s, e) => HintUp.Begin();
             HideStatBar();
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
             ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Colors.White;
@@ -106,21 +123,9 @@ namespace WindowsApp2._0
             ApplicationView.GetForCurrentView().TitleBar.ButtonPressedForegroundColor = Colors.White;
         }
 
-        async Task ShowStatBar()
-        {
-            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
-            {
-                await StatusBar.GetForCurrentView().ShowAsync();
-            }
-        }
+        async Task ShowStatBar() => await (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar") ? StatusBar.GetForCurrentView().ShowAsync() : new Task(() => { }).AsAsyncAction());
 
-        async Task HideStatBar()
-        {
-            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
-            {
-                await StatusBar.GetForCurrentView().HideAsync();
-            }
-        }
+        async Task HideStatBar() => await (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar") ? StatusBar.GetForCurrentView().HideAsync() : new Task(() => { }).AsAsyncAction());
 
         void Recompose(Size newSize)
         {
@@ -130,8 +135,12 @@ namespace WindowsApp2._0
             (MainGrid.RenderTransform as TranslateTransform).X = ViewTranslateX.Value;
             (MainGrid.RenderTransform as TranslateTransform).Y = ViewTranslateY.Value;
             if (CurrentLayout == _previousLayout) return;
+            
             VisualStateManager.GoToState(this, CurrentLayout.ToString(), false);
             AdjustTitleBar();
+
+            (CurrentState == DataSelectionState.None ? (CurrentLayout == LayoutState.Wide ? HintRight : HintDown) : NullAnimation).Begin();
+
             _previousLayout = CurrentLayout;
         }
 
@@ -174,15 +183,15 @@ namespace WindowsApp2._0
                                 : DataSelectionState.None);
         }
 
-        void GridControlManipulationDelta(Object sender, ManipulationDeltaRoutedEventArgs e)
+        async void GridControlManipulationDelta(Object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var controlGrid = sender as Grid;
             if (controlGrid == null) return;
 
             (MainGrid.RenderTransform as TranslateTransform).X = CurrentLayout == LayoutState.Wide ? MathUtils.Limit((MainGrid.RenderTransform as TranslateTransform).X + e.Delta.Translation.X, controlGrid.Name == "OpenFileControl" ? -_internalWindowSize.Width / 2 : -_internalWindowSize.Width, controlGrid.Name == "OpenFileControl" ? 0 : -_internalWindowSize.Width / 2) : -_internalWindowSize.Width;
             (MainGrid.RenderTransform as TranslateTransform).Y = CurrentLayout == LayoutState.Narrow ? MathUtils.Limit((MainGrid.RenderTransform as TranslateTransform).Y + e.Delta.Translation.Y, controlGrid.Name == "OpenFileControl" ? -_internalWindowSize.Height / 2 : -_internalWindowSize.Height, controlGrid.Name == "OpenFileControl" ? 0 : -_internalWindowSize.Height / 2) : 0;
-
-            if (e.IsInertial) e.Complete();
+            
+            await (e.IsInertial ? new Task(() => e.Complete()) : EmptyTask);
             e.Handled = true;
         }
 
@@ -214,17 +223,25 @@ namespace WindowsApp2._0
         {
             LoadSerialPorts();
         }
-        void FileViewPageOpen()
+        async Task FileViewPageOpen()
         {
             OpeningFileIconAnimation.Begin();
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
             SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
-            OpeningFileIconAnimation.Stop();
-            OpeningFileLoader.Visibility = Visibility.Collapsed;
-            FileDataView.Visibility = Visibility.Visible;
-            for(Int32 i = 0; i < 6; i++)
+
+            IList<String> lines = null;
+            VisualStateManager.GoToState(this, "FileLoading", false);
+
+            //! Data load and all the awesome shit I was able to get on a single line
+
+            //VisualStateManager.GoToState(this, "File" + ((!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken) && (lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken))) != null) ? (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" ? "Success" : "UnknownHeader") : "Fail"), false);
+
+            //OpeningFileIconAnimation.Stop();
+
+            if (((IEnumerable<VisualStateGroup>) VisualStateManager.GetVisualStateGroups(MainGrid)).Where(p => p.Name == "DataLoadStates").First().CurrentState.Name == "FileSuccess")
             {
-                //TemperatureChart.Push(i, Math.Sqrt(i));
+                //! File loaded successfuly
+
             }
         }
         void ConnectModulePageOpen()
@@ -290,7 +307,7 @@ namespace WindowsApp2._0
             if (loadFile == null) return;
             loadFileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(loadFile);
             SelectedFileLabel.Text = loadFile.Path;
-            ToolTipService.SetToolTip(SelectedFileLabel, loadFile.Path);
+            ToolTipService.SetToolTip(SelectedFileLabelBorder, loadFile.Path);
         }
 
         #endregion

@@ -13,6 +13,7 @@
 
 
         <!--#region Animations-->
+        <Storyboard x:Name="NullAnimation" />
         <Storyboard x:Name="DataSelectionAnimation">
             <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="MainGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind ViewTranslateX}">
                 <DoubleAnimation.EasingFunction>
@@ -24,6 +25,18 @@
                     <ExponentialEase />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Name="HintDown" BeginTime="0:0:1">
+            <SwipeHintThemeAnimation TargetName="MainGrid" ToHorizontalOffset="0" ToVerticalOffset="30" Duration="0:0:0.5" />
+        </Storyboard>
+        <Storyboard x:Name="HintRight" BeginTime="0:0:1">
+            <SwipeHintThemeAnimation TargetName="MainGrid" ToHorizontalOffset="30" ToVerticalOffset="0" Duration="0:0:0.5" />
+        </Storyboard>
+        <Storyboard x:Name="HintUp" BeginTime="0:0:1">
+            <SwipeHintThemeAnimation TargetName="MainGrid" ToHorizontalOffset="0" ToVerticalOffset="-30" Duration="0:0:0.5" />
+        </Storyboard>
+        <Storyboard x:Name="HintLeft" BeginTime="0:0:1">
+            <SwipeHintThemeAnimation TargetName="MainGrid" ToHorizontalOffset="-30" ToVerticalOffset="0" Duration="0:0:0.5" />
         </Storyboard>
         <Storyboard x:Name="OpeningFileIconAnimation">
             <DoubleAnimation Duration="0:0:1" RepeatBehavior="Forever" Storyboard.TargetName="OpeningFileIcon" Storyboard.TargetProperty="(TextBlock.RenderTransform).(RotateTransform.Angle)" To="360" />
@@ -218,6 +231,41 @@
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
+            <VisualStateGroup x:Name="DataLoadStates">
+                <VisualState x:Name="FileLoading">
+                    <VisualState.Setters>
+                        <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
+                        <Setter Target="FileDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="OpeningFileIcon.Text" Value="&#xE895;" />
+                        <Setter Target="OpeningFileLabel.Text" Value="Opening File" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="FileSuccess">
+                    <VisualState.Setters>
+                        <Setter Target="OpeningFileLoader.Visibility" Value="Collapsed" />
+                        <Setter Target="FileDataView.Visibility" Value="Visible" />
+                        </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="FileFail">
+                    <VisualState.Setters>
+                        <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
+                        <Setter Target="FileDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="OpeningFileIcon.Text" Value="&#xE171;" />
+                        <Setter Target="OpeningFileLabel.Text" Value="The file didn't load successfuly, try re-opening" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="FileUnknownHeader">
+                    <VisualState.Setters>
+                        <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
+                        <Setter Target="FileDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="OpeningFileIcon.Text" Value="&#xE171;" />
+                        <Setter Target="OpeningFileLabel.Text" Value="The file header is unknown. Make sure the file is produced by the probe and isn't corrupted" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ModuleLoading" />
+                <VisualState x:Name="ModuleSuccess" />
+                <VisualState x:Name="ModuleFail" />
+            </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
         <Grid.RenderTransform>
             <TranslateTransform />
@@ -247,7 +295,7 @@
             <!--#region File Controls-->
             <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" Text="File:" />
 
-            <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 17 0" Background="#E0F2F1" IsTapEnabled="True" Padding="5" Tapped="BrowseOpenTapped">
+            <Border Name="SelectedFileLabelBorder"  Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 17 0" Background="#E0F2F1" IsTapEnabled="True" Padding="5" Tapped="BrowseOpenTapped">
                 <TextBlock Name="SelectedFileLabel" VerticalAlignment="Center" FontStyle="Italic" Text="None Selected" />
             </Border>
 
@@ -265,18 +313,19 @@
                 <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#FF9800" Text="&#xEC50;" />
                 <TextBlock Name="OpenFileControlLabel" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" Foreground="#FF9800" Text="OPEN" />
             </StackPanel>
+            <controls:Chart2D x:Name="TestChart"  Background="LightGray" PlotAreaBackground="DarkGray" />
         </Grid>
 
         <Grid Name="OpenFileView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
             <StackPanel Name="OpeningFileLoader" VerticalAlignment="Center" Orientation="Vertical">
-                <TextBlock Name="OpeningFileIcon" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="40" Foreground="#009688" RenderTransformOrigin="0.5 0.5" Text="&#xE895;">
+                <TextBlock Name="OpeningFileIcon" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="40" Foreground="#009688" RenderTransformOrigin="0.5 0.5">
                     <TextBlock.RenderTransform>
                         <RotateTransform />
                     </TextBlock.RenderTransform>
                 </TextBlock>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#009688" Text="Opening File..." />
+                <TextBlock Name="OpeningFileLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#009688" TextWrapping="WrapWholeWords" />
             </StackPanel>
-            <ScrollViewer Name="FileDataView" Padding="0 0 0 48" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+            <ScrollViewer Name="FileDataView" Padding="0 0 0 48" VerticalScrollBarVisibility="Auto">
                 <Grid Padding="10 5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -361,7 +410,7 @@
                 </Grid>
             </ScrollViewer>
             <!--#region BottomAppBar-->
-            <Grid Name="BottomAppBarGrid" Height="48" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#009688" Opacity="0.9">
+            <Grid Name="BottomAppBarGrid" Height="48" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#009688" Opacity="0.9" Visibility="{Binding Visibility, ElementName=FileDataView, Mode=OneWay}">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -375,7 +424,7 @@
                     <Button Name="Play" Content="&#xE102;" Foreground="#FF9800" Style="{StaticResource FileBottomBarButtonStyle}" />
                     <Button Name="Stop" Content="&#xE103;" Foreground="#FF9800" Style="{StaticResource FileBottomBarButtonStyle}" />
                     <Button Name="Settings" Content="&#xE713;" Foreground="#FF9800" Style="{StaticResource FileBottomBarButtonStyle}" />
-                    <!--  If someone think, it's bad solution, ask Vojta...  -->
+                    <!--  If someone thinks it's a bad solution, ask Vojta...  -->
                 </StackPanel>
             </Grid>
             <!--#endregion-->
