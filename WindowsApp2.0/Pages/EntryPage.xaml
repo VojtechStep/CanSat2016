@@ -236,7 +236,9 @@
                     <VisualState.Setters>
                         <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
                         <Setter Target="FileDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="OpeningFileIcon.Foreground" Value="#009688" />
                         <Setter Target="OpeningFileIcon.Text" Value="&#xE895;" />
+                        <Setter Target="OpeningFileLabel.Foreground" Value="#009688" />
                         <Setter Target="OpeningFileLabel.Text" Value="Opening File" />
                     </VisualState.Setters>
                 </VisualState>
@@ -250,7 +252,9 @@
                     <VisualState.Setters>
                         <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
                         <Setter Target="FileDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="OpeningFileIcon.Foreground" Value="#FA0A0A" />
                         <Setter Target="OpeningFileIcon.Text" Value="&#xE171;" />
+                        <Setter Target="OpeningFileLabel.Foreground" Value="#FA0A0A" />
                         <Setter Target="OpeningFileLabel.Text" Value="The file didn't load successfuly, try re-opening" />
                     </VisualState.Setters>
                 </VisualState>
@@ -258,7 +262,9 @@
                     <VisualState.Setters>
                         <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
                         <Setter Target="FileDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="OpeningFileIcon.Foreground" Value="#FA0A0A" />
                         <Setter Target="OpeningFileIcon.Text" Value="&#xE171;" />
+                        <Setter Target="OpeningFileLabel.Foreground" Value="#FA0A0A" />
                         <Setter Target="OpeningFileLabel.Text" Value="The file header is unknown. Make sure the file is produced by the probe and isn't corrupted" />
                     </VisualState.Setters>
                 </VisualState>
@@ -317,13 +323,13 @@
         </Grid>
 
         <Grid Name="OpenFileView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
-            <StackPanel Name="OpeningFileLoader" VerticalAlignment="Center" Orientation="Vertical">
-                <TextBlock Name="OpeningFileIcon" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="40" Foreground="#009688" RenderTransformOrigin="0.5 0.5">
+            <StackPanel Name="OpeningFileLoader" VerticalAlignment="Center">
+                <TextBlock Name="OpeningFileIcon" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="40" RenderTransformOrigin="0.5 0.5">
                     <TextBlock.RenderTransform>
                         <RotateTransform />
                     </TextBlock.RenderTransform>
                 </TextBlock>
-                <TextBlock Name="OpeningFileLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#009688" TextWrapping="WrapWholeWords" />
+                <TextBlock Name="OpeningFileLabel" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWholeWords" />
             </StackPanel>
             <ScrollViewer Name="FileDataView" Padding="0 0 0 48" VerticalScrollBarVisibility="Auto">
                 <Grid Padding="10 5">

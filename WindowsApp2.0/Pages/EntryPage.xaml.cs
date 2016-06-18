@@ -41,6 +41,13 @@ namespace WindowsApp2._0
             set
             {
                 _currentState = value;
+                Bindings.Update();
+                DataSelectionAnimation.Begin();
+                AdjustTitleBar();
+                HintRight.Stop();
+                HintLeft.Stop();
+                HintDown.Stop();
+                HintUp.Stop();
                 switch (value)
                 {
                     case DataSelectionState.Open:
@@ -57,20 +64,17 @@ namespace WindowsApp2._0
                         break;
                     default:
                         EntryViewOpen();
+                        (CurrentState == DataSelectionState.None ? (CurrentLayout == LayoutState.Wide ? HintRight : HintDown) : NullAnimation).Begin();
                         break;
                 }
-
-                Bindings.Update();
-                DataSelectionAnimation.Begin();
-                AdjustTitleBar();
             }
         }
 
-        LayoutState CurrentLayout => DesiredSize.Width >= 720
-                                                ? LayoutState.Wide
-                                                : (DesiredSize.Width > 0
-                                                    ? LayoutState.Narrow
-                                                    : LayoutState.None);
+        LayoutState CurrentLayout => Math.Abs(DesiredSize.Height) < 0 || Math.Abs(DesiredSize.Width) < 0
+                                        ? LayoutState.None
+                                        : (DesiredSize.Width / DesiredSize.Height >= 1)
+                                            ? LayoutState.Wide
+                                            : LayoutState.Narrow;
 
         LayoutState _previousLayout;
 
@@ -93,7 +97,7 @@ namespace WindowsApp2._0
                                             : (CurrentState == DataSelectionState.OpenView || CurrentState == DataSelectionState.ConnectView
                                                 ? -_internalWindowSize.Height
                                                 : 0);
-        
+
 
         List<DeviceInformation> Ports { get; } = new List<DeviceInformation>();
 
@@ -135,14 +139,11 @@ namespace WindowsApp2._0
             (MainGrid.RenderTransform as TranslateTransform).X = ViewTranslateX.Value;
             (MainGrid.RenderTransform as TranslateTransform).Y = ViewTranslateY.Value;
             if (CurrentLayout == _previousLayout) return;
-            
+
             VisualStateManager.GoToState(this, CurrentLayout.ToString(), false);
-            AdjustTitleBar();
-
-            (CurrentState == DataSelectionState.None ? (CurrentLayout == LayoutState.Wide ? HintRight : HintDown) : NullAnimation).Begin();
-
             _previousLayout = CurrentLayout;
         }
+
 
         void AdjustTitleBar()
         {
@@ -190,7 +191,7 @@ namespace WindowsApp2._0
 
             (MainGrid.RenderTransform as TranslateTransform).X = CurrentLayout == LayoutState.Wide ? MathUtils.Limit((MainGrid.RenderTransform as TranslateTransform).X + e.Delta.Translation.X, controlGrid.Name == "OpenFileControl" ? -_internalWindowSize.Width / 2 : -_internalWindowSize.Width, controlGrid.Name == "OpenFileControl" ? 0 : -_internalWindowSize.Width / 2) : -_internalWindowSize.Width;
             (MainGrid.RenderTransform as TranslateTransform).Y = CurrentLayout == LayoutState.Narrow ? MathUtils.Limit((MainGrid.RenderTransform as TranslateTransform).Y + e.Delta.Translation.Y, controlGrid.Name == "OpenFileControl" ? -_internalWindowSize.Height / 2 : -_internalWindowSize.Height, controlGrid.Name == "OpenFileControl" ? 0 : -_internalWindowSize.Height / 2) : 0;
-            
+
             await (e.IsInertial ? new Task(() => e.Complete()) : EmptyTask);
             e.Handled = true;
         }
@@ -232,11 +233,9 @@ namespace WindowsApp2._0
             IList<String> lines = null;
             VisualStateManager.GoToState(this, "FileLoading", false);
 
-            //! Data load and all the awesome shit I was able to get on a single line
+            VisualStateManager.GoToState(this, "File" + ((!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken) && (lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken))) != null) ? (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" ? "Success" : "UnknownHeader") : "Fail"), false);
 
-            //VisualStateManager.GoToState(this, "File" + ((!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken) && (lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken))) != null) ? (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" ? "Success" : "UnknownHeader") : "Fail"), false);
-
-            //OpeningFileIconAnimation.Stop();
+            OpeningFileIconAnimation.Stop();
 
             if (((IEnumerable<VisualStateGroup>) VisualStateManager.GetVisualStateGroups(MainGrid)).Where(p => p.Name == "DataLoadStates").First().CurrentState.Name == "FileSuccess")
             {
@@ -304,6 +303,7 @@ namespace WindowsApp2._0
                 }
             };
             StorageFile loadFile = await openPicker.PickSingleFileAsync();
+
             if (loadFile == null) return;
             loadFileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(loadFile);
             SelectedFileLabel.Text = loadFile.Path;
