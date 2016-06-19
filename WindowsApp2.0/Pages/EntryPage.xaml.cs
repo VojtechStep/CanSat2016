@@ -20,6 +20,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using WindowsApp2._0.Controls;
 
 namespace WindowsApp2._0
 {
@@ -103,8 +104,6 @@ namespace WindowsApp2._0
 
         Boolean PortAvailable => Ports?.Count > 0;
 
-        Task EmptyTask => new Task(() => { });
-
         #endregion
 
         #region Render stuff
@@ -127,9 +126,17 @@ namespace WindowsApp2._0
             ApplicationView.GetForCurrentView().TitleBar.ButtonPressedForegroundColor = Colors.White;
         }
 
-        async Task ShowStatBar() => await (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar") ? StatusBar.GetForCurrentView().ShowAsync() : new Task(() => { }).AsAsyncAction());
+        async Task ShowStatBar()
+        {
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+                await StatusBar.GetForCurrentView().ShowAsync();
+        } 
 
-        async Task HideStatBar() => await (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar") ? StatusBar.GetForCurrentView().HideAsync() : new Task(() => { }).AsAsyncAction());
+        async Task HideStatBar()
+        {
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+                await StatusBar.GetForCurrentView().HideAsync();
+        }
 
         void Recompose(Size newSize)
         {
@@ -184,7 +191,7 @@ namespace WindowsApp2._0
                                 : DataSelectionState.None);
         }
 
-        async void GridControlManipulationDelta(Object sender, ManipulationDeltaRoutedEventArgs e)
+        void GridControlManipulationDelta(Object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var controlGrid = sender as Grid;
             if (controlGrid == null) return;
@@ -192,7 +199,7 @@ namespace WindowsApp2._0
             (MainGrid.RenderTransform as TranslateTransform).X = CurrentLayout == LayoutState.Wide ? MathUtils.Limit((MainGrid.RenderTransform as TranslateTransform).X + e.Delta.Translation.X, controlGrid.Name == "OpenFileControl" ? -_internalWindowSize.Width / 2 : -_internalWindowSize.Width, controlGrid.Name == "OpenFileControl" ? 0 : -_internalWindowSize.Width / 2) : -_internalWindowSize.Width;
             (MainGrid.RenderTransform as TranslateTransform).Y = CurrentLayout == LayoutState.Narrow ? MathUtils.Limit((MainGrid.RenderTransform as TranslateTransform).Y + e.Delta.Translation.Y, controlGrid.Name == "OpenFileControl" ? -_internalWindowSize.Height / 2 : -_internalWindowSize.Height, controlGrid.Name == "OpenFileControl" ? 0 : -_internalWindowSize.Height / 2) : 0;
 
-            await (e.IsInertial ? new Task(() => e.Complete()) : EmptyTask);
+            if (e.IsInertial) e.Complete();
             e.Handled = true;
         }
 
@@ -212,7 +219,7 @@ namespace WindowsApp2._0
         #region Navigation stuff
         void EntryViewOpen()
         {
-            TestChart.Push(TestChart.DataLength, Math.Sqrt(TestChart.DataLength));
+            
         }
 
         void OpenPageOpen()
@@ -237,11 +244,28 @@ namespace WindowsApp2._0
 
             OpeningFileIconAnimation.Stop();
 
-            if (((IEnumerable<VisualStateGroup>) VisualStateManager.GetVisualStateGroups(MainGrid)).Where(p => p.Name == "DataLoadStates").First().CurrentState.Name == "FileSuccess")
+            if (((IEnumerable<VisualStateGroup>) VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "FileSuccess")
             {
+                lines.Remove(lines[0]);
                 //! File loaded successfuly
 
-                
+                Int32[] Times = (from line in lines select Int32.Parse(line.Split(',')[0])).ToArray();
+                Double[] Temperatures = (from line in lines select Double.Parse(line.Split(',')[1])).ToArray();
+                Double[] Pressures = (from line in lines select Double.Parse(line.Split(',')[2])).ToArray();
+                Double[][] Accelerations = (from line in lines select new Double[] { Double.Parse(line.Split(',')[3]), Double.Parse(line.Split(',')[4]), Double.Parse(line.Split(',')[5]) }).ToArray();
+                Double[] Latitudes = (from line in lines select Double.Parse(line.Split(',')[6])).ToArray();
+                Char[] NSIndicators = (from line in lines select line.Split(',')[7][0]).ToArray();
+                Double[] Longitudes = (from line in lines select Double.Parse(line.Split(',')[8])).ToArray();
+                Char[] WEIndicators = (from line in lines select line.Split(',')[9][0]).ToArray();
+                Double[] Altitudes = (from line in lines select Double.Parse(line.Split(',')[10])).ToArray();
+
+                TemperatureChart.Push(Times, Temperatures);
+                PressureChart.Push(Times, Pressures);
+                XAccChart.Push(Times, (from XYZ in Accelerations select XYZ[0]).ToArray());
+                YAccChart.Push(Times, (from XYZ in Accelerations select XYZ[1]).ToArray());
+                ZAccChart.Push(Times, (from XYZ in Accelerations select XYZ[2]).ToArray());
+                //? For some reason, this caused a crash
+                //RawPacketView.Text = String.Join("\n", lines);
 
             }
         }
@@ -257,6 +281,7 @@ namespace WindowsApp2._0
             CurrentState = CurrentState == DataSelectionState.OpenView ? DataSelectionState.Open : (CurrentState == DataSelectionState.ConnectView ? DataSelectionState.Connect : DataSelectionState.None);
             OpeningFileIconAnimation.Stop();
             ConnectingModuleIconAnimation.Stop();
+            foreach (var chart in (FileDataView.Content as Grid).Children.OfType<Chart2D>()) chart.Clear();
             SystemNavigationManager.GetForCurrentView().BackRequested -= GoBackToDataSelect;
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
         }
