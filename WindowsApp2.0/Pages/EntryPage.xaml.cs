@@ -212,7 +212,7 @@ namespace WindowsApp2._0
         #region Navigation stuff
         void EntryViewOpen()
         {
-
+            TestChart.Push(TestChart.DataLength, Math.Sqrt(TestChart.DataLength));
         }
 
         void OpenPageOpen()
@@ -240,6 +240,8 @@ namespace WindowsApp2._0
             if (((IEnumerable<VisualStateGroup>) VisualStateManager.GetVisualStateGroups(MainGrid)).Where(p => p.Name == "DataLoadStates").First().CurrentState.Name == "FileSuccess")
             {
                 //! File loaded successfuly
+
+                
 
             }
         }

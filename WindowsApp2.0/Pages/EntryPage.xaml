@@ -58,24 +58,24 @@
                                         <VisualState x:Name="Normal" />
                                         <VisualState x:Name="Pressed">
                                             <VisualState.Setters>
-                                                <Setter Target="BackgroundBorder.Background" Value="#265B56" />
-                                                <Setter Target="BackgroundBorder.BorderBrush" Value="#265B56" />
+                                                <Setter Target="BackgroundBorder.Background" Value="#AF5800" />
+                                                <Setter Target="BackgroundBorder.BorderBrush" Value="#AF5800" />
                                             </VisualState.Setters>
                                         </VisualState>
                                         <VisualState x:Name="PointerOver">
                                             <VisualState.Setters>
-                                                <Setter Target="BackgroundBorder.BorderBrush" Value="#265B56" />
+                                                <Setter Target="BackgroundBorder.BorderBrush" Value="#AF5800" />
                                             </VisualState.Setters>
                                         </VisualState>
                                     </VisualStateGroup>
                                 </VisualStateManager.VisualStateGroups>
-                                <Border Name="BackgroundBorder" BorderBrush="#4DB6AC" BorderThickness="2 2 2 2" Padding="8 4 8 4">
+                                <Border Name="BackgroundBorder" BorderBrush="#FF9800" BorderThickness="2 2 2 2" Padding="8 4 8 4">
                                     <Border.Background>
-                                        <SolidColorBrush Color="#4DB6AC" />
+                                        <SolidColorBrush Color="#FF9800" />
                                     </Border.Background>
                                     <StackPanel Orientation="Horizontal">
-                                        <ContentPresenter Margin="0 0 5 0" VerticalAlignment="Center" Content="{TemplateBinding Content}" FontSize="{TemplateBinding FontSize}" Foreground="#FF2D00" />
-                                        <TextBlock VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="{TemplateBinding FontSize}" Foreground="#FF2D00" Text="{TemplateBinding Tag}" />
+                                        <ContentPresenter Margin="0 0 5 0" VerticalAlignment="Center" Content="{TemplateBinding Content}" FontSize="{TemplateBinding FontSize}" />
+                                        <TextBlock VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding Tag}" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -95,24 +95,24 @@
                                         <VisualState x:Name="Normal" />
                                         <VisualState x:Name="Pressed">
                                             <VisualState.Setters>
-                                                <Setter Target="BackgroundBorder.Background" Value="#7F5B26" />
-                                                <Setter Target="BackgroundBorder.BorderBrush" Value="#7F5B26" />
+                                                <Setter Target="BackgroundBorder.Background" Value="#005648" />
+                                                <Setter Target="BackgroundBorder.BorderBrush" Value="#005648" />
                                             </VisualState.Setters>
                                         </VisualState>
                                         <VisualState x:Name="PointerOver">
                                             <VisualState.Setters>
-                                                <Setter Target="BackgroundBorder.BorderBrush" Value="#7F5B26" />
+                                                <Setter Target="BackgroundBorder.BorderBrush" Value="#005648" />
                                             </VisualState.Setters>
                                         </VisualState>
                                     </VisualStateGroup>
                                 </VisualStateManager.VisualStateGroups>
-                                <Border Name="BackgroundBorder" BorderBrush="#FFB74D" BorderThickness="2 2 2 2" Padding="8 4 8 4">
+                                <Border Name="BackgroundBorder" BorderBrush="#009688" BorderThickness="2 2 2 2" Padding="8 4 8 4">
                                     <Border.Background>
-                                        <SolidColorBrush Color="#FFB74D" />
+                                        <SolidColorBrush Color="#009688" />
                                     </Border.Background>
                                     <StackPanel Orientation="Horizontal">
-                                        <ContentPresenter Margin="0 0 5 0" VerticalAlignment="Center" Content="{TemplateBinding Content}" FontSize="{TemplateBinding FontSize}" Foreground="#009688" />
-                                        <TextBlock VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="{TemplateBinding FontSize}" Foreground="#009688" Text="{TemplateBinding Tag}" />
+                                        <ContentPresenter Margin="0 0 5 0" VerticalAlignment="Center" Content="{TemplateBinding Content}" FontSize="{TemplateBinding FontSize}" />
+                                        <TextBlock VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding Tag}" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -305,11 +305,11 @@
                 <TextBlock Name="SelectedFileLabel" VerticalAlignment="Center" FontStyle="Italic" Text="None Selected" />
             </Border>
 
-            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Tag="&#xE1A5;" Tapped="BrowseOpenTapped" />
+            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Tag="&#xE1A5;" Style="{StaticResource OpenButtonStyle}"  Tapped="BrowseOpenTapped" />
 
-            <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Content="Cancel" Tag="&#xE10A;" Tapped="CancelDataSelection" />
+            <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Content="Cancel" Tag="&#xE10A;" Style="{StaticResource OpenButtonStyle}" Tapped="CancelDataSelection" />
 
-            <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Content="Open" Tag="&#xE10B;" Tapped="ShowDataRequested" />
+            <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Content="Open" Tag="&#xE10B;" Style="{StaticResource OpenButtonStyle}" Tapped="ShowDataRequested" />
             <!--#endregion-->
 
         </Grid>
@@ -476,7 +476,7 @@
                 <TextBlock Name="SaveToFileLabel" VerticalAlignment="Center" FontStyle="Italic" Text="None Selected" />
             </Border>
 
-            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Tag="&#xE1DA;" />
+            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Tag="&#xE1DA;" Style="{StaticResource ConnectButtonStyle}" />
 
             <TextBlock Grid.Row="3" Grid.Column="1" Margin="0 10 0 10" Text="Port:" />
 
@@ -488,11 +488,11 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
 
-            <Button Grid.Row="4" Grid.Column="4" Margin="-18 0 2 0" VerticalAlignment="Center" Content="Refresh" Tag="&#xE117;" Tapped="RefreshRequested" />
+            <Button Grid.Row="4" Grid.Column="4" Margin="-18 0 2 0" VerticalAlignment="Center" Content="Refresh" Tag="&#xE117;" Style="{StaticResource ConnectButtonStyle}" Tapped="RefreshRequested" />
 
-            <Button Grid.Row="6" Grid.Column="1" VerticalAlignment="Top" Content="Cancel" Tag="&#xE10A;" Tapped="CancelDataSelection" />
+            <Button Grid.Row="6" Grid.Column="1" VerticalAlignment="Top" Content="Cancel" Tag="&#xE10A;" Style="{StaticResource ConnectButtonStyle}" Tapped="CancelDataSelection" />
 
-            <Button Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Connect" Tag="&#xE10B;" Tapped="ShowDataRequested" />
+            <Button Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Connect" Tag="&#xE10B;" Style="{StaticResource ConnectButtonStyle}" Tapped="ShowDataRequested" />
             <!--#endregion-->
 
         </Grid>

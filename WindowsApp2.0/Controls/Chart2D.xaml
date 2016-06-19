@@ -10,7 +10,7 @@
 
     <RelativePanel Name="MainGrid" MinWidth="100" MinHeight="75">
 
-        <Canvas Name="PlotArea" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignTopWithPanel="True" Margin="5 10 10 5" />
+        <Canvas Name="PlotArea" Margin="5 0 0 5" RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" />
 
         <Grid Name="XAxisLabels" RelativePanel.AlignLeftWith="PlotArea" RelativePanel.AlignRightWith="PlotArea" RelativePanel.Below="PlotArea" />
 
