@@ -8,9 +8,14 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <RelativePanel Name="MainGrid" MinWidth="100" MinHeight="75">
+    <RelativePanel Name="MainGrid" MinWidth="150" MinHeight="125">
 
-        <Canvas Name="PlotArea" Margin="5 0 0 5" RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" />
+
+        <Canvas Name="PlotArea" MinWidth="110" MinHeight="90" Margin="5 0 0 5" RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" />
+
+        <Grid Name="CurrentDataPointerLabelSpace" RelativePanel.AlignLeftWith="PlotArea" RelativePanel.AlignRightWith="PlotArea" RelativePanel.Above="PlotArea" />
+
+        <Grid Name="CurrentDataPointerLabelSpaceY" RelativePanel.AlignBottomWith="PlotArea" RelativePanel.AlignTopWith="PlotArea" RelativePanel.RightOf="PlotArea" />
 
         <Grid Name="XAxisLabels" RelativePanel.AlignLeftWith="PlotArea" RelativePanel.AlignRightWith="PlotArea" RelativePanel.Below="PlotArea" />
 

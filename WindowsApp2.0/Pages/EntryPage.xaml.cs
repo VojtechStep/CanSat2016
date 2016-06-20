@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Utils;
 using Windows.ApplicationModel.Core;
 using Windows.Devices.Enumeration;
+using Windows.Devices.Geolocation;
 using Windows.Devices.SerialCommunication;
 using Windows.Foundation;
 using Windows.Foundation.Metadata;
@@ -18,6 +19,7 @@ using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using WindowsApp2._0.Controls;
@@ -30,6 +32,27 @@ namespace WindowsApp2._0
         #region Properties, varables and stuff
 
         Size _internalWindowSize;
+        DispatcherTimer dataAnimationTimer = new DispatcherTimer();
+
+        Int32[] Times;
+        Double[] Longitudes;
+        Double[] Latitudes;
+        Double[] Altitudes;
+
+        Int32 _currentTime;
+        Int32 CurrentTime
+        {
+            get { return _currentTime; }
+            set
+            {
+                _currentTime = value;
+                var Hours = Math.Floor((Double) value / 10000) % 100 < 10 ? $"0{Math.Floor((Double) value / 10000) % 100}" : (Math.Floor((Double) value / 10000) % 100).ToString();
+                var Minutes = Math.Floor((Double) value / 100) % 100 < 10 ? $"0{Math.Floor((Double) value / 100) % 100}" : (Math.Floor((Double) value / 100) % 100).ToString();
+                var Seconds = Math.Floor((Double) value) % 100 < 10 ? $"0{Math.Floor((Double) value) % 100}" : (Math.Floor((Double) value) % 100).ToString();
+                TimeTextBox.Text = $"{Hours}:{Minutes}:{Seconds}";
+                (FileDataView.Content as Grid).Children.OfType<Chart2D>().ForEach(p => p.CurrentData = value);
+            }
+        }
 
         String loadFileToken;
         String saveFileToken;
@@ -118,6 +141,7 @@ namespace WindowsApp2._0
             };
             HintRight.Completed += (s, e) => HintLeft.Begin();
             HintDown.Completed += (s, e) => HintUp.Begin();
+            dataAnimationTimer.Tick += (s, o) => TimeSlider.Value += 1;
             HideStatBar();
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
             ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Colors.White;
@@ -130,7 +154,7 @@ namespace WindowsApp2._0
         {
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
                 await StatusBar.GetForCurrentView().ShowAsync();
-        } 
+        }
 
         async Task HideStatBar()
         {
@@ -219,7 +243,7 @@ namespace WindowsApp2._0
         #region Navigation stuff
         void EntryViewOpen()
         {
-            
+
         }
 
         void OpenPageOpen()
@@ -240,7 +264,7 @@ namespace WindowsApp2._0
             IList<String> lines = null;
             VisualStateManager.GoToState(this, "FileLoading", false);
 
-            VisualStateManager.GoToState(this, "File" + ((!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken) && (lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken))) != null) ? (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" ? "Success" : "UnknownHeader") : "Fail"), false);
+            VisualStateManager.GoToState(this, "File" + ((!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken) && (lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken))) != null) ? (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" ? (lines.Count > 2 ? "Success" : "Empty") : "UnknownHeader") : "Fail"), false);
 
             OpeningFileIconAnimation.Stop();
 
@@ -248,25 +272,22 @@ namespace WindowsApp2._0
             {
                 lines.Remove(lines[0]);
                 //! File loaded successfuly
+                
+                Times = (from line in lines select (Int32)Double.Parse(line.Split(',')[0])).ToArray();
+                TemperatureChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[1])).ToArray());
+                PressureChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[2])).ToArray());
+                XAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[3])).ToArray());
+                YAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[4])).ToArray());
+                ZAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[5])).ToArray());
+                Latitudes = (from line in lines select Double.Parse(line.Split(',')[6]) / 100).ToArray();
+                Longitudes = (from line in lines select Double.Parse(line.Split(',')[8]) / 100).ToArray();
+                Altitudes = (from line in lines select Double.Parse(line.Split(',')[10])).ToArray();
+                
 
-                Int32[] Times = (from line in lines select Int32.Parse(line.Split(',')[0])).ToArray();
-                Double[] Temperatures = (from line in lines select Double.Parse(line.Split(',')[1])).ToArray();
-                Double[] Pressures = (from line in lines select Double.Parse(line.Split(',')[2])).ToArray();
-                Double[][] Accelerations = (from line in lines select new Double[] { Double.Parse(line.Split(',')[3]), Double.Parse(line.Split(',')[4]), Double.Parse(line.Split(',')[5]) }).ToArray();
-                Double[] Latitudes = (from line in lines select Double.Parse(line.Split(',')[6])).ToArray();
-                Char[] NSIndicators = (from line in lines select line.Split(',')[7][0]).ToArray();
-                Double[] Longitudes = (from line in lines select Double.Parse(line.Split(',')[8])).ToArray();
-                Char[] WEIndicators = (from line in lines select line.Split(',')[9][0]).ToArray();
-                Double[] Altitudes = (from line in lines select Double.Parse(line.Split(',')[10])).ToArray();
-
-                TemperatureChart.Push(Times, Temperatures);
-                PressureChart.Push(Times, Pressures);
-                XAccChart.Push(Times, (from XYZ in Accelerations select XYZ[0]).ToArray());
-                YAccChart.Push(Times, (from XYZ in Accelerations select XYZ[1]).ToArray());
-                ZAccChart.Push(Times, (from XYZ in Accelerations select XYZ[2]).ToArray());
-                //? For some reason, this caused a crash
-                //RawPacketView.Text = String.Join("\n", lines);
-
+                RawPacketView.Text = String.Join("\n", lines);
+                TimeSlider.Minimum = 0;
+                TimeSlider.Maximum = Times.Count() - 1;
+                TimeSlider.Value = 0;
             }
         }
         void ConnectModulePageOpen()
@@ -338,6 +359,66 @@ namespace WindowsApp2._0
         }
 
         #endregion
+
+        void TimeSlider_ValueChanged(Object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+            CurrentTime = Times[(Int32) e.NewValue];
+            TempIndicatorValue.Text = TemperatureChart.Get(CurrentTime).ToString();
+            PresIndicatorValue.Text = PressureChart.Get(CurrentTime).ToString();
+            XAccIndicatorValue.Text = XAccChart.Get(CurrentTime).ToString();
+            YAccIndicatorValue.Text = YAccChart.Get(CurrentTime).ToString();
+            ZAccIndicatorValue.Text = ZAccChart.Get(CurrentTime).ToString();
+
+            try { GPSDataMap.MapElements.Remove(GPSDataMap.MapElements.OfType<MapIcon>().First(p => p.Title == "Probe")); } catch(InvalidOperationException) { }
+            var ps = new Geopoint(new BasicGeoposition
+            {
+                Latitude = Latitudes[(Int32) e.NewValue],
+                Longitude = Longitudes[(Int32) e.NewValue],
+                Altitude = Altitudes[(Int32) e.NewValue]
+            });
+            GPSDataMap.Center = ps;
+            GPSDataMap.MapElements.Add(new MapIcon
+            {
+                Title = "Probe",
+                Location = ps
+            });
+
+
+        }
+
+        Double ToDegrees(Double gpsData)
+        {
+            if (gpsData > Math.Pow(10, 5))
+            {
+                Double Minutes = Double.Parse(gpsData.ToString().Substring(gpsData.ToString().Length - 5));
+                return (gpsData - Minutes) / (Math.Pow(10, gpsData.ToString().Length - 5)) + (Minutes / 60);
+            }
+            return 0;
+        }
+
+        void Play_Tapped(Object sender, TappedRoutedEventArgs e)
+        {
+            Button b = sender as Button;
+            if (b.Tag as String == "Play")
+            {
+                if (Math.Abs(TimeSlider.Value - (Times.Length - 1)) <= 0) TimeSlider.Value = 0;
+                dataAnimationTimer.Start();
+                b.Content = "\uE103";
+                b.Tag = "Stop";
+            }
+            else
+            {
+                dataAnimationTimer.Stop();
+                b.Content = "\uE102";
+                b.Tag = "Play";
+            }
+        }
+
+        void ComboBox_SelectionChanged(Object sender, SelectionChangedEventArgs e)
+        {
+            Double ratio = Double.Parse(((sender as ComboBox).SelectedItem as TextBlock).Text);
+            dataAnimationTimer.Interval = TimeSpan.FromSeconds(1 / ratio);
+        }
     }
 
     #region Enum (no stuff in this one yet)

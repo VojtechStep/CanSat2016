@@ -268,6 +268,16 @@
                         <Setter Target="OpeningFileLabel.Text" Value="The file header is unknown. Make sure the file is produced by the probe and isn't corrupted" />
                     </VisualState.Setters>
                 </VisualState>
+                <VisualState x:Name="FileEmpty">
+                    <VisualState.Setters>
+                        <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
+                        <Setter Target="FileDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="OpeningFileIcon.Foreground" Value="#FA0A0A" />
+                        <Setter Target="OpeningFileIcon.Text" Value="&#xE171;" />
+                        <Setter Target="OpeningFileLabel.Foreground" Value="#FA0A0A" />
+                        <Setter Target="OpeningFileLabel.Text" Value="The file is empty. There is no data to show. This file is unusable, because it has no data. If you tried to visualize an empty file, the whole universe would implode and align itself with other multiverse versions of itself and you would unleash dark entities from even darker realms into our world. Do not do that, that's a very bad thing that you should never try, not even with your parent's suppervision." />
+                    </VisualState.Setters>
+                </VisualState>
                 <VisualState x:Name="ModuleLoading" />
                 <VisualState x:Name="ModuleSuccess" />
                 <VisualState x:Name="ModuleFail" />
@@ -319,7 +329,6 @@
                 <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#FF9800" Text="&#xEC50;" />
                 <TextBlock Name="OpenFileControlLabel" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" Foreground="#FF9800" Text="OPEN" />
             </StackPanel>
-            <controls:Chart2D x:Name="TestChart"  Background="LightGray" PlotAreaBackground="DarkGray" />
         </Grid>
 
         <Grid Name="OpenFileView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
@@ -329,7 +338,7 @@
                         <RotateTransform />
                     </TextBlock.RenderTransform>
                 </TextBlock>
-                <TextBlock Name="OpeningFileLabel" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWholeWords" />
+                <TextBlock Name="OpeningFileLabel" HorizontalAlignment="Center" MaxWidth="400"  VerticalAlignment="Center" TextWrapping="WrapWholeWords" />
             </StackPanel>
             <ScrollViewer Name="FileDataView" Padding="0 0 0 48" VerticalScrollBarVisibility="Auto">
                 <Grid Padding="10 5">
@@ -357,11 +366,11 @@
                     <TextBlock Grid.Column="3" Grid.ColumnSpan="3" Text="Pressure" />
 
                     <controls:Chart2D x:Name="TemperatureChart" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" Background="LightGray" PlotAreaBackground="Gray" />
-                    <controls:Chart2D x:Name="PressureChart" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" Margin="5" Background="LightGray" />
+                    <controls:Chart2D x:Name="PressureChart" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" Margin="5" Background="LightGray" PlotAreaBackground="Gray" />
                     <StackPanel Grid.Row="1" Grid.Column="6">
                         <StackPanel Margin="5" Orientation="Horizontal">
                             <TextBlock Name="TempIndicatorValue" Text="0" />
-                            <TextBlock Margin="5 0 0 0" Text="%" />
+                            <TextBlock Margin="5 0 0 0" Text="°C" />
                         </StackPanel>
                         <StackPanel Margin="5" Orientation="Horizontal">
                             <TextBlock Name="PresIndicatorValue" Text="0" />
@@ -373,9 +382,9 @@
                     <TextBlock Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Text="Y Acceleration" />
                     <TextBlock Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="2" Text="Z Acceleration" />
 
-                    <controls:Chart2D x:Name="XAccChart" Grid.Row="3" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" />
-                    <controls:Chart2D x:Name="YAccChart" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" />
-                    <controls:Chart2D x:Name="ZAccChart" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" />
+                    <controls:Chart2D x:Name="XAccChart" MinWidth="150" MinHeight="125" Grid.Row="3" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
+                    <controls:Chart2D x:Name="YAccChart" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
+                    <controls:Chart2D x:Name="ZAccChart" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
                     <StackPanel Grid.Row="3" Grid.Column="6">
                         <StackPanel Margin="5" Orientation="Horizontal">
                             <TextBlock Name="XAccIndicatorValue" Text="0" />
@@ -393,7 +402,7 @@
 
                     <TextBlock Grid.Row="4" Grid.ColumnSpan="6" Text="GPS Data" />
 
-                    <maps:MapControl x:Name="GPSDataMap" Grid.Row="5" Grid.ColumnSpan="6" />
+                    <maps:MapControl x:Name="GPSDataMap" Grid.Row="5" Grid.ColumnSpan="6" Style="Terrain" ZoomLevel="14"  MapServiceToken="tRdFETJbn4yQ5bIFq9Me~xzTZlss7SuCvQOO-Q6ThDw~Ap211aSco-aK81mUT93xL6B-vTcXiFU5YegzhBFKmBpRUr1pND3cB2nuW0AoIC25" />
                     <StackPanel Grid.Row="5" Grid.Column="6">
                         <StackPanel Margin="5" Orientation="Horizontal">
                             <TextBlock Name="LatitudeIndicatorValue" Text="0" />
@@ -424,12 +433,29 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Margin="10 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="20" FontWeight="SemiBold" Foreground="#FF9800" Text="00:00:00" />
-                <Slider Grid.Column="1" VerticalAlignment="Center" Foreground="#FF9800" />
+                <TextBlock Name="TimeTextBox" Margin="10 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="20" FontWeight="SemiBold" Foreground="#FF9800" Text="00:00:00" />
+                <Slider Name="TimeSlider" IsThumbToolTipEnabled="False" Grid.Column="1" VerticalAlignment="Center" Foreground="#FF9800" ValueChanged="TimeSlider_ValueChanged" />
                 <StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
-                    <Button Name="Play" Content="&#xE102;" Foreground="#FF9800" Style="{StaticResource FileBottomBarButtonStyle}" />
-                    <Button Name="Stop" Content="&#xE103;" Foreground="#FF9800" Style="{StaticResource FileBottomBarButtonStyle}" />
-                    <Button Name="Settings" Content="&#xE713;" Foreground="#FF9800" Style="{StaticResource FileBottomBarButtonStyle}" />
+                    <Button Name="Play" Content="&#xE102;" Foreground="#FF9800" Tapped="Play_Tapped" Tag="Play"  Style="{StaticResource FileBottomBarButtonStyle}" />
+                    <Button Name="Settings" Content="&#xE713;" Foreground="#FF9800" Style="{StaticResource FileBottomBarButtonStyle}">
+                        <Button.Flyout>
+                            <Flyout>
+                                <StackPanel Padding="5 10 5 10">
+                                    <TextBlock Margin="2" Text="Play speed" />
+                                    <ComboBox Name="SpeedRateComboBox"  SelectionChanged="ComboBox_SelectionChanged" SelectedIndex="2">
+                                        <ComboBox.Items>
+                                            <TextBlock Text="0.5" />
+                                            <TextBlock Text="0.75" />
+                                            <TextBlock Text="1" />
+                                            <TextBlock Text="1.5" />
+                                            <TextBlock Text="2" />
+                                            <TextBlock Text="5" />
+                                        </ComboBox.Items>
+                                    </ComboBox>
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
                     <!--  If someone thinks it's a bad solution, ask Vojta...  -->
                 </StackPanel>
             </Grid>
