@@ -23,7 +23,6 @@ using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using WindowsApp2._0.Controls;
-
 namespace WindowsApp2._0
 {
     public sealed partial class EntryPage
@@ -169,6 +168,9 @@ namespace WindowsApp2._0
             MainGrid.Height = 2 * _internalWindowSize.Height;
             (MainGrid.RenderTransform as TranslateTransform).X = ViewTranslateX.Value;
             (MainGrid.RenderTransform as TranslateTransform).Y = ViewTranslateY.Value;
+
+            if (CurrentState == DataSelectionState.OpenView) try { (FileDataView.Content as Grid).Children.OfType<Chart2D>().ForEach(p => p.ReRender(p.RenderSize)); } catch (InvalidOperationException) { }
+
             if (CurrentLayout == _previousLayout) return;
 
             VisualStateManager.GoToState(this, CurrentLayout.ToString(), false);
@@ -272,17 +274,24 @@ namespace WindowsApp2._0
             {
                 lines.Remove(lines[0]);
                 //! File loaded successfuly
-                
-                Times = (from line in lines select (Int32)Double.Parse(line.Split(',')[0])).ToArray();
+
+                Times = (from line in lines select (Int32) Double.Parse(line.Split(',')[0])).ToArray();
                 TemperatureChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[1])).ToArray());
                 PressureChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[2])).ToArray());
                 XAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[3])).ToArray());
                 YAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[4])).ToArray());
                 ZAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[5])).ToArray());
-                Latitudes = (from line in lines select Double.Parse(line.Split(',')[6]) / 100).ToArray();
-                Longitudes = (from line in lines select Double.Parse(line.Split(',')[8]) / 100).ToArray();
+                if ((await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken)).DisplayName.Contains("FinalData"))
+                {
+                    Latitudes = (from line in lines select Double.Parse(line.Split(',')[6]) / 100).ToArray();
+                    Longitudes = (from line in lines select Double.Parse(line.Split(',')[8]) / 100).ToArray();
+                }
+                else
+                {
+                    Latitudes = (from line in lines select (Math.Floor((Double.Parse(line.Split(',')[6])) / 100) + (Double.Parse(line.Split(',')[6]) % 100) / 60)).ToArray();
+                    Longitudes = (from line in lines select (Math.Floor((Double.Parse(line.Split(',')[8])) / 100) + (Double.Parse(line.Split(',')[8]) % 100) / 60)).ToArray();
+                }
                 Altitudes = (from line in lines select Double.Parse(line.Split(',')[10])).ToArray();
-                
 
                 RawPacketView.Text = String.Join("\n", lines);
                 TimeSlider.Minimum = 0;
@@ -302,7 +311,8 @@ namespace WindowsApp2._0
             CurrentState = CurrentState == DataSelectionState.OpenView ? DataSelectionState.Open : (CurrentState == DataSelectionState.ConnectView ? DataSelectionState.Connect : DataSelectionState.None);
             OpeningFileIconAnimation.Stop();
             ConnectingModuleIconAnimation.Stop();
-            foreach (var chart in (FileDataView.Content as Grid).Children.OfType<Chart2D>()) chart.Clear();
+            dataAnimationTimer.Stop();
+            (FileDataView.Content as Grid).Children.OfType<Chart2D>().ForEach(p => p.Clear());
             SystemNavigationManager.GetForCurrentView().BackRequested -= GoBackToDataSelect;
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
         }
@@ -358,8 +368,6 @@ namespace WindowsApp2._0
             ToolTipService.SetToolTip(SelectedFileLabelBorder, loadFile.Path);
         }
 
-        #endregion
-
         void TimeSlider_ValueChanged(Object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
             CurrentTime = Times[(Int32) e.NewValue];
@@ -369,7 +377,7 @@ namespace WindowsApp2._0
             YAccIndicatorValue.Text = YAccChart.Get(CurrentTime).ToString();
             ZAccIndicatorValue.Text = ZAccChart.Get(CurrentTime).ToString();
 
-            try { GPSDataMap.MapElements.Remove(GPSDataMap.MapElements.OfType<MapIcon>().First(p => p.Title == "Probe")); } catch(InvalidOperationException) { }
+            try { GPSDataMap.MapElements.Remove(GPSDataMap.MapElements.OfType<MapIcon>().First(p => p.Title == "Probe")); } catch (InvalidOperationException) { }
             var ps = new Geopoint(new BasicGeoposition
             {
                 Latitude = Latitudes[(Int32) e.NewValue],
@@ -383,7 +391,9 @@ namespace WindowsApp2._0
                 Location = ps
             });
 
-
+            LatitudeIndicatorValue.Text = Latitudes[(Int32) e.NewValue].ToString();
+            LongitudeIndicatorValue.Text = Longitudes[(Int32) e.NewValue].ToString();
+            AltitudeIndicatorValue.Text = Altitudes[(Int32) e.NewValue].ToString();
         }
 
         Double ToDegrees(Double gpsData)
@@ -398,7 +408,7 @@ namespace WindowsApp2._0
 
         void Play_Tapped(Object sender, TappedRoutedEventArgs e)
         {
-            Button b = sender as Button;
+            var b = sender as Button;
             if (b.Tag as String == "Play")
             {
                 if (Math.Abs(TimeSlider.Value - (Times.Length - 1)) <= 0) TimeSlider.Value = 0;
@@ -419,6 +429,8 @@ namespace WindowsApp2._0
             Double ratio = Double.Parse(((sender as ComboBox).SelectedItem as TextBlock).Text);
             dataAnimationTimer.Interval = TimeSpan.FromSeconds(1 / ratio);
         }
+
+        #endregion
     }
 
     #region Enum (no stuff in this one yet)

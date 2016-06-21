@@ -36,7 +36,25 @@ namespace WindowsApp2._0.Controls
                 else { _currentData = null; }
             }
         }
-
+        
+        public Boolean ShowXLabels
+        {
+            get { return (Boolean) GetValue(ShowXLabelsProperty); }
+            set { SetValue(ShowXLabelsProperty, value); ReRender(RenderSize); }
+        }
+        
+        public static readonly DependencyProperty ShowXLabelsProperty =
+            DependencyProperty.Register("ShowXLabels", typeof(Boolean), typeof(Chart2D), new PropertyMetadata(true));
+        
+        public Boolean ShowYLabels
+        {
+            get { return (Boolean) GetValue(ShowYLabelsProperty); }
+            set { SetValue(ShowYLabelsProperty, value); ReRender(RenderSize); }
+        }
+        
+        public static readonly DependencyProperty ShowYLabelsProperty =
+            DependencyProperty.Register("ShowYLabels", typeof(Boolean), typeof(Chart2D), new PropertyMetadata(true));
+        
         public Brush PlotAreaBackground
         {
             get { return (Brush) PlotArea.GetValue(Panel.BackgroundProperty); }
@@ -61,9 +79,9 @@ namespace WindowsApp2._0.Controls
                 ReRenderEnabled = true;
             };
         }
-        
 
-        void ReRender(Size newSize)
+
+        public void ReRender(Size newSize)
         {
             if (Visibility == Visibility.Visible && ReRenderEnabled)
             {
@@ -90,12 +108,12 @@ namespace WindowsApp2._0.Controls
                             Stroke = new SolidColorBrush(Colors.LightGray),
                             StrokeThickness = 0.75
                         });
-
-                        XAxisLabels.Children.Add(new TextBlock
-                        {
-                            Text = i.ToString(),
-                            Margin = new Thickness((i - Points.Keys.First()) * xStep, 0, 0, 0)
-                        });
+                        if (ShowXLabels)
+                            XAxisLabels.Children.Add(new TextBlock
+                            {
+                                Text = i.ToString(),
+                                Margin = new Thickness((i - Points.Keys.First()) * xStep, 0, 0, 0)
+                            });
                     }
 
                     for (Double i = Points.Values.Min(); i < Points.Values.Min() + 5 || i <= Points.Values.Max(); i += (Points.Values.Max() - Points.Values.Min() < 5) ? 1 : MathUtils.NearestToMultipleOf((Points.Values.Max() - Points.Values.Min()) / 5, 5))
@@ -109,12 +127,13 @@ namespace WindowsApp2._0.Controls
                             Stroke = new SolidColorBrush(Colors.LightGray),
                             StrokeThickness = 0.75
                         });
-                        YAxisLabels.Children.Add(new TextBlock
-                        {
-                            Text = i.ToString(),
-                            VerticalAlignment = VerticalAlignment.Bottom,
-                            RenderTransform = new TranslateTransform { Y = -(i - Points.Values.Min()) * yStep }
-                        });
+                        if (ShowYLabels)
+                            YAxisLabels.Children.Add(new TextBlock
+                            {
+                                Text = i.ToString(),
+                                VerticalAlignment = VerticalAlignment.Bottom,
+                                RenderTransform = new TranslateTransform { Y = -(i - Points.Values.Min()) * yStep }
+                            });
                     }
 
                     var pointsEnumerator = Points.GetEnumerator();
@@ -199,7 +218,7 @@ namespace WindowsApp2._0.Controls
         public void Push(Int32 x, Double y)
         {
             if (Points.Count < 1 || x > Points.Keys.Last()) Points.Add(x, y);
-            ReRender(DesiredSize);
+            ReRender(RenderSize);
         }
 
         public void Push(Int32[] xs, Double[] ys)
@@ -215,7 +234,7 @@ namespace WindowsApp2._0.Controls
             if (dict.Count > 0 && dict.First().Key > Points.Last().Key && dict.OrderByDescending(p => p.Key) == dict)
             {
                 foreach (var pair in dict) Points.Add(pair.Key, pair.Value);
-                ReRender(DesiredSize);
+                ReRender(RenderSize);
             }
         }
 

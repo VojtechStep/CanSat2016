@@ -27,16 +27,16 @@
             </DoubleAnimation>
         </Storyboard>
         <Storyboard x:Name="HintDown" BeginTime="0:0:1">
-            <SwipeHintThemeAnimation TargetName="MainGrid" ToHorizontalOffset="0" ToVerticalOffset="30" Duration="0:0:0.5" />
+            <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="0" ToVerticalOffset="30" TargetName="MainGrid" />
         </Storyboard>
         <Storyboard x:Name="HintRight" BeginTime="0:0:1">
-            <SwipeHintThemeAnimation TargetName="MainGrid" ToHorizontalOffset="30" ToVerticalOffset="0" Duration="0:0:0.5" />
+            <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="30" ToVerticalOffset="0" TargetName="MainGrid" />
         </Storyboard>
         <Storyboard x:Name="HintUp" BeginTime="0:0:1">
-            <SwipeHintThemeAnimation TargetName="MainGrid" ToHorizontalOffset="0" ToVerticalOffset="-30" Duration="0:0:0.5" />
+            <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="0" ToVerticalOffset="-30" TargetName="MainGrid" />
         </Storyboard>
         <Storyboard x:Name="HintLeft" BeginTime="0:0:1">
-            <SwipeHintThemeAnimation TargetName="MainGrid" ToHorizontalOffset="-30" ToVerticalOffset="0" Duration="0:0:0.5" />
+            <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="-30" ToVerticalOffset="0" TargetName="MainGrid" />
         </Storyboard>
         <Storyboard x:Name="OpeningFileIconAnimation">
             <DoubleAnimation Duration="0:0:1" RepeatBehavior="Forever" Storyboard.TargetName="OpeningFileIcon" Storyboard.TargetProperty="(TextBlock.RenderTransform).(RotateTransform.Angle)" To="360" />
@@ -197,6 +197,34 @@
                         <Setter Target="OpenFileView.(Grid.Column)" Value="0" />
                         <Setter Target="ConnectModuleView.(Grid.Row)" Value="2" />
                         <Setter Target="ConnectModuleView.(Grid.Column)" Value="2" />
+                        <Setter Target="TemperatureChartLabel.(Grid.ColumnSpan)" Value="3" />
+                        <Setter Target="PressureChartLabel.(Grid.ColumnSpan)" Value="3" />
+                        <Setter Target="PressureChartLabel.(Grid.Column)" Value="3" />
+                        <Setter Target="TemperatureChart.(Grid.Row)" Value="1" />
+                        <Setter Target="TemperatureChart.(Grid.ColumnSpan)" Value="3" />
+                        <Setter Target="PressureChart.(Grid.Row)" Value="1" />
+                        <Setter Target="PressureChart.(Grid.Column)" Value="3" />
+                        <Setter Target="PressureChart.(Grid.ColumnSpan)" Value="3" />
+                        <Setter Target="XAccChartLabel.(Grid.Row)" Value="4" />
+                        <Setter Target="XAccChartLabel.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="YAccChartLabel.(Grid.Row)" Value="4" />
+                        <Setter Target="YAccChartLabel.(Grid.Column)" Value="2" />
+                        <Setter Target="YAccChartLabel.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="ZAccChartLabel.(Grid.Row)" Value="4" />
+                        <Setter Target="ZAccChartLabel.(Grid.Column)" Value="4" />
+                        <Setter Target="ZAccChartLabel.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="XAccChart.(Grid.Row)" Value="5" />
+                        <Setter Target="XAccChart.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="YAccChart.(Grid.Row)" Value="5" />
+                        <Setter Target="YAccChart.(Grid.Column)" Value="2" />
+                        <Setter Target="YAccChart.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="ZAccChart.(Grid.Row)" Value="5" />
+                        <Setter Target="ZAccChart.(Grid.Column)" Value="4" />
+                        <Setter Target="ZAccChart.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="GPSLabel.(Grid.Row)" Value="10" />
+                        <Setter Target="GPSLabel.(Grid.ColumnSpan)" Value="6" />
+                        <Setter Target="GPSDataMap.(Grid.Row)" Value="11" />
+                        <Setter Target="GPSDataMap.(Grid.ColumnSpan)" Value="6" />
                         <!--#endregion-->
                         <Setter Target="OpenFileControl.ManipulationMode" Value="TranslateX" />
                         <Setter Target="ConnectModuleControl.ManipulationMode" Value="TranslateX" />
@@ -225,6 +253,45 @@
                         <Setter Target="OpenFileView.(Grid.Row)" Value="0" />
                         <Setter Target="ConnectModuleView.(Grid.Column)" Value="0" />
                         <Setter Target="ConnectModuleView.(Grid.Row)" Value="2" />
+                        <Setter Target="Row1.Height" Value="Auto" />
+                        <Setter Target="Row2.Height" Value="*" />
+                        <Setter Target="Row3.Height" Value="Auto" />
+                        <Setter Target="Row4.Height" Value="*" />
+                        <Setter Target="Row5.Height" Value="Auto" />
+                        <Setter Target="Row6.Height" Value="*" />
+                        <Setter Target="TemperatureChartLabel.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="TemperatureChart.(Grid.Row)" Value="1" />
+                        <Setter Target="TemperatureChart.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="PressureChartLabel.(Grid.Row)" Value="2" />
+                        <Setter Target="PressureChartLabel.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="PressureChartLabel.(Grid.Column)" Value="0" />
+                        <Setter Target="PressureChart.(Grid.Row)" Value="3" />
+                        <Setter Target="PressureChart.(Grid.Column)" Value="0" />
+                        <Setter Target="PressureChart.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="MeteoData.Visibility" Value="Collapsed" />
+                        <Setter Target="XAccChartLabel.(Grid.Row)" Value="4" />
+                        <Setter Target="XAccChartLabel.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="YAccChartLabel.(Grid.Row)" Value="6" />
+                        <Setter Target="YAccChartLabel.(Grid.Column)" Value="0" />
+                        <Setter Target="YAccChartLabel.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="ZAccChartLabel.(Grid.Row)" Value="8" />
+                        <Setter Target="ZAccChartLabel.(Grid.Column)" Value="0" />
+                        <Setter Target="ZAccChartLabel.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="XAccChart.(Grid.Row)" Value="5" />
+                        <Setter Target="XAccChart.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="YAccChart.(Grid.Row)" Value="7" />
+                        <Setter Target="YAccChart.(Grid.Column)" Value="0" />
+                        <Setter Target="YAccChart.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="ZAccChart.(Grid.Row)" Value="9" />
+                        <Setter Target="ZAccChart.(Grid.Column)" Value="0" />
+                        <Setter Target="ZAccChart.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="ZAccChart.ShowXLabels" Value="False" />
+                        <Setter Target="AccelData.Visibility" Value="Collapsed" />
+                        <Setter Target="GPSLabel.(Grid.Row)" Value="10" />
+                        <Setter Target="GPSLabel.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="GPSDataMap.(Grid.Row)" Value="11" />
+                        <Setter Target="GPSDataMap.(Grid.ColumnSpan)" Value="7" />
+                        <Setter Target="GPSData.Visibility" Value="Collapsed" />
                         <!--#endregion-->
                         <Setter Target="OpenFileControl.ManipulationMode" Value="TranslateY" />
                         <Setter Target="ConnectModuleControl.ManipulationMode" Value="TranslateY" />
@@ -246,7 +313,7 @@
                     <VisualState.Setters>
                         <Setter Target="OpeningFileLoader.Visibility" Value="Collapsed" />
                         <Setter Target="FileDataView.Visibility" Value="Visible" />
-                        </VisualState.Setters>
+                    </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="FileFail">
                     <VisualState.Setters>
@@ -311,15 +378,15 @@
             <!--#region File Controls-->
             <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" Text="File:" />
 
-            <Border Name="SelectedFileLabelBorder"  Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 17 0" Background="#E0F2F1" IsTapEnabled="True" Padding="5" Tapped="BrowseOpenTapped">
+            <Border Name="SelectedFileLabelBorder" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 17 0" Background="#E0F2F1" IsTapEnabled="True" Padding="5" Tapped="BrowseOpenTapped">
                 <TextBlock Name="SelectedFileLabel" VerticalAlignment="Center" FontStyle="Italic" Text="None Selected" />
             </Border>
 
-            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Tag="&#xE1A5;" Style="{StaticResource OpenButtonStyle}"  Tapped="BrowseOpenTapped" />
+            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Style="{StaticResource OpenButtonStyle}" Tag="&#xE1A5;" Tapped="BrowseOpenTapped" />
 
-            <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Content="Cancel" Tag="&#xE10A;" Style="{StaticResource OpenButtonStyle}" Tapped="CancelDataSelection" />
+            <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Content="Cancel" Style="{StaticResource OpenButtonStyle}" Tag="&#xE10A;" Tapped="CancelDataSelection" />
 
-            <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Content="Open" Tag="&#xE10B;" Style="{StaticResource OpenButtonStyle}" Tapped="ShowDataRequested" />
+            <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Content="Open" Style="{StaticResource OpenButtonStyle}" Tag="&#xE10B;" Tapped="ShowDataRequested" />
             <!--#endregion-->
 
         </Grid>
@@ -338,7 +405,7 @@
                         <RotateTransform />
                     </TextBlock.RenderTransform>
                 </TextBlock>
-                <TextBlock Name="OpeningFileLabel" HorizontalAlignment="Center" MaxWidth="400"  VerticalAlignment="Center" TextWrapping="WrapWholeWords" />
+                <TextBlock Name="OpeningFileLabel" MaxWidth="400" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWholeWords" />
             </StackPanel>
             <ScrollViewer Name="FileDataView" Padding="0 0 0 48" VerticalScrollBarVisibility="Auto">
                 <Grid Padding="10 5">
@@ -354,78 +421,85 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
+                        <RowDefinition x:Name="Row1" Height="0" />
+                        <RowDefinition x:Name="Row2" Height="0" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
+                        <RowDefinition x:Name="Row3" Height="0" />
+                        <RowDefinition x:Name="Row4" Height="0" />
+                        <RowDefinition x:Name="Row5" Height="0" />
+                        <RowDefinition x:Name="Row6" Height="0" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="2*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.ColumnSpan="3" Text="Temperature" FontSize="20" Margin="5"/>
-                    <TextBlock Grid.Column="3" Grid.ColumnSpan="3" Text="Pressure" FontSize="20" Margin="5" />
+                    <TextBlock Name="TemperatureChartLabel" Margin="5" FontSize="20" Text="Temperature" />
+                    <TextBlock Name="PressureChartLabel" Margin="5" FontSize="20" Text="Pressure" />
 
-                    <controls:Chart2D x:Name="TemperatureChart" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" Background="LightGray" PlotAreaBackground="Gray" />
-                    <controls:Chart2D x:Name="PressureChart" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" Margin="5" Background="LightGray" PlotAreaBackground="Gray" />
-                    <StackPanel Grid.Row="1" Grid.Column="6" Background="LightGray" Margin="5">
+                    <controls:Chart2D x:Name="TemperatureChart" Margin="5" Background="LightGray" PlotAreaBackground="Gray" />
+                    <controls:Chart2D x:Name="PressureChart" Margin="5" Background="LightGray" PlotAreaBackground="Gray" />
+                    <StackPanel Name="MeteoData" Grid.Row="1" Grid.Column="6" Margin="5" Background="LightGray">
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="TempIndicatorValue" Text="0" FontSize="20" Margin="5"/>
-                            <TextBlock Text="°C" FontSize="20" Margin="5" />
+                            <TextBlock Name="TempIndicatorValue" Margin="5" FontSize="20" Text="0" />
+                            <TextBlock Margin="5" FontSize="20" Text="°C" />
                         </StackPanel>
-                        <StackPanel Margin="5" Orientation="Horizontal" >
-                            <TextBlock Name="PresIndicatorValue" Text="0" FontSize="20" Margin="5"/>
-                            <TextBlock Text="mBar" FontSize="20" Margin="5" />
+                        <StackPanel Margin="5" Orientation="Horizontal">
+                            <TextBlock Name="PresIndicatorValue" Margin="5" FontSize="20" Text="0" />
+                            <TextBlock Margin="5" FontSize="20" Text="mBar" />
                         </StackPanel>
                     </StackPanel>
 
-                    <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="X Acceleration" FontSize="20" Margin="5" />
-                    <TextBlock Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Text="Y Acceleration" FontSize="20" Margin="5" />
-                    <TextBlock Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="2" Text="Z Acceleration" FontSize="20" Margin="5" />
+                    <TextBlock Name="XAccChartLabel" Margin="5" FontSize="20" Text="X Acceleration" />
+                    <TextBlock Name="YAccChartLabel" Margin="5" FontSize="20" Text="Y Acceleration" />
+                    <TextBlock Name="ZAccChartLabel" Margin="5" FontSize="20" Text="Z Acceleration" />
 
-                    <controls:Chart2D x:Name="XAccChart" MinWidth="150" MinHeight="125" Grid.Row="3" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
-                    <controls:Chart2D x:Name="YAccChart" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
-                    <controls:Chart2D x:Name="ZAccChart" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
-                    <StackPanel Grid.Row="3" Grid.Column="6" Background="LightGray" Margin="5">
+                    <controls:Chart2D x:Name="XAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
+                    <controls:Chart2D x:Name="YAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
+                    <controls:Chart2D x:Name="ZAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
+                    <StackPanel Name="AccelData" Grid.Row="5" Grid.Column="6" Margin="5" Background="LightGray">
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="XAccIndicatorValue" Text="0"  FontSize="20" Margin="5"/>
-                            <TextBlock  Text="G"  FontSize="20" Margin="5"/>
+                            <TextBlock Name="XAccIndicatorValue" Margin="5" FontSize="20" Text="0" />
+                            <TextBlock Margin="5" FontSize="20" Text="G" />
                         </StackPanel>
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="YAccIndicatorValue" Text="0"  FontSize="20" Margin="5"/>
-                            <TextBlock  Text="G"  FontSize="20" Margin="5" />
+                            <TextBlock Name="YAccIndicatorValue" Margin="5" FontSize="20" Text="0" />
+                            <TextBlock Margin="5" FontSize="20" Text="G" />
                         </StackPanel>
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="ZAccIndicatorValue" Text="0"  FontSize="20" Margin="5"/>
-                            <TextBlock  Text="G"  FontSize="20" Margin="5"/>
+                            <TextBlock Name="ZAccIndicatorValue" Margin="5" FontSize="20" Text="0" />
+                            <TextBlock Margin="5" FontSize="20" Text="G" />
                         </StackPanel>
                     </StackPanel>
 
-                    <TextBlock Grid.Row="4" Grid.ColumnSpan="6" Text="GPS Data" FontSize="20" Margin="5" />
+                    <TextBlock Name="GPSLabel" Margin="5" FontSize="20" Text="GPS Data" />
 
-                    <maps:MapControl x:Name="GPSDataMap" Grid.Row="5" Grid.ColumnSpan="6" Margin="5" Style="Aerial" ZoomLevel="14"  MapServiceToken="tRdFETJbn4yQ5bIFq9Me~xzTZlss7SuCvQOO-Q6ThDw~Ap211aSco-aK81mUT93xL6B-vTcXiFU5YegzhBFKmBpRUr1pND3cB2nuW0AoIC25" />
-                    <StackPanel Grid.Row="5" Grid.Column="6">
+                    <maps:MapControl x:Name="GPSDataMap" Grid.RowSpan="2" Margin="5" MapServiceToken="tRdFETJbn4yQ5bIFq9Me~xzTZlss7SuCvQOO-Q6ThDw~Ap211aSco-aK81mUT93xL6B-vTcXiFU5YegzhBFKmBpRUr1pND3cB2nuW0AoIC25" Style="Aerial" ZoomLevel="14" />
+                    <StackPanel Name="GPSData" Grid.Row="11" Grid.Column="6" Grid.RowSpan="2" Margin="5" Background="LightGray">
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="LatitudeIndicatorValue" Text="0" />
-                            <TextBlock Margin="5 0 0 0" Text="&#186;" />
+                            <TextBlock Name="LatitudeIndicatorValue" FontSize="20" Text="0" />
+                            <TextBlock Margin="5 0 0 0" FontSize="20" Text="&#186;" />
                         </StackPanel>
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="LongitudeIndicatorValue" Text="0" />
-                            <TextBlock Margin="5 0 0 0" Text="&#186;" />
+                            <TextBlock Name="LongitudeIndicatorValue" FontSize="20" Text="0" />
+                            <TextBlock Margin="5 0 0 0" FontSize="20" Text="&#186;" />
                         </StackPanel>
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="AltitudeIndicatorValue" Text="0" />
-                            <TextBlock Margin="5 0 0 0" Text="m.a.s.l." />
+                            <TextBlock Name="AltitudeIndicatorValue" FontSize="20" Text="0" />
+                            <TextBlock Margin="5 0 0 0" FontSize="20" Text="m.a.s.l." />
                         </StackPanel>
                     </StackPanel>
 
-                    <TextBlock Grid.Row="6" Grid.ColumnSpan="8" Text="Raw packets" FontSize="20" Margin="5" />
+                    <TextBlock Grid.Row="13" Grid.ColumnSpan="8" Margin="5" FontSize="20" Text="Raw packets" />
 
-                    <TextBlock x:Name="RawPacketView" Grid.Row="7" Grid.ColumnSpan="8" Margin="5" />
+                    <TextBlock x:Name="RawPacketView" Grid.Row="14" Grid.ColumnSpan="8" Margin="5" />
 
                 </Grid>
             </ScrollViewer>
             <!--#region BottomAppBar-->
-            <Grid Name="BottomAppBarGrid" Height="48" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#009688"  >
+            <Grid Name="BottomAppBarGrid" Height="48" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#009688">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -433,16 +507,16 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Name="TimeTextBox" Margin="10 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="20"  Foreground="White" Text="00:00:00" />
-                <Slider Name="TimeSlider" IsThumbToolTipEnabled="False" Grid.Column="1" VerticalAlignment="Center" Foreground="White" ValueChanged="TimeSlider_ValueChanged" />
+                <TextBlock Name="TimeTextBox" Margin="10 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="20" Foreground="White" Text="00:00:00" />
+                <Slider Name="TimeSlider" Grid.Column="1" VerticalAlignment="Center" Foreground="White" IsThumbToolTipEnabled="False" ValueChanged="TimeSlider_ValueChanged" />
                 <StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
-                    <Button Name="Play" Content="&#xE102;" Foreground="White" Tapped="Play_Tapped" Tag="Play"  Style="{StaticResource FileBottomBarButtonStyle}" FontSize="20" Margin="5 0 0 0" />
-                    <Button Name="Settings" Content="&#xE713;" Foreground="White" Style="{StaticResource FileBottomBarButtonStyle}" FontSize="20"  >
+                    <Button Name="Play" Margin="5 0 0 0" Content="&#xE102;" FontSize="20" Foreground="White" Style="{StaticResource FileBottomBarButtonStyle}" Tag="Play" Tapped="Play_Tapped" />
+                    <Button Name="Settings" Content="&#xE713;" FontSize="20" Foreground="White" Style="{StaticResource FileBottomBarButtonStyle}">
                         <Button.Flyout>
                             <Flyout>
                                 <StackPanel Padding="5 10 5 10">
                                     <TextBlock Margin="2" Text="Play speed" />
-                                    <ComboBox Name="SpeedRateComboBox"  SelectionChanged="ComboBox_SelectionChanged" SelectedIndex="2">
+                                    <ComboBox Name="SpeedRateComboBox" SelectedIndex="2" SelectionChanged="ComboBox_SelectionChanged">
                                         <ComboBox.Items>
                                             <TextBlock Text="0.5" />
                                             <TextBlock Text="0.75" />
@@ -502,7 +576,7 @@
                 <TextBlock Name="SaveToFileLabel" VerticalAlignment="Center" FontStyle="Italic" Text="None Selected" />
             </Border>
 
-            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Tag="&#xE1DA;" Style="{StaticResource ConnectButtonStyle}" />
+            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE1DA;" />
 
             <TextBlock Grid.Row="3" Grid.Column="1" Margin="0 10 0 10" Text="Port:" />
 
@@ -514,11 +588,11 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
 
-            <Button Grid.Row="4" Grid.Column="4" Margin="-18 0 2 0" VerticalAlignment="Center" Content="Refresh" Tag="&#xE117;" Style="{StaticResource ConnectButtonStyle}" Tapped="RefreshRequested" />
+            <Button Grid.Row="4" Grid.Column="4" Margin="-18 0 2 0" VerticalAlignment="Center" Content="Refresh" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE117;" Tapped="RefreshRequested" />
 
-            <Button Grid.Row="6" Grid.Column="1" VerticalAlignment="Top" Content="Cancel" Tag="&#xE10A;" Style="{StaticResource ConnectButtonStyle}" Tapped="CancelDataSelection" />
+            <Button Grid.Row="6" Grid.Column="1" VerticalAlignment="Top" Content="Cancel" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE10A;" Tapped="CancelDataSelection" />
 
-            <Button Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Connect" Tag="&#xE10B;" Style="{StaticResource ConnectButtonStyle}" Tapped="ShowDataRequested" />
+            <Button Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Connect" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE10B;" Tapped="ShowDataRequested" />
             <!--#endregion-->
 
         </Grid>
