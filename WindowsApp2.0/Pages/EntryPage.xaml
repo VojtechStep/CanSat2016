@@ -367,14 +367,14 @@
 
                     <controls:Chart2D x:Name="TemperatureChart" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" Background="LightGray" PlotAreaBackground="Gray" />
                     <controls:Chart2D x:Name="PressureChart" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" Margin="5" Background="LightGray" PlotAreaBackground="Gray" />
-                    <StackPanel Grid.Row="1" Grid.Column="6">
+                    <StackPanel Grid.Row="1" Grid.Column="6" Background="LightGray" Margin="5">
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="TempIndicatorValue" Text="0" />
-                            <TextBlock Margin="5 0 0 0" Text="°C" />
+                            <TextBlock Name="TempIndicatorValue" Text="0" FontSize="20" Margin="5"/>
+                            <TextBlock Text="°C" FontSize="20" Margin="5" />
                         </StackPanel>
-                        <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="PresIndicatorValue" Text="0" />
-                            <TextBlock Margin="5 0 0 0" Text="mBar" />
+                        <StackPanel Margin="5" Orientation="Horizontal" >
+                            <TextBlock Name="PresIndicatorValue" Text="0" FontSize="20" Margin="5"/>
+                            <TextBlock Text="mBar" FontSize="20" Margin="5" />
                         </StackPanel>
                     </StackPanel>
 
@@ -385,18 +385,18 @@
                     <controls:Chart2D x:Name="XAccChart" MinWidth="150" MinHeight="125" Grid.Row="3" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
                     <controls:Chart2D x:Name="YAccChart" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
                     <controls:Chart2D x:Name="ZAccChart" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
-                    <StackPanel Grid.Row="3" Grid.Column="6">
+                    <StackPanel Grid.Row="3" Grid.Column="6" Background="LightGray" Margin="5">
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="XAccIndicatorValue" Text="0" />
-                            <TextBlock Margin="5 0 0 0" Text="G" />
+                            <TextBlock Name="XAccIndicatorValue" Text="0"  FontSize="20" Margin="5"/>
+                            <TextBlock  Text="G"  FontSize="20" Margin="5"/>
                         </StackPanel>
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="YAccIndicatorValue" Text="0" />
-                            <TextBlock Margin="5 0 0 0" Text="G" />
+                            <TextBlock Name="YAccIndicatorValue" Text="0"  FontSize="20" Margin="5"/>
+                            <TextBlock  Text="G"  FontSize="20" Margin="5" />
                         </StackPanel>
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="ZAccIndicatorValue" Text="0" />
-                            <TextBlock Margin="5 0 0 0" Text="G" />
+                            <TextBlock Name="ZAccIndicatorValue" Text="0"  FontSize="20" Margin="5"/>
+                            <TextBlock  Text="G"  FontSize="20" Margin="5"/>
                         </StackPanel>
                     </StackPanel>
 
