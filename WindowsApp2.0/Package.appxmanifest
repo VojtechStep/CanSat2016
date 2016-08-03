@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="58ce4b7d-649d-4b0f-812c-d8c886872af3" Publisher="CN=vojte" Version="1.5.0.0" />
+  <Identity Name="27908Vojtchtpank.CanSat" Publisher="CN=9882071D-CA42-49E6-B680-19FAFFC35CAD" Version="1.1.10.0" />
   <mp:PhoneIdentity PhoneProductId="58ce4b7d-649d-4b0f-812c-d8c886872af3" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>WindowsApp2.0</DisplayName>
-    <PublisherDisplayName>The Almighty Lobsters</PublisherDisplayName>
-    <Logo>Assets\StoreLog.png</Logo>
+    <DisplayName>CanSat</DisplayName>
+    <PublisherDisplayName>Vojtěch Štěpančík</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="WindowsApp2._0.App">
-      <uap:VisualElements DisplayName="projectLilly" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="WindowsApp2.0" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="CanSat" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="WindowsApp2.0" BackgroundColor="transparent">
         <uap:LockScreen Notification="badge" BadgeLogo="Assets\BadgeLogo.png" />
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\Square71x71Logo.png" Square310x310Logo="Assets\Square310x310Logo.png" ShortName="CanSat Preview">
           <uap:ShowNameOnTiles>
@@ -26,9 +26,19 @@
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="csdata">
+            <uap:DisplayName>CanSat data</uap:DisplayName>
+            <uap:InfoTip>Data collected via the CanSat setellite</uap:InfoTip>
+            <uap:SupportedFileTypes>
+              <uap:FileType ContentType="text/csv">.csv</uap:FileType>
+              <uap:FileType ContentType="text/txt">.txt</uap:FileType>
+              <uap:FileType ContentType="text/log">.log</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
-  <Capabilities>
-    <Capability Name="internetClient" />
-  </Capabilities>
 </Package>

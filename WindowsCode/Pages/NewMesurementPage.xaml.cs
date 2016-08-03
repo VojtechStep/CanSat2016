@@ -131,7 +131,7 @@ namespace WindowsCode.Pages
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            (App.Current as App).GoBack();
+            (Application.Current as App).GoBack();
         }
 
         private async void StartMesurement(Int32 deviceIndex)

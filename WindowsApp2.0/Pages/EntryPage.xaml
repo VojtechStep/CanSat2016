@@ -26,16 +26,16 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
-        <Storyboard x:Name="HintDown" BeginTime="0:0:1">
+        <Storyboard x:Name="HintDown">
             <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="0" ToVerticalOffset="30" TargetName="MainGrid" />
         </Storyboard>
-        <Storyboard x:Name="HintRight" BeginTime="0:0:1">
+        <Storyboard x:Name="HintRight">
             <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="30" ToVerticalOffset="0" TargetName="MainGrid" />
         </Storyboard>
-        <Storyboard x:Name="HintUp" BeginTime="0:0:1">
+        <Storyboard x:Name="HintUp">
             <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="0" ToVerticalOffset="-30" TargetName="MainGrid" />
         </Storyboard>
-        <Storyboard x:Name="HintLeft" BeginTime="0:0:1">
+        <Storyboard x:Name="HintLeft">
             <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="-30" ToVerticalOffset="0" TargetName="MainGrid" />
         </Storyboard>
         <Storyboard x:Name="OpeningFileIconAnimation">
@@ -138,6 +138,16 @@
                                         <VisualState x:Name="PointerOver">
                                             <VisualState.Setters>
                                                 <Setter Target="BackgroundBorder.Background" Value="#10B6A8" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="EnabledStates">
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.StateTriggers>
+                                                <local:IsFalseStateTrigger Value="{Binding IsEnabled, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWay}" />
+                                            </VisualState.StateTriggers>
+                                            <VisualState.Setters>
+                                                <Setter Target="BackgroundBorder.Opacity" Value="0.25" />
                                             </VisualState.Setters>
                                         </VisualState>
                                     </VisualStateGroup>
@@ -345,9 +355,82 @@
                         <Setter Target="OpeningFileLabel.Text" Value="The file is empty. There is no data to show. This file is unusable, because it has no data. If you tried to visualize an empty file, the whole universe would implode and align itself with other multiverse versions of itself and you would unleash dark entities from even darker realms into our world. Do not do that, that's a very bad thing that you should never try, not even with your parent's suppervision." />
                     </VisualState.Setters>
                 </VisualState>
-                <VisualState x:Name="ModuleLoading" />
-                <VisualState x:Name="ModuleSuccess" />
-                <VisualState x:Name="ModuleFail" />
+                <VisualState x:Name="ModuleConnecting">
+                    <VisualState.Setters>
+                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FF9800" />
+                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE895;" />
+                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FF9800" />
+                        <Setter Target="ConnectingModuleLabel.Text" Value="Connecting module" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ModuleSuccess">
+                    <VisualState.Setters>
+                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Collapsed" />
+                        <Setter Target="ModuleDataView.Visibility" Value="Visible" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ModuleNotConnected">
+                    <VisualState.Setters>
+                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
+                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
+                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
+                        <Setter Target="ConnectingModuleLabel.Text" Value="The port you selected is not available" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ModuleFileNotSelected">
+                    <VisualState.Setters>
+                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
+                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
+                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
+                        <Setter Target="ConnectingModuleLabel.Text" Value="You haven't selected any file to save the data to" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ModuleNotConnectable">
+                    <VisualState.Setters>
+                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
+                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
+                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
+                        <Setter Target="ConnectingModuleLabel.Text" Value="The module couldn't be connected to. Make sure it's not damaged" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ModuleNotRecognised">
+                    <VisualState.Setters>
+                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
+                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
+                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
+                        <Setter Target="ConnectingModuleLabel.Text" Value="The module didn't respond to the handshake. Make sure you're using the latest firmware" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ModuleSDFail">
+                    <VisualState.Setters>
+                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
+                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
+                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
+                        <Setter Target="ConnectingModuleLabel.Text" Value="The internal SD card didn't load successfuly. Check if there is any and if it's connected well" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="EnabledStates">
+                <VisualState x:Name="SliderDisabled">
+                    <VisualState.StateTriggers>
+                        <local:IsFalseStateTrigger Value="{Binding IsEnabled, ElementName=TimeSlider, Mode=OneWay}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TimeSlider.Opacity" Value="0.25" />
+                    </VisualState.Setters>
+                </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
         <Grid.RenderTransform>
@@ -391,7 +474,7 @@
 
         </Grid>
 
-        <Grid Name="OpenFileControl" Background="#009688" IsTapEnabled="True" ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" Tapped="GridControlTapped">
+        <Grid Name="OpenFileControl" Background="#009688" IsTapEnabled="True" ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" Tapped="GridControlTapped"  PointerEntered="OpenGridControl_PointerEntered">
             <StackPanel Name="OpenGridControlLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
                 <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#FF9800" Text="&#xEC50;" />
                 <TextBlock Name="OpenFileControlLabel" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" Foreground="#FF9800" Text="OPEN" />
@@ -508,7 +591,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Name="TimeTextBox" Margin="10 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="20" Foreground="White" Text="00:00:00" />
-                <Slider Name="TimeSlider" Grid.Column="1" VerticalAlignment="Center" Foreground="White" IsThumbToolTipEnabled="False" ValueChanged="TimeSlider_ValueChanged" />
+                <Slider Name="TimeSlider" Grid.Column="1" VerticalAlignment="Center" Foreground="White" IsThumbToolTipEnabled="True" Minimum="0" Value="0" ValueChanged="TimeSlider_ValueChanged" />
                 <StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
                     <Button Name="Play" Margin="5 0 0 0" Content="&#xE102;" FontSize="20" Foreground="White" Style="{StaticResource FileBottomBarButtonStyle}" Tag="Play" Tapped="Play_Tapped" />
                     <Button Name="Settings" Content="&#xE713;" FontSize="20" Foreground="White" Style="{StaticResource FileBottomBarButtonStyle}">
@@ -526,6 +609,7 @@
                                             <TextBlock Text="5" />
                                         </ComboBox.Items>
                                     </ComboBox>
+                                    <ToggleSwitch Header="Center map" IsOn="True" Toggled="CenterMap_Toggled"/>
                                 </StackPanel>
                             </Flyout>
                         </Button.Flyout>
@@ -538,7 +622,7 @@
         <!--#endregion-->
 
         <!--#region Module Part-->
-        <Grid Name="ConnectModuleControl" Background="#FF9800" IsTapEnabled="True" ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" Tapped="GridControlTapped">
+        <Grid Name="ConnectModuleControl" Background="#FF9800" IsTapEnabled="True" ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" Tapped="GridControlTapped"  PointerEntered="ConnectGridControl_PointerEntered">
             <StackPanel Name="ConnectGridControlLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
                 <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#009688" Text="&#xE99A;" />
                 <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" Foreground="#009688" Text="CONNECT" />
@@ -572,11 +656,11 @@
 
             <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" Text="Save To:" />
 
-            <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 17 0" Background="#FFF3E0" Padding="5">
+            <Border Name="SaveToFileLabelBorder" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 17 0" Background="#FFF3E0" Padding="5" Tapped="BrowseSaveTapped">
                 <TextBlock Name="SaveToFileLabel" VerticalAlignment="Center" FontStyle="Italic" Text="None Selected" />
             </Border>
 
-            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE1DA;" />
+            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE1DA;" Tapped="BrowseSaveTapped" />
 
             <TextBlock Grid.Row="3" Grid.Column="1" Margin="0 10 0 10" Text="Port:" />
 
@@ -598,14 +682,19 @@
         </Grid>
 
         <Grid Name="ConnectModuleView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
-            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                <TextBlock Name="ConnectingModuleIcon" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="40" Foreground="#FF9800" RenderTransformOrigin="0.5, 0.5" Text="&#xE895;">
+            <StackPanel Name="ConnectingModuleLoader" VerticalAlignment="Center" Orientation="Vertical">
+                <TextBlock Name="ConnectingModuleIcon" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="40" RenderTransformOrigin="0.5, 0.5" >
                     <TextBlock.RenderTransform>
                         <RotateTransform />
                     </TextBlock.RenderTransform>
                 </TextBlock>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF9800" Text="Connecting to module..." />
+                <TextBlock Name="ConnectingModuleLabel"  HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF9800" Text="Connecting to module..." />
             </StackPanel>
+            <ScrollViewer Name="ModuleDataView" VerticalScrollBarVisibility="Auto">
+                <Grid Padding="10 5">
+                    <TextBlock Text="Datadatadata" />
+                </Grid>
+            </ScrollViewer>
         </Grid>
 
         <!--#endregion-->

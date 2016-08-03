@@ -16,7 +16,7 @@ String inMsg = "";
 
 //Radio object
 RFM69 radio;
-bool promiscuousMode = false; //set to 'true' to sniff all packets on the same network
+bool promiscuousMode = true; //set to 'true' to sniff all packets on the same network
 
 void setup()
 {

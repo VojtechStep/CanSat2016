@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
-using Utils;
+using Patha.Utils;
 using Windows.ApplicationModel.Core;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Geolocation;
@@ -23,6 +23,8 @@ using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using WindowsApp2._0.Controls;
+using WindowsApp2._0.Utils;
+
 namespace WindowsApp2._0
 {
     public sealed partial class EntryPage
@@ -32,33 +34,30 @@ namespace WindowsApp2._0
 
         Size _internalWindowSize;
         DispatcherTimer dataAnimationTimer = new DispatcherTimer();
+        Boolean _centerMap = true;
 
-        Int32[] Times;
+        static Int32[] Times;
         Double[] Longitudes;
         Double[] Latitudes;
         Double[] Altitudes;
 
-        Int32 _currentTime;
-        Int32 CurrentTime
+        static Int32 _currentTime;
+        public static Int32 CurrentTime
         {
             get { return _currentTime; }
             set
             {
                 _currentTime = value;
-                var Hours = Math.Floor((Double) value / 10000) % 100 < 10 ? $"0{Math.Floor((Double) value / 10000) % 100}" : (Math.Floor((Double) value / 10000) % 100).ToString();
-                var Minutes = Math.Floor((Double) value / 100) % 100 < 10 ? $"0{Math.Floor((Double) value / 100) % 100}" : (Math.Floor((Double) value / 100) % 100).ToString();
-                var Seconds = Math.Floor((Double) value) % 100 < 10 ? $"0{Math.Floor((Double) value) % 100}" : (Math.Floor((Double) value) % 100).ToString();
-                TimeTextBox.Text = $"{Hours}:{Minutes}:{Seconds}";
-                (FileDataView.Content as Grid).Children.OfType<Chart2D>().ForEach(p => p.CurrentData = value);
             }
         }
 
-        String loadFileToken;
+
+        public String loadFileToken;
         String saveFileToken;
 
         DataSelectionState _currentState = DataSelectionState.None;
 
-        DataSelectionState CurrentState
+        public DataSelectionState CurrentState
         {
             get { return _currentState; }
             set
@@ -87,7 +86,6 @@ namespace WindowsApp2._0
                         break;
                     default:
                         EntryViewOpen();
-                        (CurrentState == DataSelectionState.None ? (CurrentLayout == LayoutState.Wide ? HintRight : HintDown) : NullAnimation).Begin();
                         break;
                 }
             }
@@ -138,11 +136,9 @@ namespace WindowsApp2._0
                 Recompose(DesiredSize);
                 CurrentState = DataSelectionState.None;
             };
-            HintRight.Completed += (s, e) => HintLeft.Begin();
-            HintDown.Completed += (s, e) => HintUp.Begin();
             dataAnimationTimer.Tick += (s, o) => TimeSlider.Value += 1;
             HideStatBar();
-            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
+            //CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
             ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Colors.White;
             ApplicationView.GetForCurrentView().TitleBar.ButtonForegroundColor = Colors.White;
             ApplicationView.GetForCurrentView().TitleBar.ButtonHoverForegroundColor = Colors.White;
@@ -173,6 +169,7 @@ namespace WindowsApp2._0
 
             if (CurrentLayout == _previousLayout) return;
 
+            AdjustTitleBar();
             VisualStateManager.GoToState(this, CurrentLayout.ToString(), false);
             _previousLayout = CurrentLayout;
         }
@@ -196,6 +193,15 @@ namespace WindowsApp2._0
                                                                                                     : Colors.Black)));
             ApplicationView.GetForCurrentView().TitleBar.ButtonHoverBackgroundColor = ApplicationView.GetForCurrentView().TitleBar.ButtonBackgroundColor.Value.Lighten(30);
             ApplicationView.GetForCurrentView().TitleBar.ButtonPressedBackgroundColor = ApplicationView.GetForCurrentView().TitleBar.ButtonBackgroundColor.Value.Lighten(50);
+        }
+        void OpenGridControl_PointerEntered(Object sender, PointerRoutedEventArgs e)
+        {
+            (CurrentState == DataSelectionState.None ? (CurrentLayout == LayoutState.Wide ? HintRight : HintDown) : NullAnimation).Begin();
+        }
+
+        void ConnectGridControl_PointerEntered(Object sender, PointerRoutedEventArgs e)
+        {
+            (CurrentState == DataSelectionState.None ? (CurrentLayout == LayoutState.Wide ? HintLeft : HintUp) : NullAnimation).Begin();
         }
 
         #endregion
@@ -250,15 +256,30 @@ namespace WindowsApp2._0
 
         void OpenPageOpen()
         {
-
+            if (ApiInformation.IsApiContractPresent("Windows.Phone.UI.Input.HardwareButtons", 1, 0))
+                Windows.Phone.UI.Input.HardwareButtons.BackPressed += GoToEntryPage;
         }
 
-        void ConnectPageOpen()
+        async Task ConnectPageOpen()
         {
-            LoadSerialPorts();
+            if (ApiInformation.IsApiContractPresent("Windows.Phone.UI.Input.HardwareButtons", 1, 0))
+                Windows.Phone.UI.Input.HardwareButtons.BackPressed += GoToEntryPage;
+            await LoadSerialPorts();
         }
+
+        private void GoToEntryPage(Object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
+        {
+            if (!String.IsNullOrWhiteSpace(loadFileToken)) Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(loadFileToken);
+            CurrentState = DataSelectionState.None;
+            if (ApiInformation.IsApiContractPresent("Windows.Phone.UI.Input.HardwareButtons", 1, 0))
+                Windows.Phone.UI.Input.HardwareButtons.BackPressed -= GoToEntryPage;
+        }
+
+
+
         async Task FileViewPageOpen()
         {
+            TimeSlider.IsEnabled = Play.IsEnabled = Settings.IsEnabled = false;
             OpeningFileIconAnimation.Begin();
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
             SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
@@ -266,14 +287,41 @@ namespace WindowsApp2._0
             IList<String> lines = null;
             VisualStateManager.GoToState(this, "FileLoading", false);
 
-            VisualStateManager.GoToState(this, "File" + ((!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken) && (lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken))) != null) ? (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" ? (lines.Count > 2 ? "Success" : "Empty") : "UnknownHeader") : "Fail"), false);
+            //VisualStateManager.GoToState(this, "File" + ((!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken) && (lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken))) != null) ? (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" ? (lines.Count > 2 ? "Success" : "Empty") : "UnknownHeader") : "Fail"), false);
+
+            String fileStateAppend;
+
+            if (!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken))
+            {
+                lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken));
+                if (lines != null)
+                {
+                    if (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]")
+                    {
+                        if (lines.Count > 2)
+                        {
+                            fileStateAppend = "Success";
+                        }
+                        else { fileStateAppend = "Empty"; }
+                    }
+                    else { fileStateAppend = "UnknownHeader"; }
+                }
+                else { fileStateAppend = "Fail"; }
+            }
+            else { fileStateAppend = "Fail"; }
+
+            VisualStateManager.GoToState(this, "File" + fileStateAppend, false);
 
             OpeningFileIconAnimation.Stop();
+
+            TimeSlider.IsEnabled = Play.IsEnabled = Settings.IsEnabled = true;
 
             if (((IEnumerable<VisualStateGroup>) VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "FileSuccess")
             {
                 lines.Remove(lines[0]);
                 //! File loaded successfuly
+
+                foreach (Chart2D chart in (FileDataView.Content as Grid).Children.OfType<Chart2D>()) chart.XMarkerConverter = (value) => EntryPage.ReadableTimeFromGPSTime(value);
 
                 Times = (from line in lines select (Int32) Double.Parse(line.Split(',')[0])).ToArray();
                 TemperatureChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[1])).ToArray());
@@ -294,18 +342,63 @@ namespace WindowsApp2._0
                 Altitudes = (from line in lines select Double.Parse(line.Split(',')[10])).ToArray();
 
                 RawPacketView.Text = String.Join("\n", lines);
-                TimeSlider.Minimum = 0;
                 TimeSlider.Maximum = Times.Count() - 1;
-                TimeSlider.Value = 0;
+
+                //TimeSlider.ThumbToolTipValueConverter = new TimeSliderConverter();
+
+                UpdateGraphs(0);
             }
         }
-        void ConnectModulePageOpen()
+        async Task ConnectModulePageOpen()
         {
             ConnectingModuleIconAnimation.Begin();
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
             SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
+            if (ApiInformation.IsApiContractPresent("Windows.Phone.UI.Input.HardwareButtons", 1, 0))
+                Windows.Phone.UI.Input.HardwareButtons.BackPressed += GoBackToDataSelect;
+
+
+            VisualStateManager.GoToState(this, "ModuleConnecting", false);
+
+            //VisualStateManager.GoToState(this, "Module" + ((PortAvailable) ? (!String.IsNullOrWhiteSpace(saveFileToken) ? (await Communication.ConnectAsync(1000, (await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[PortSelector.SelectedIndex].Id) ? (((await Communication.WriteAsync((Byte)'s')) && (await Communication.ReadAsync(1000)) == 0x06) ? (((await Communication.ReadAsync(1000)) == 0x07) ? "Success" : "SDFail") : "NotRecognised") : "NotConnectable") : "FileNotSelected") : "NotConnected"), false);
+
+            String moduleStateAppend;
+
+            if (PortAvailable)
+            {
+                if (!String.IsNullOrWhiteSpace(saveFileToken))
+                {
+                    await FileIO.WriteLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(saveFileToken), new String[] { "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" });
+                    if (await Communication.ConnectAsync(1500, (await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[PortSelector.SelectedIndex].Id))
+                    {
+                        await Communication.WriteAsync(1500, (Byte) 's');
+                        if (await Communication.ReadAsync(1500) == 0x06)
+                        {
+                            if (await Communication.ReadAsync(1500) == 0x07)
+                            {
+                                moduleStateAppend = "Success";
+                            }
+                            else { moduleStateAppend = "SDFail"; }
+                        }
+                        else { moduleStateAppend = "NotRecognised"; }
+                    }
+                    else { moduleStateAppend = "NotConnectable"; }
+                }
+                else { moduleStateAppend = "FileNotSelected"; }
+            }
+            else { moduleStateAppend = "NotConnected"; }
+
+            VisualStateManager.GoToState(this, "Module" + moduleStateAppend, false);
+
+            ConnectingModuleIconAnimation.Stop();
+            if (((IEnumerable<VisualStateGroup>) VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "ModuleSuccess")
+            {
+                Listen();
+                Debug.WriteLine("Listening");
+            }
         }
 
+        void GoBackToDataSelect(Object o, Windows.Phone.UI.Input.BackPressedEventArgs e) => GoBackToDataSelect(o, (BackRequestedEventArgs) null);
         void GoBackToDataSelect(object o, BackRequestedEventArgs e)
         {
             CurrentState = CurrentState == DataSelectionState.OpenView ? DataSelectionState.Open : (CurrentState == DataSelectionState.ConnectView ? DataSelectionState.Connect : DataSelectionState.None);
@@ -313,6 +406,8 @@ namespace WindowsApp2._0
             ConnectingModuleIconAnimation.Stop();
             dataAnimationTimer.Stop();
             (FileDataView.Content as Grid).Children.OfType<Chart2D>().ForEach(p => p.Clear());
+            if (ApiInformation.IsApiContractPresent("Windows.Phone.UI.Input.HardwareButtons", 1, 0))
+                Windows.Phone.UI.Input.HardwareButtons.BackPressed -= GoBackToDataSelect;
             SystemNavigationManager.GetForCurrentView().BackRequested -= GoBackToDataSelect;
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
         }
@@ -329,6 +424,27 @@ namespace WindowsApp2._0
         #endregion
 
         #region Serial stuff
+        async void BrowseSaveTapped(Object sender, TappedRoutedEventArgs e)
+        {
+            var savePicker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                SuggestedFileName = "Mesurement",
+                DefaultFileExtension = ".csv",
+                FileTypeChoices =
+                {
+                    ["Comma Separated Values"] = new String[] {".csv"},
+                    ["Text"] = new String[] {".txt"},
+                    ["CanSat Mesurement"] = new String[] {".csmes"},
+                    ["Log"] = new String[] {".log"}
+                }
+            };
+            var saveFile = await savePicker.PickSaveFileAsync();
+            if (saveFile == null) return;
+            saveFileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(saveFile);
+            SaveToFileLabel.Text = saveFile.Path;
+            ToolTipService.SetToolTip(SaveToFileLabelBorder, saveFile.Path);
+        }
 
         async void RefreshRequested(Object sender, TappedRoutedEventArgs e) => await LoadSerialPorts();
 
@@ -336,13 +452,18 @@ namespace WindowsApp2._0
         {
             Ports.Clear();
             var selector = SerialDevice.GetDeviceSelector();
-            DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(selector);
+            DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(selector).AsTask(new CancellationTokenSource(2000).Token);
             foreach (DeviceInformation di in devices)
             {
                 Ports.Add(di);
             }
             Bindings.Update();
-            PortSelector.SelectedIndex = Ports.Count - 1;
+            if (PortAvailable) PortSelector.SelectedIndex = 0;
+        }
+
+        async Task Listen()
+        {
+
         }
 
         #endregion
@@ -357,20 +478,28 @@ namespace WindowsApp2._0
                 FileTypeFilter = {
                     ".csv",
                     ".txt",
-                    ".csmes"
+                    ".csmes",
+                    ".log"
                 }
             };
-            StorageFile loadFile = await openPicker.PickSingleFileAsync();
+            var loadFile = await openPicker.PickSingleFileAsync();
 
             if (loadFile == null) return;
+            if (!String.IsNullOrWhiteSpace(loadFileToken)) Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(loadFileToken);
+            UpdateEnvironmentWithFile(loadFile);
+        }
+
+        public void UpdateEnvironmentWithFile(IStorageItem loadFile)
+        {
             loadFileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(loadFile);
             SelectedFileLabel.Text = loadFile.Path;
             ToolTipService.SetToolTip(SelectedFileLabelBorder, loadFile.Path);
         }
 
-        void TimeSlider_ValueChanged(Object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        void TimeSlider_ValueChanged(Object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e) => UpdateGraphs((Int32) e.NewValue);
+        void UpdateGraphs(Int32 newValue)
         {
-            CurrentTime = Times[(Int32) e.NewValue];
+            CurrentTime = Times[newValue];
             TempIndicatorValue.Text = TemperatureChart.Get(CurrentTime).ToString();
             PresIndicatorValue.Text = PressureChart.Get(CurrentTime).ToString();
             XAccIndicatorValue.Text = XAccChart.Get(CurrentTime).ToString();
@@ -380,27 +509,32 @@ namespace WindowsApp2._0
             try { GPSDataMap.MapElements.Remove(GPSDataMap.MapElements.OfType<MapIcon>().First(p => p.Title == "Probe")); } catch (InvalidOperationException) { }
             var ps = new Geopoint(new BasicGeoposition
             {
-                Latitude = Latitudes[(Int32) e.NewValue],
-                Longitude = Longitudes[(Int32) e.NewValue],
-                Altitude = Altitudes[(Int32) e.NewValue]
+                Latitude = Latitudes[newValue],
+                Longitude = Longitudes[newValue],
+                Altitude = Altitudes[newValue]
             });
-            GPSDataMap.Center = ps;
+            if (_centerMap)
+                GPSDataMap.Center = ps;
             GPSDataMap.MapElements.Add(new MapIcon
             {
                 Title = "Probe",
                 Location = ps
             });
 
-            LatitudeIndicatorValue.Text = Latitudes[(Int32) e.NewValue].ToString();
-            LongitudeIndicatorValue.Text = Longitudes[(Int32) e.NewValue].ToString();
-            AltitudeIndicatorValue.Text = Altitudes[(Int32) e.NewValue].ToString();
+            LatitudeIndicatorValue.Text = Latitudes[newValue].ToString();
+            LongitudeIndicatorValue.Text = Longitudes[newValue].ToString();
+            AltitudeIndicatorValue.Text = Altitudes[newValue].ToString();
+
+
+            TimeTextBox.Text = ReadableTimeFromGPSTime(CurrentTime);
+            (FileDataView.Content as Grid).Children.OfType<Chart2D>().ForEach(p => p.CurrentData = CurrentTime);
         }
 
         Double ToDegrees(Double gpsData)
         {
             if (gpsData > Math.Pow(10, 5))
             {
-                Double Minutes = Double.Parse(gpsData.ToString().Substring(gpsData.ToString().Length - 5));
+                var Minutes = Double.Parse(gpsData.ToString().Substring(gpsData.ToString().Length - 5));
                 return (gpsData - Minutes) / (Math.Pow(10, gpsData.ToString().Length - 5)) + (Minutes / 60);
             }
             return 0;
@@ -426,16 +560,30 @@ namespace WindowsApp2._0
 
         void ComboBox_SelectionChanged(Object sender, SelectionChangedEventArgs e)
         {
-            Double ratio = Double.Parse(((sender as ComboBox).SelectedItem as TextBlock).Text);
+            var ratio = Double.Parse(((sender as ComboBox).SelectedItem as TextBlock).Text);
             dataAnimationTimer.Interval = TimeSpan.FromSeconds(1 / ratio);
+        }
+        void CenterMap_Toggled(Object sender, RoutedEventArgs e)
+        {
+            _centerMap = (sender as ToggleSwitch).IsOn;
         }
 
         #endregion
+
+        public static String ReadableTimeFromGPSTime(Double toConvert)
+        {
+            var Hours = Math.Floor(toConvert / 10000) % 100 < 10 ? $"0{Math.Floor(toConvert / 10000) % 100}" : (Math.Floor(toConvert / 10000) % 100).ToString();
+            var Minutes = Math.Floor(toConvert / 100) % 100 < 10 ? $"0{Math.Floor(toConvert / 100) % 100}" : (Math.Floor(toConvert / 100) % 100).ToString();
+            var Seconds = Math.Floor(toConvert) % 100 < 10 ? $"0{Math.Floor(toConvert) % 100}" : (Math.Floor(toConvert) % 100).ToString();
+            return $"{Hours}:{Minutes}:{Seconds}";
+        }
+
+
     }
 
-    #region Enum (no stuff in this one yet)
+    #region Enums and little helpers
 
-    enum DataSelectionState
+    public enum DataSelectionState
     {
         Open,
         Connect,
@@ -450,5 +598,54 @@ namespace WindowsApp2._0
         Wide,
         Narrow
     }
+
+    class TimeSliderConverter : Windows.UI.Xaml.Data.IValueConverter
+    {
+        public Object Convert(Object value, Type targetType, Object parameter, String language)
+        {
+            Debug.WriteLine("?");
+            return "?";
+        }
+
+        public Object ConvertBack(Object value, Type targetType, Object parameter, String language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class IsTrueStateTrigger : StateTriggerBase
+    {
+        public Boolean Value
+        {
+            get { return (Boolean) GetValue(ValueProperty); }
+            set { SetValue(ValueProperty, value); }
+        }
+        public static readonly DependencyProperty ValueProperty =
+            DependencyProperty.Register("Value", typeof(Boolean), typeof(IsTrueStateTrigger), new PropertyMetadata(true, ValueChangedCallback));
+        static void ValueChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as IsTrueStateTrigger;
+            var value = (Boolean) e.NewValue;
+            obj.SetActive(value);
+        }
+    }
+
+    class IsFalseStateTrigger : StateTriggerBase
+    {
+        public Boolean Value
+        {
+            get { return (Boolean) GetValue(ValueProperty); }
+            set { SetValue(ValueProperty, value); }
+        }
+        public static readonly DependencyProperty ValueProperty =
+            DependencyProperty.Register("Value", typeof(Boolean), typeof(IsFalseStateTrigger), new PropertyMetadata(true, ValueChangedCallback));
+        static void ValueChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as IsFalseStateTrigger;
+            var value = (Boolean) e.NewValue;
+            obj.SetActive(!value);
+        }
+    }
+
     #endregion
 }

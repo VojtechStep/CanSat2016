@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Utils;
+using Patha.Utils;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -36,25 +36,28 @@ namespace WindowsApp2._0.Controls
                 else { _currentData = null; }
             }
         }
-        
+
+        public Func<Double, String> XMarkerConverter { get; set; }
+        public Func<Double, String> YMarkerConverter { get; set; }
+
         public Boolean ShowXLabels
         {
             get { return (Boolean) GetValue(ShowXLabelsProperty); }
             set { SetValue(ShowXLabelsProperty, value); ReRender(RenderSize); }
         }
-        
+
         public static readonly DependencyProperty ShowXLabelsProperty =
             DependencyProperty.Register("ShowXLabels", typeof(Boolean), typeof(Chart2D), new PropertyMetadata(true));
-        
+
         public Boolean ShowYLabels
         {
             get { return (Boolean) GetValue(ShowYLabelsProperty); }
             set { SetValue(ShowYLabelsProperty, value); ReRender(RenderSize); }
         }
-        
+
         public static readonly DependencyProperty ShowYLabelsProperty =
             DependencyProperty.Register("ShowYLabels", typeof(Boolean), typeof(Chart2D), new PropertyMetadata(true));
-        
+
         public Brush PlotAreaBackground
         {
             get { return (Brush) PlotArea.GetValue(Panel.BackgroundProperty); }
@@ -111,7 +114,7 @@ namespace WindowsApp2._0.Controls
                         if (ShowXLabels)
                             XAxisLabels.Children.Add(new TextBlock
                             {
-                                Text = i.ToString(),
+                                Text = XMarkerConverter != null ? XMarkerConverter(i) : i.ToString(),
                                 Margin = new Thickness((i - Points.Keys.First()) * xStep, 0, 0, 0)
                             });
                     }
@@ -130,7 +133,7 @@ namespace WindowsApp2._0.Controls
                         if (ShowYLabels)
                             YAxisLabels.Children.Add(new TextBlock
                             {
-                                Text = i.ToString(),
+                                Text = YMarkerConverter != null ? YMarkerConverter(i) : i.ToString(),
                                 VerticalAlignment = VerticalAlignment.Bottom,
                                 RenderTransform = new TranslateTransform { Y = -(i - Points.Values.Min()) * yStep }
                             });
@@ -171,7 +174,7 @@ namespace WindowsApp2._0.Controls
 
             if (CurrentData != null)
             {
-                Int32 DesiredKey = Points.Keys.OrderBy(p => Math.Abs(p - (Double) CurrentData)).First();
+                var DesiredKey = Points.Keys.OrderBy(p => Math.Abs(p - (Double) CurrentData)).First();
                 var xStep = PlotArea.Width / (MathUtils.Limit(Points.Keys.Last() - Points.Keys.First(), 5, Points.Keys.Last() - Points.Keys.First()));
                 var yStep = PlotArea.Height / (MathUtils.Limit(Points.Values.Max() - Points.Values.Min(), 5, Points.Values.Max() - Points.Values.Min()));
                 PlotArea.Children.Add(new Line
@@ -187,7 +190,7 @@ namespace WindowsApp2._0.Controls
                 VisualTreeHelper.DisconnectChildrenRecursive(CurrentDataPointerLabelSpace);
                 CurrentDataPointerLabelSpace.Children.Add(new TextBlock
                 {
-                    Text = DesiredKey.ToString(),
+                    Text = XMarkerConverter != null ? XMarkerConverter(DesiredKey) : DesiredKey.ToString(),
                     RenderTransform = new TranslateTransform { X = (DesiredKey - Points.Keys.First()) * xStep }
                 });
                 PlotArea.Children.Add(new Line
@@ -203,7 +206,7 @@ namespace WindowsApp2._0.Controls
                 VisualTreeHelper.DisconnectChildrenRecursive(CurrentDataPointerLabelSpaceY);
                 CurrentDataPointerLabelSpaceY.Children.Add(new TextBlock
                 {
-                    Text = Points[DesiredKey].ToString(),
+                    Text = YMarkerConverter != null ? YMarkerConverter(Points[DesiredKey]) : Points[DesiredKey].ToString(),
                     RenderTransform = new TranslateTransform { Y = PlotArea.Height - (Points[DesiredKey] - Points.Values.Min()) * yStep }
                 });
             }
@@ -247,11 +250,10 @@ namespace WindowsApp2._0.Controls
         public Double? Pop()
         {
             if (Points.Count == 0) return null;
-            Double output = Points.Values.First();
+            var output = Points.Values.First();
             Points.Remove(Points.Keys.First());
             ReRender(DesiredSize);
             return output;
         }
-
     }
 }
