@@ -13,7 +13,6 @@
 
 
         <!--#region Animations-->
-        <Storyboard x:Name="NullAnimation" />
         <Storyboard x:Name="DataSelectionAnimation">
             <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="MainGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind ViewTranslateX}">
                 <DoubleAnimation.EasingFunction>
@@ -25,18 +24,6 @@
                     <ExponentialEase />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-        </Storyboard>
-        <Storyboard x:Name="HintDown">
-            <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="0" ToVerticalOffset="30" TargetName="MainGrid" />
-        </Storyboard>
-        <Storyboard x:Name="HintRight">
-            <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="30" ToVerticalOffset="0" TargetName="MainGrid" />
-        </Storyboard>
-        <Storyboard x:Name="HintUp">
-            <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="0" ToVerticalOffset="-30" TargetName="MainGrid" />
-        </Storyboard>
-        <Storyboard x:Name="HintLeft">
-            <SwipeHintThemeAnimation Duration="0:0:0.5" ToHorizontalOffset="-30" ToVerticalOffset="0" TargetName="MainGrid" />
         </Storyboard>
         <Storyboard x:Name="OpeningFileIconAnimation">
             <DoubleAnimation Duration="0:0:1" RepeatBehavior="Forever" Storyboard.TargetName="OpeningFileIcon" Storyboard.TargetProperty="(TextBlock.RenderTransform).(RotateTransform.Angle)" To="360" />
@@ -161,284 +148,25 @@
                 </Setter>
             </Style.Setters>
         </Style>
+        <Style x:Key="BorderlessFlyout" TargetType="FlyoutPresenter">
+            <Style.Setters>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="FlyoutPresenter">
+                            <Grid Padding="{TemplateBinding BorderThickness}" Background="LightGray">
+                                <ContentPresenter Content="{TemplateBinding Content}" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style.Setters>
+        </Style>
         <!--#endregion-->
 
     </Page.Resources>
 
-    <Grid Name="MainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-        <!--#region Column and Row Definitions-->
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <!--#endregion-->
-
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="WidthStates">
-                <VisualState x:Name="Wide">
-                    <VisualState.Setters>
-                        <!--#region Regrouping on resize-->
-                        <Setter Target="OpenFileOptions.(Grid.Row)" Value="0" />
-                        <Setter Target="OpenFileOptions.(Grid.RowSpan)" Value="2" />
-                        <Setter Target="OpenFileOptions.(Grid.Column)" Value="0" />
-                        <Setter Target="OpenFileOptions.(Grid.ColumnSpan)" Value="1" />
-                        <Setter Target="OpenFileControl.(Grid.Row)" Value="0" />
-                        <Setter Target="OpenFileControl.(Grid.RowSpan)" Value="2" />
-                        <Setter Target="OpenFileControl.(Grid.Column)" Value="1" />
-                        <Setter Target="OpenFileControl.(Grid.ColumnSpan)" Value="1" />
-                        <Setter Target="ConnectModuleControl.(Grid.Row)" Value="0" />
-                        <Setter Target="ConnectModuleControl.(Grid.RowSpan)" Value="2" />
-                        <Setter Target="ConnectModuleControl.(Grid.Column)" Value="2" />
-                        <Setter Target="ConnectModuleControl.(Grid.ColumnSpan)" Value="1" />
-                        <Setter Target="ConnectModuleOptions.(Grid.Row)" Value="0" />
-                        <Setter Target="ConnectModuleOptions.(Grid.RowSpan)" Value="2" />
-                        <Setter Target="ConnectModuleOptions.(Grid.Column)" Value="3" />
-                        <Setter Target="ConnectModuleOptions.(Grid.ColumnSpan)" Value="1" />
-                        <Setter Target="OpenFileView.(Grid.Row)" Value="2" />
-                        <Setter Target="OpenFileView.(Grid.Column)" Value="0" />
-                        <Setter Target="ConnectModuleView.(Grid.Row)" Value="2" />
-                        <Setter Target="ConnectModuleView.(Grid.Column)" Value="2" />
-                        <Setter Target="TemperatureChartLabel.(Grid.ColumnSpan)" Value="3" />
-                        <Setter Target="PressureChartLabel.(Grid.ColumnSpan)" Value="3" />
-                        <Setter Target="PressureChartLabel.(Grid.Column)" Value="3" />
-                        <Setter Target="TemperatureChart.(Grid.Row)" Value="1" />
-                        <Setter Target="TemperatureChart.(Grid.ColumnSpan)" Value="3" />
-                        <Setter Target="PressureChart.(Grid.Row)" Value="1" />
-                        <Setter Target="PressureChart.(Grid.Column)" Value="3" />
-                        <Setter Target="PressureChart.(Grid.ColumnSpan)" Value="3" />
-                        <Setter Target="XAccChartLabel.(Grid.Row)" Value="4" />
-                        <Setter Target="XAccChartLabel.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="YAccChartLabel.(Grid.Row)" Value="4" />
-                        <Setter Target="YAccChartLabel.(Grid.Column)" Value="2" />
-                        <Setter Target="YAccChartLabel.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="ZAccChartLabel.(Grid.Row)" Value="4" />
-                        <Setter Target="ZAccChartLabel.(Grid.Column)" Value="4" />
-                        <Setter Target="ZAccChartLabel.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="XAccChart.(Grid.Row)" Value="5" />
-                        <Setter Target="XAccChart.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="YAccChart.(Grid.Row)" Value="5" />
-                        <Setter Target="YAccChart.(Grid.Column)" Value="2" />
-                        <Setter Target="YAccChart.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="ZAccChart.(Grid.Row)" Value="5" />
-                        <Setter Target="ZAccChart.(Grid.Column)" Value="4" />
-                        <Setter Target="ZAccChart.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="GPSLabel.(Grid.Row)" Value="10" />
-                        <Setter Target="GPSLabel.(Grid.ColumnSpan)" Value="6" />
-                        <Setter Target="GPSDataMap.(Grid.Row)" Value="11" />
-                        <Setter Target="GPSDataMap.(Grid.ColumnSpan)" Value="6" />
-                        <!--#endregion-->
-                        <Setter Target="OpenFileControl.ManipulationMode" Value="TranslateX" />
-                        <Setter Target="ConnectModuleControl.ManipulationMode" Value="TranslateX" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="Narrow">
-                    <VisualState.Setters>
-                        <!--#region Regrouping on resize-->
-                        <Setter Target="OpenFileOptions.(Grid.Column)" Value="2" />
-                        <Setter Target="OpenFileOptions.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="OpenFileOptions.(Grid.Row)" Value="0" />
-                        <Setter Target="OpenFileOptions.(Grid.RowSpan)" Value="1" />
-                        <Setter Target="OpenFileControl.(Grid.Column)" Value="2" />
-                        <Setter Target="OpenFileControl.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="OpenFileControl.(Grid.Row)" Value="1" />
-                        <Setter Target="OpenFileControl.(Grid.RowSpan)" Value="1" />
-                        <Setter Target="ConnectModuleControl.(Grid.Column)" Value="2" />
-                        <Setter Target="ConnectModuleControl.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="ConnectModuleControl.(Grid.Row)" Value="2" />
-                        <Setter Target="ConnectModuleControl.(Grid.RowSpan)" Value="1" />
-                        <Setter Target="ConnectModuleOptions.(Grid.Column)" Value="2" />
-                        <Setter Target="ConnectModuleOptions.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="ConnectModuleOptions.(Grid.Row)" Value="3" />
-                        <Setter Target="ConnectModuleOptions.(Grid.RowSpan)" Value="1" />
-                        <Setter Target="OpenFileView.(Grid.Column)" Value="0" />
-                        <Setter Target="OpenFileView.(Grid.Row)" Value="0" />
-                        <Setter Target="ConnectModuleView.(Grid.Column)" Value="0" />
-                        <Setter Target="ConnectModuleView.(Grid.Row)" Value="2" />
-                        <Setter Target="Row1.Height" Value="Auto" />
-                        <Setter Target="Row2.Height" Value="*" />
-                        <Setter Target="Row3.Height" Value="Auto" />
-                        <Setter Target="Row4.Height" Value="*" />
-                        <Setter Target="Row5.Height" Value="Auto" />
-                        <Setter Target="Row6.Height" Value="*" />
-                        <Setter Target="TemperatureChartLabel.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="TemperatureChart.(Grid.Row)" Value="1" />
-                        <Setter Target="TemperatureChart.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="PressureChartLabel.(Grid.Row)" Value="2" />
-                        <Setter Target="PressureChartLabel.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="PressureChartLabel.(Grid.Column)" Value="0" />
-                        <Setter Target="PressureChart.(Grid.Row)" Value="3" />
-                        <Setter Target="PressureChart.(Grid.Column)" Value="0" />
-                        <Setter Target="PressureChart.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="MeteoData.Visibility" Value="Collapsed" />
-                        <Setter Target="XAccChartLabel.(Grid.Row)" Value="4" />
-                        <Setter Target="XAccChartLabel.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="YAccChartLabel.(Grid.Row)" Value="6" />
-                        <Setter Target="YAccChartLabel.(Grid.Column)" Value="0" />
-                        <Setter Target="YAccChartLabel.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="ZAccChartLabel.(Grid.Row)" Value="8" />
-                        <Setter Target="ZAccChartLabel.(Grid.Column)" Value="0" />
-                        <Setter Target="ZAccChartLabel.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="XAccChart.(Grid.Row)" Value="5" />
-                        <Setter Target="XAccChart.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="YAccChart.(Grid.Row)" Value="7" />
-                        <Setter Target="YAccChart.(Grid.Column)" Value="0" />
-                        <Setter Target="YAccChart.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="ZAccChart.(Grid.Row)" Value="9" />
-                        <Setter Target="ZAccChart.(Grid.Column)" Value="0" />
-                        <Setter Target="ZAccChart.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="ZAccChart.ShowXLabels" Value="False" />
-                        <Setter Target="AccelData.Visibility" Value="Collapsed" />
-                        <Setter Target="GPSLabel.(Grid.Row)" Value="10" />
-                        <Setter Target="GPSLabel.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="GPSDataMap.(Grid.Row)" Value="11" />
-                        <Setter Target="GPSDataMap.(Grid.ColumnSpan)" Value="7" />
-                        <Setter Target="GPSData.Visibility" Value="Collapsed" />
-                        <!--#endregion-->
-                        <Setter Target="OpenFileControl.ManipulationMode" Value="TranslateY" />
-                        <Setter Target="ConnectModuleControl.ManipulationMode" Value="TranslateY" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-            <VisualStateGroup x:Name="DataLoadStates">
-                <VisualState x:Name="FileLoading">
-                    <VisualState.Setters>
-                        <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
-                        <Setter Target="FileDataView.Visibility" Value="Collapsed" />
-                        <Setter Target="OpeningFileIcon.Foreground" Value="#009688" />
-                        <Setter Target="OpeningFileIcon.Text" Value="&#xE895;" />
-                        <Setter Target="OpeningFileLabel.Foreground" Value="#009688" />
-                        <Setter Target="OpeningFileLabel.Text" Value="Opening File" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="FileSuccess">
-                    <VisualState.Setters>
-                        <Setter Target="OpeningFileLoader.Visibility" Value="Collapsed" />
-                        <Setter Target="FileDataView.Visibility" Value="Visible" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="FileFail">
-                    <VisualState.Setters>
-                        <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
-                        <Setter Target="FileDataView.Visibility" Value="Collapsed" />
-                        <Setter Target="OpeningFileIcon.Foreground" Value="#FA0A0A" />
-                        <Setter Target="OpeningFileIcon.Text" Value="&#xE171;" />
-                        <Setter Target="OpeningFileLabel.Foreground" Value="#FA0A0A" />
-                        <Setter Target="OpeningFileLabel.Text" Value="The file didn't load successfuly, try re-opening" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="FileUnknownHeader">
-                    <VisualState.Setters>
-                        <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
-                        <Setter Target="FileDataView.Visibility" Value="Collapsed" />
-                        <Setter Target="OpeningFileIcon.Foreground" Value="#FA0A0A" />
-                        <Setter Target="OpeningFileIcon.Text" Value="&#xE171;" />
-                        <Setter Target="OpeningFileLabel.Foreground" Value="#FA0A0A" />
-                        <Setter Target="OpeningFileLabel.Text" Value="The file header is unknown. Make sure the file is produced by the probe and isn't corrupted" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="FileEmpty">
-                    <VisualState.Setters>
-                        <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
-                        <Setter Target="FileDataView.Visibility" Value="Collapsed" />
-                        <Setter Target="OpeningFileIcon.Foreground" Value="#FA0A0A" />
-                        <Setter Target="OpeningFileIcon.Text" Value="&#xE171;" />
-                        <Setter Target="OpeningFileLabel.Foreground" Value="#FA0A0A" />
-                        <Setter Target="OpeningFileLabel.Text" Value="The file is empty. There is no data to show. This file is unusable, because it has no data. If you tried to visualize an empty file, the whole universe would implode and align itself with other multiverse versions of itself and you would unleash dark entities from even darker realms into our world. Do not do that, that's a very bad thing that you should never try, not even with your parent's suppervision." />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="ModuleConnecting">
-                    <VisualState.Setters>
-                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
-                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
-                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FF9800" />
-                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE895;" />
-                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FF9800" />
-                        <Setter Target="ConnectingModuleLabel.Text" Value="Connecting module" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="ModuleSuccess">
-                    <VisualState.Setters>
-                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Collapsed" />
-                        <Setter Target="ModuleDataView.Visibility" Value="Visible" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="ModuleNotConnected">
-                    <VisualState.Setters>
-                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
-                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
-                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
-                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
-                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
-                        <Setter Target="ConnectingModuleLabel.Text" Value="The port you selected is not available" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="ModuleFileNotSelected">
-                    <VisualState.Setters>
-                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
-                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
-                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
-                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
-                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
-                        <Setter Target="ConnectingModuleLabel.Text" Value="You haven't selected any file to save the data to" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="ModuleNotConnectable">
-                    <VisualState.Setters>
-                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
-                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
-                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
-                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
-                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
-                        <Setter Target="ConnectingModuleLabel.Text" Value="The module couldn't be connected to. Make sure it's not damaged" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="ModuleNotRecognised">
-                    <VisualState.Setters>
-                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
-                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
-                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
-                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
-                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
-                        <Setter Target="ConnectingModuleLabel.Text" Value="The module didn't respond to the handshake. Make sure you're using the latest firmware" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="ModuleSDFail">
-                    <VisualState.Setters>
-                        <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
-                        <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
-                        <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
-                        <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
-                        <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
-                        <Setter Target="ConnectingModuleLabel.Text" Value="The internal SD card didn't load successfuly. Check if there is any and if it's connected well" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-            <VisualStateGroup x:Name="EnabledStates">
-                <VisualState x:Name="SliderDisabled">
-                    <VisualState.StateTriggers>
-                        <local:IsFalseStateTrigger Value="{Binding IsEnabled, ElementName=TimeSlider, Mode=OneWay}" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TimeSlider.Opacity" Value="0.25" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
-        <Grid.RenderTransform>
-            <TranslateTransform />
-        </Grid.RenderTransform>
-
-        <!--#region File Part-->
-        <Grid Name="OpenFileOptions" Background="#2BD9AE">
+    <Page.Content>
+        <Grid Name="MainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
             <!--#region Column and Row Definitions-->
             <Grid.ColumnDefinitions>
@@ -446,259 +174,533 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <!--#endregion-->
 
-            <!--#region File Controls-->
-            <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" Text="File:" />
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="WidthStates">
+                    <VisualState x:Name="Wide">
+                        <VisualState.Setters>
+                            <!--#region Regrouping on resize-->
+                            <Setter Target="OpenFileOptions.(Grid.Row)" Value="0" />
+                            <Setter Target="OpenFileOptions.(Grid.RowSpan)" Value="2" />
+                            <Setter Target="OpenFileOptions.(Grid.Column)" Value="0" />
+                            <Setter Target="OpenFileOptions.(Grid.ColumnSpan)" Value="1" />
+                            <Setter Target="OpenFileControl.(Grid.Row)" Value="0" />
+                            <Setter Target="OpenFileControl.(Grid.RowSpan)" Value="2" />
+                            <Setter Target="OpenFileControl.(Grid.Column)" Value="1" />
+                            <Setter Target="OpenFileControl.(Grid.ColumnSpan)" Value="1" />
+                            <Setter Target="ConnectModuleControl.(Grid.Row)" Value="0" />
+                            <Setter Target="ConnectModuleControl.(Grid.RowSpan)" Value="2" />
+                            <Setter Target="ConnectModuleControl.(Grid.Column)" Value="2" />
+                            <Setter Target="ConnectModuleControl.(Grid.ColumnSpan)" Value="1" />
+                            <Setter Target="ConnectModuleOptions.(Grid.Row)" Value="0" />
+                            <Setter Target="ConnectModuleOptions.(Grid.RowSpan)" Value="2" />
+                            <Setter Target="ConnectModuleOptions.(Grid.Column)" Value="3" />
+                            <Setter Target="ConnectModuleOptions.(Grid.ColumnSpan)" Value="1" />
+                            <Setter Target="OpenFileView.(Grid.Row)" Value="2" />
+                            <Setter Target="OpenFileView.(Grid.Column)" Value="0" />
+                            <Setter Target="ConnectModuleView.(Grid.Row)" Value="2" />
+                            <Setter Target="ConnectModuleView.(Grid.Column)" Value="2" />
+                            <Setter Target="TemperatureChartLabel.(Grid.ColumnSpan)" Value="3" />
+                            <Setter Target="PressureChartLabel.(Grid.ColumnSpan)" Value="3" />
+                            <Setter Target="PressureChartLabel.(Grid.Column)" Value="3" />
+                            <Setter Target="TemperatureChart.(Grid.Row)" Value="1" />
+                            <Setter Target="TemperatureChart.(Grid.ColumnSpan)" Value="3" />
+                            <Setter Target="PressureChart.(Grid.Row)" Value="1" />
+                            <Setter Target="PressureChart.(Grid.Column)" Value="3" />
+                            <Setter Target="PressureChart.(Grid.ColumnSpan)" Value="3" />
+                            <Setter Target="XAccChartLabel.(Grid.Row)" Value="4" />
+                            <Setter Target="XAccChartLabel.(Grid.ColumnSpan)" Value="2" />
+                            <Setter Target="YAccChartLabel.(Grid.Row)" Value="4" />
+                            <Setter Target="YAccChartLabel.(Grid.Column)" Value="2" />
+                            <Setter Target="YAccChartLabel.(Grid.ColumnSpan)" Value="2" />
+                            <Setter Target="ZAccChartLabel.(Grid.Row)" Value="4" />
+                            <Setter Target="ZAccChartLabel.(Grid.Column)" Value="4" />
+                            <Setter Target="ZAccChartLabel.(Grid.ColumnSpan)" Value="2" />
+                            <Setter Target="XAccChart.(Grid.Row)" Value="5" />
+                            <Setter Target="XAccChart.(Grid.ColumnSpan)" Value="2" />
+                            <Setter Target="YAccChart.(Grid.Row)" Value="5" />
+                            <Setter Target="YAccChart.(Grid.Column)" Value="2" />
+                            <Setter Target="YAccChart.(Grid.ColumnSpan)" Value="2" />
+                            <Setter Target="ZAccChart.(Grid.Row)" Value="5" />
+                            <Setter Target="ZAccChart.(Grid.Column)" Value="4" />
+                            <Setter Target="ZAccChart.(Grid.ColumnSpan)" Value="2" />
+                            <Setter Target="GPSLabel.(Grid.Row)" Value="10" />
+                            <Setter Target="GPSLabel.(Grid.ColumnSpan)" Value="6" />
+                            <Setter Target="GPSDataMap.(Grid.Row)" Value="11" />
+                            <Setter Target="GPSDataMap.(Grid.ColumnSpan)" Value="6" />
+                            <!--#endregion-->
+                            <Setter Target="OpenFileControl.ManipulationMode" Value="TranslateX" />
+                            <Setter Target="ConnectModuleControl.ManipulationMode" Value="TranslateX" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Narrow">
+                        <VisualState.Setters>
+                            <!--#region Regrouping on resize-->
+                            <Setter Target="OpenFileOptions.(Grid.Column)" Value="2" />
+                            <Setter Target="OpenFileOptions.(Grid.ColumnSpan)" Value="2" />
+                            <Setter Target="OpenFileOptions.(Grid.Row)" Value="0" />
+                            <Setter Target="OpenFileOptions.(Grid.RowSpan)" Value="1" />
+                            <Setter Target="OpenFileControl.(Grid.Column)" Value="2" />
+                            <Setter Target="OpenFileControl.(Grid.ColumnSpan)" Value="2" />
+                            <Setter Target="OpenFileControl.(Grid.Row)" Value="1" />
+                            <Setter Target="OpenFileControl.(Grid.RowSpan)" Value="1" />
+                            <Setter Target="ConnectModuleControl.(Grid.Column)" Value="2" />
+                            <Setter Target="ConnectModuleControl.(Grid.ColumnSpan)" Value="2" />
+                            <Setter Target="ConnectModuleControl.(Grid.Row)" Value="2" />
+                            <Setter Target="ConnectModuleControl.(Grid.RowSpan)" Value="1" />
+                            <Setter Target="ConnectModuleOptions.(Grid.Column)" Value="2" />
+                            <Setter Target="ConnectModuleOptions.(Grid.ColumnSpan)" Value="2" />
+                            <Setter Target="ConnectModuleOptions.(Grid.Row)" Value="3" />
+                            <Setter Target="ConnectModuleOptions.(Grid.RowSpan)" Value="1" />
+                            <Setter Target="OpenFileView.(Grid.Column)" Value="0" />
+                            <Setter Target="OpenFileView.(Grid.Row)" Value="0" />
+                            <Setter Target="ConnectModuleView.(Grid.Column)" Value="0" />
+                            <Setter Target="ConnectModuleView.(Grid.Row)" Value="2" />
+                            <Setter Target="Row1.Height" Value="Auto" />
+                            <Setter Target="Row2.Height" Value="*" />
+                            <Setter Target="Row3.Height" Value="Auto" />
+                            <Setter Target="Row4.Height" Value="*" />
+                            <Setter Target="Row5.Height" Value="Auto" />
+                            <Setter Target="Row6.Height" Value="*" />
+                            <Setter Target="TemperatureChartLabel.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="TemperatureChart.(Grid.Row)" Value="1" />
+                            <Setter Target="TemperatureChart.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="PressureChartLabel.(Grid.Row)" Value="2" />
+                            <Setter Target="PressureChartLabel.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="PressureChartLabel.(Grid.Column)" Value="0" />
+                            <Setter Target="PressureChart.(Grid.Row)" Value="3" />
+                            <Setter Target="PressureChart.(Grid.Column)" Value="0" />
+                            <Setter Target="PressureChart.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="XAccChartLabel.(Grid.Row)" Value="4" />
+                            <Setter Target="XAccChartLabel.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="YAccChartLabel.(Grid.Row)" Value="6" />
+                            <Setter Target="YAccChartLabel.(Grid.Column)" Value="0" />
+                            <Setter Target="YAccChartLabel.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="ZAccChartLabel.(Grid.Row)" Value="8" />
+                            <Setter Target="ZAccChartLabel.(Grid.Column)" Value="0" />
+                            <Setter Target="ZAccChartLabel.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="XAccChart.(Grid.Row)" Value="5" />
+                            <Setter Target="XAccChart.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="YAccChart.(Grid.Row)" Value="7" />
+                            <Setter Target="YAccChart.(Grid.Column)" Value="0" />
+                            <Setter Target="YAccChart.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="ZAccChart.(Grid.Row)" Value="9" />
+                            <Setter Target="ZAccChart.(Grid.Column)" Value="0" />
+                            <Setter Target="ZAccChart.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="ZAccChart.ShowXLabels" Value="False" />
+                            <Setter Target="GPSLabel.(Grid.Row)" Value="10" />
+                            <Setter Target="GPSLabel.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="GPSDataMap.(Grid.Row)" Value="11" />
+                            <Setter Target="GPSDataMap.(Grid.ColumnSpan)" Value="7" />
+                            <Setter Target="MeteoData.Visibility" Value="Collapsed" />
+                            <Setter Target="AccelData.Visibility" Value="Collapsed" />
+                            <Setter Target="GPSData.Visibility" Value="Collapsed" />
+                            <!--#endregion-->
+                            <Setter Target="OpenFileControl.ManipulationMode" Value="TranslateY" />
+                            <Setter Target="ConnectModuleControl.ManipulationMode" Value="TranslateY" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+                <VisualStateGroup x:Name="DataLoadStates">
+                    <VisualState x:Name="FileLoading">
+                        <VisualState.Setters>
+                            <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
+                            <Setter Target="FileDataView.Visibility" Value="Collapsed" />
+                            <Setter Target="OpeningFileIcon.Foreground" Value="#009688" />
+                            <Setter Target="OpeningFileIcon.Text" Value="&#xE895;" />
+                            <Setter Target="OpeningFileLabel.Foreground" Value="#009688" />
+                            <Setter Target="OpeningFileLabel.Text" Value="Opening File" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="FileSuccess">
+                        <VisualState.Setters>
+                            <Setter Target="OpeningFileLoader.Visibility" Value="Collapsed" />
+                            <Setter Target="FileDataView.Visibility" Value="Visible" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="FileFail">
+                        <VisualState.Setters>
+                            <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
+                            <Setter Target="FileDataView.Visibility" Value="Collapsed" />
+                            <Setter Target="OpeningFileIcon.Foreground" Value="#FA0A0A" />
+                            <Setter Target="OpeningFileIcon.Text" Value="&#xE171;" />
+                            <Setter Target="OpeningFileLabel.Foreground" Value="#FA0A0A" />
+                            <Setter Target="OpeningFileLabel.Text" Value="The file didn't load successfuly, try re-opening" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="FileUnknownHeader">
+                        <VisualState.Setters>
+                            <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
+                            <Setter Target="FileDataView.Visibility" Value="Collapsed" />
+                            <Setter Target="OpeningFileIcon.Foreground" Value="#FA0A0A" />
+                            <Setter Target="OpeningFileIcon.Text" Value="&#xE171;" />
+                            <Setter Target="OpeningFileLabel.Foreground" Value="#FA0A0A" />
+                            <Setter Target="OpeningFileLabel.Text" Value="The file header is unknown. Make sure the file is produced by the probe and isn't corrupted" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="FileEmpty">
+                        <VisualState.Setters>
+                            <Setter Target="OpeningFileLoader.Visibility" Value="Visible" />
+                            <Setter Target="FileDataView.Visibility" Value="Collapsed" />
+                            <Setter Target="OpeningFileIcon.Foreground" Value="#FA0A0A" />
+                            <Setter Target="OpeningFileIcon.Text" Value="&#xE171;" />
+                            <Setter Target="OpeningFileLabel.Foreground" Value="#FA0A0A" />
+                            <Setter Target="OpeningFileLabel.Text" Value="The file is empty. There is no data to show. This file is unusable, because it has no data. If you tried to visualize an empty file, the whole universe would implode and align itself with other multiverse versions of itself and you would unleash dark entities from even darker realms into our world. Do not do that, that's a very bad thing that you should never try, not even under your parents' suppervision." />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="ModuleConnecting">
+                        <VisualState.Setters>
+                            <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                            <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                            <Setter Target="ConnectingModuleIcon.Foreground" Value="#FF9800" />
+                            <Setter Target="ConnectingModuleIcon.Text" Value="&#xE895;" />
+                            <Setter Target="ConnectingModuleLabel.Foreground" Value="#FF9800" />
+                            <Setter Target="ConnectingModuleLabel.Text" Value="Connecting module" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="ModuleSuccess">
+                        <VisualState.Setters>
+                            <Setter Target="ConnectingModuleLoader.Visibility" Value="Collapsed" />
+                            <Setter Target="ModuleDataView.Visibility" Value="Visible" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="ModuleNotConnected">
+                        <VisualState.Setters>
+                            <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                            <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                            <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
+                            <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
+                            <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
+                            <Setter Target="ConnectingModuleLabel.Text" Value="The port you selected is not available" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="ModuleFileNotSelected">
+                        <VisualState.Setters>
+                            <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                            <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                            <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
+                            <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
+                            <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
+                            <Setter Target="ConnectingModuleLabel.Text" Value="You haven't selected any file to save the data to" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="ModuleNotConnectable">
+                        <VisualState.Setters>
+                            <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                            <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                            <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
+                            <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
+                            <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
+                            <Setter Target="ConnectingModuleLabel.Text" Value="The module couldn't be connected to. Make sure it's not damaged" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="ModuleNotRecognised">
+                        <VisualState.Setters>
+                            <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                            <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                            <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
+                            <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
+                            <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
+                            <Setter Target="ConnectingModuleLabel.Text" Value="The module didn't respond to the handshake. Make sure you're using the latest firmware" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="ModuleSDFail">
+                        <VisualState.Setters>
+                            <Setter Target="ConnectingModuleLoader.Visibility" Value="Visible" />
+                            <Setter Target="ModuleDataView.Visibility" Value="Collapsed" />
+                            <Setter Target="ConnectingModuleIcon.Foreground" Value="#FA0A0A" />
+                            <Setter Target="ConnectingModuleIcon.Text" Value="&#xE171;" />
+                            <Setter Target="ConnectingModuleLabel.Foreground" Value="#FA0A0A" />
+                            <Setter Target="ConnectingModuleLabel.Text" Value="The internal SD card didn't load successfuly. Check if there is any and if it's connected well" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+                <VisualStateGroup x:Name="EnabledStates">
+                    <VisualState x:Name="SliderDisabled">
+                        <VisualState.StateTriggers>
+                            <local:IsFalseStateTrigger Value="{Binding IsEnabled, ElementName=TimeSlider, Mode=OneWay}" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="TimeSlider.Opacity" Value="0.25" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <Grid.RenderTransform>
+                <TranslateTransform />
+            </Grid.RenderTransform>
 
-            <Border Name="SelectedFileLabelBorder" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 17 0" Background="#E0F2F1" IsTapEnabled="True" Padding="5" Tapped="BrowseOpenTapped">
-                <TextBlock Name="SelectedFileLabel" VerticalAlignment="Center" FontStyle="Italic" Text="None Selected" />
-            </Border>
+            <!--#region File Part-->
+            <Grid Name="OpenFileOptions" Background="#2BD9AE">
 
-            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Style="{StaticResource OpenButtonStyle}" Tag="&#xE1A5;" Tapped="BrowseOpenTapped" />
+                <!--#region Column and Row Definitions-->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <!--#endregion-->
 
-            <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Content="Cancel" Style="{StaticResource OpenButtonStyle}" Tag="&#xE10A;" Tapped="CancelDataSelection" />
+                <!--#region File Controls-->
+                <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" Text="File:" />
 
-            <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Content="Open" Style="{StaticResource OpenButtonStyle}" Tag="&#xE10B;" Tapped="ShowDataRequested" />
-            <!--#endregion-->
+                <Border Name="SelectedFileLabelBorder" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 17 0" Background="#E0F2F1" IsTapEnabled="True" Padding="5" Tapped="BrowseOpenTapped">
+                    <TextBlock Name="SelectedFileLabel" VerticalAlignment="Center" FontStyle="Italic" Text="None Selected" />
+                </Border>
 
-        </Grid>
+                <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Style="{StaticResource OpenButtonStyle}" Tag="&#xE1A5;" Tapped="BrowseOpenTapped" />
 
-        <Grid Name="OpenFileControl" Background="#009688" IsTapEnabled="True" ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" Tapped="GridControlTapped"  PointerEntered="OpenGridControl_PointerEntered">
-            <StackPanel Name="OpenGridControlLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
-                <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#FF9800" Text="&#xEC50;" />
-                <TextBlock Name="OpenFileControlLabel" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" Foreground="#FF9800" Text="OPEN" />
-            </StackPanel>
-        </Grid>
+                <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Content="Cancel" Style="{StaticResource OpenButtonStyle}" Tag="&#xE10A;" Tapped="CancelDataSelection" />
 
-        <Grid Name="OpenFileView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
-            <StackPanel Name="OpeningFileLoader" VerticalAlignment="Center">
-                <TextBlock Name="OpeningFileIcon" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="40" RenderTransformOrigin="0.5 0.5">
-                    <TextBlock.RenderTransform>
-                        <RotateTransform />
-                    </TextBlock.RenderTransform>
-                </TextBlock>
-                <TextBlock Name="OpeningFileLabel" MaxWidth="400" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWholeWords" />
-            </StackPanel>
-            <ScrollViewer Name="FileDataView" Padding="0 0 0 48" VerticalScrollBarVisibility="Auto">
-                <Grid Padding="10 5">
+                <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Content="Open" Style="{StaticResource OpenButtonStyle}" Tag="&#xE10B;" Tapped="ShowDataRequested" />
+                <!--#endregion-->
+
+            </Grid>
+
+            <Grid Name="OpenFileControl" Background="#009688" IsTapEnabled="True" ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" Tapped="GridControlTapped">
+                <StackPanel Name="OpenGridControlLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
+                    <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#FF9800" Text="&#xEC50;" />
+                    <TextBlock Name="OpenFileControlLabel" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" Foreground="#FF9800" Text="OPEN" />
+                </StackPanel>
+            </Grid>
+
+            <Grid Name="OpenFileView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
+                <StackPanel Name="OpeningFileLoader" VerticalAlignment="Center">
+                    <TextBlock Name="OpeningFileIcon" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="40" RenderTransformOrigin="0.5 0.5">
+                        <TextBlock.RenderTransform>
+                            <RotateTransform />
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+                    <TextBlock Name="OpeningFileLabel" MaxWidth="400" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWholeWords" />
+                </StackPanel>
+                <ScrollViewer Name="FileDataView" Padding="0 0 0 48" VerticalScrollBarVisibility="Auto">
+                    <Grid Padding="10 5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition x:Name="Row1" Height="0" />
+                            <RowDefinition x:Name="Row2" Height="0" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition x:Name="Row3" Height="0" />
+                            <RowDefinition x:Name="Row4" Height="0" />
+                            <RowDefinition x:Name="Row5" Height="0" />
+                            <RowDefinition x:Name="Row6" Height="0" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Name="TemperatureChartLabel" Margin="5" FontSize="20" Text="Temperature" />
+                        <TextBlock Name="PressureChartLabel" Margin="5" FontSize="20" Text="Pressure" />
+
+                        <controls:Chart2D x:Name="TemperatureChart" Margin="5" Background="LightGray" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
+                        <controls:Chart2D x:Name="PressureChart" Margin="5" Background="LightGray" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
+                        <StackPanel Name="MeteoData" Grid.Row="1" Grid.Column="6" Margin="5" Background="LightGray">
+                            <StackPanel Margin="5" Orientation="Horizontal">
+                                <TextBlock Name="TempIndicatorValue" Margin="5" FontSize="20" Text="0" />
+                                <TextBlock Margin="5" FontSize="20" Text="°C" />
+                            </StackPanel>
+                            <StackPanel Margin="5" Orientation="Horizontal">
+                                <TextBlock Name="PresIndicatorValue" Margin="5" FontSize="20" Text="0" />
+                                <TextBlock Margin="5" FontSize="20" Text="mBar" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <TextBlock Name="XAccChartLabel" Margin="5" FontSize="20" Text="X Acceleration" />
+                        <TextBlock Name="YAccChartLabel" Margin="5" FontSize="20" Text="Y Acceleration" />
+                        <TextBlock Name="ZAccChartLabel" Margin="5" FontSize="20" Text="Z Acceleration" />
+
+                        <controls:Chart2D x:Name="XAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
+                        <controls:Chart2D x:Name="YAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
+                        <controls:Chart2D x:Name="ZAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
+                        <StackPanel Name="AccelData" Grid.Row="5" Grid.Column="6" Margin="5" Background="LightGray">
+                            <StackPanel Margin="5" Orientation="Horizontal">
+                                <TextBlock Name="XAccIndicatorValue" Margin="5" FontSize="20" Text="0" />
+                                <TextBlock Margin="5" FontSize="20" Text="G" />
+                            </StackPanel>
+                            <StackPanel Margin="5" Orientation="Horizontal">
+                                <TextBlock Name="YAccIndicatorValue" Margin="5" FontSize="20" Text="0" />
+                                <TextBlock Margin="5" FontSize="20" Text="G" />
+                            </StackPanel>
+                            <StackPanel Margin="5" Orientation="Horizontal">
+                                <TextBlock Name="ZAccIndicatorValue" Margin="5" FontSize="20" Text="0" />
+                                <TextBlock Margin="5" FontSize="20" Text="G" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <TextBlock Name="GPSLabel" Margin="5" FontSize="20" Text="GPS Data" />
+
+                        <maps:MapControl x:Name="GPSDataMap" Grid.RowSpan="2" Margin="5" MapServiceToken="tRdFETJbn4yQ5bIFq9Me~xzTZlss7SuCvQOO-Q6ThDw~Ap211aSco-aK81mUT93xL6B-vTcXiFU5YegzhBFKmBpRUr1pND3cB2nuW0AoIC25" Style="Terrain" ZoomLevel="18" />
+                        <StackPanel Name="GPSData" Grid.Row="11" Grid.Column="6" Grid.RowSpan="2" Margin="5" Background="LightGray">
+                            <StackPanel Margin="5" Orientation="Horizontal">
+                                <TextBlock Name="LatitudeIndicatorValue" FontSize="20" Text="0" />
+                                <TextBlock Margin="5 0 0 0" FontSize="20" Text="&#186;" />
+                            </StackPanel>
+                            <StackPanel Margin="5" Orientation="Horizontal">
+                                <TextBlock Name="LongitudeIndicatorValue" FontSize="20" Text="0" />
+                                <TextBlock Margin="5 0 0 0" FontSize="20" Text="&#186;" />
+                            </StackPanel>
+                            <StackPanel Margin="5" Orientation="Horizontal">
+                                <TextBlock Name="AltitudeIndicatorValue" FontSize="20" Text="0" />
+                                <TextBlock Margin="5 0 0 0" FontSize="20" Text="m.a.s.l." />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="13" Grid.ColumnSpan="8" Margin="5" FontSize="20" Text="Raw packets" />
+
+                        <TextBlock x:Name="RawPacketView" Grid.Row="14" Grid.ColumnSpan="8" Margin="5" />
+
+                    </Grid>
+                </ScrollViewer>
+                <!--#region BottomAppBar-->
+                <Grid Name="BottomAppBarGrid" Height="48" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#009688">
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="2*" />
                     </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition x:Name="Row1" Height="0" />
-                        <RowDefinition x:Name="Row2" Height="0" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition x:Name="Row3" Height="0" />
-                        <RowDefinition x:Name="Row4" Height="0" />
-                        <RowDefinition x:Name="Row5" Height="0" />
-                        <RowDefinition x:Name="Row6" Height="0" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
 
-                    <TextBlock Name="TemperatureChartLabel" Margin="5" FontSize="20" Text="Temperature" />
-                    <TextBlock Name="PressureChartLabel" Margin="5" FontSize="20" Text="Pressure" />
-
-                    <controls:Chart2D x:Name="TemperatureChart" Margin="5" Background="LightGray" PlotAreaBackground="Gray" />
-                    <controls:Chart2D x:Name="PressureChart" Margin="5" Background="LightGray" PlotAreaBackground="Gray" />
-                    <StackPanel Name="MeteoData" Grid.Row="1" Grid.Column="6" Margin="5" Background="LightGray">
-                        <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="TempIndicatorValue" Margin="5" FontSize="20" Text="0" />
-                            <TextBlock Margin="5" FontSize="20" Text="°C" />
-                        </StackPanel>
-                        <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="PresIndicatorValue" Margin="5" FontSize="20" Text="0" />
-                            <TextBlock Margin="5" FontSize="20" Text="mBar" />
-                        </StackPanel>
+                    <TextBlock Name="TimeTextBox" Margin="10 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="20" Foreground="White" Text="00:00:00" />
+                    <Slider Name="TimeSlider" Grid.Column="1" VerticalAlignment="Center" Foreground="White" IsThumbToolTipEnabled="True" Minimum="0" Value="0" ValueChanged="TimeSlider_ValueChanged" />
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
+                        <Button Name="Play" Margin="5 0 0 0" Content="&#xE102;" FontSize="20" Foreground="White" Style="{StaticResource FileBottomBarButtonStyle}" Tag="Play" Tapped="Play_Tapped" />
+                        <Button Name="Settings" Content="&#xE713;" FontSize="20" Foreground="White" Style="{StaticResource FileBottomBarButtonStyle}">
+                            <Button.Flyout>
+                                <Flyout>
+                                    <StackPanel Padding="5 10 5 10">
+                                        <TextBlock Margin="2" Text="Play speed" />
+                                        <ComboBox Name="SpeedRateComboBox" SelectedIndex="2" SelectionChanged="ComboBox_SelectionChanged">
+                                            <ComboBox.Items>
+                                                <TextBlock Text="0.5" />
+                                                <TextBlock Text="0.75" />
+                                                <TextBlock Text="1" />
+                                                <TextBlock Text="1.5" />
+                                                <TextBlock Text="2" />
+                                                <TextBlock Text="5" />
+                                            </ComboBox.Items>
+                                        </ComboBox>
+                                        <ToggleSwitch Header="Center map" IsOn="True" Toggled="CenterMap_Toggled"/>
+                                        <ToggleSwitch Header="Aerial map" IsOn="False" Toggled="ToggleSwitch_Toggled" />
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                        <!--  If someone thinks it's a bad solution, ask Vojta...  -->
                     </StackPanel>
-
-                    <TextBlock Name="XAccChartLabel" Margin="5" FontSize="20" Text="X Acceleration" />
-                    <TextBlock Name="YAccChartLabel" Margin="5" FontSize="20" Text="Y Acceleration" />
-                    <TextBlock Name="ZAccChartLabel" Margin="5" FontSize="20" Text="Z Acceleration" />
-
-                    <controls:Chart2D x:Name="XAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
-                    <controls:Chart2D x:Name="YAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
-                    <controls:Chart2D x:Name="ZAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" />
-                    <StackPanel Name="AccelData" Grid.Row="5" Grid.Column="6" Margin="5" Background="LightGray">
-                        <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="XAccIndicatorValue" Margin="5" FontSize="20" Text="0" />
-                            <TextBlock Margin="5" FontSize="20" Text="G" />
-                        </StackPanel>
-                        <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="YAccIndicatorValue" Margin="5" FontSize="20" Text="0" />
-                            <TextBlock Margin="5" FontSize="20" Text="G" />
-                        </StackPanel>
-                        <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="ZAccIndicatorValue" Margin="5" FontSize="20" Text="0" />
-                            <TextBlock Margin="5" FontSize="20" Text="G" />
-                        </StackPanel>
-                    </StackPanel>
-
-                    <TextBlock Name="GPSLabel" Margin="5" FontSize="20" Text="GPS Data" />
-
-                    <maps:MapControl x:Name="GPSDataMap" Grid.RowSpan="2" Margin="5" MapServiceToken="tRdFETJbn4yQ5bIFq9Me~xzTZlss7SuCvQOO-Q6ThDw~Ap211aSco-aK81mUT93xL6B-vTcXiFU5YegzhBFKmBpRUr1pND3cB2nuW0AoIC25" Style="Aerial" ZoomLevel="14" />
-                    <StackPanel Name="GPSData" Grid.Row="11" Grid.Column="6" Grid.RowSpan="2" Margin="5" Background="LightGray">
-                        <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="LatitudeIndicatorValue" FontSize="20" Text="0" />
-                            <TextBlock Margin="5 0 0 0" FontSize="20" Text="&#186;" />
-                        </StackPanel>
-                        <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="LongitudeIndicatorValue" FontSize="20" Text="0" />
-                            <TextBlock Margin="5 0 0 0" FontSize="20" Text="&#186;" />
-                        </StackPanel>
-                        <StackPanel Margin="5" Orientation="Horizontal">
-                            <TextBlock Name="AltitudeIndicatorValue" FontSize="20" Text="0" />
-                            <TextBlock Margin="5 0 0 0" FontSize="20" Text="m.a.s.l." />
-                        </StackPanel>
-                    </StackPanel>
-
-                    <TextBlock Grid.Row="13" Grid.ColumnSpan="8" Margin="5" FontSize="20" Text="Raw packets" />
-
-                    <TextBlock x:Name="RawPacketView" Grid.Row="14" Grid.ColumnSpan="8" Margin="5" />
-
                 </Grid>
-            </ScrollViewer>
-            <!--#region BottomAppBar-->
-            <Grid Name="BottomAppBarGrid" Height="48" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#009688">
+                <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
 
+            <!--#region Module Part-->
+            <Grid Name="ConnectModuleControl" Background="#FF9800" IsTapEnabled="True" ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" Tapped="GridControlTapped">
+                <StackPanel Name="ConnectGridControlLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
+                    <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#009688" Text="&#xE99A;" />
+                    <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" Foreground="#009688" Text="CONNECT" />
+                </StackPanel>
+            </Grid>
+
+            <Grid Name="ConnectModuleOptions" Background="#FFB74D">
+
+                <!--#region Column and Row Definitions-->
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Name="TimeTextBox" Margin="10 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="20" Foreground="White" Text="00:00:00" />
-                <Slider Name="TimeSlider" Grid.Column="1" VerticalAlignment="Center" Foreground="White" IsThumbToolTipEnabled="True" Minimum="0" Value="0" ValueChanged="TimeSlider_ValueChanged" />
-                <StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
-                    <Button Name="Play" Margin="5 0 0 0" Content="&#xE102;" FontSize="20" Foreground="White" Style="{StaticResource FileBottomBarButtonStyle}" Tag="Play" Tapped="Play_Tapped" />
-                    <Button Name="Settings" Content="&#xE713;" FontSize="20" Foreground="White" Style="{StaticResource FileBottomBarButtonStyle}">
-                        <Button.Flyout>
-                            <Flyout>
-                                <StackPanel Padding="5 10 5 10">
-                                    <TextBlock Margin="2" Text="Play speed" />
-                                    <ComboBox Name="SpeedRateComboBox" SelectedIndex="2" SelectionChanged="ComboBox_SelectionChanged">
-                                        <ComboBox.Items>
-                                            <TextBlock Text="0.5" />
-                                            <TextBlock Text="0.75" />
-                                            <TextBlock Text="1" />
-                                            <TextBlock Text="1.5" />
-                                            <TextBlock Text="2" />
-                                            <TextBlock Text="5" />
-                                        </ComboBox.Items>
-                                    </ComboBox>
-                                    <ToggleSwitch Header="Center map" IsOn="True" Toggled="CenterMap_Toggled"/>
-                                </StackPanel>
-                            </Flyout>
-                        </Button.Flyout>
-                    </Button>
-                    <!--  If someone thinks it's a bad solution, ask Vojta...  -->
-                </StackPanel>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <!--#endregion-->
+
+                <!--#region Module Options-->
+
+                <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" Text="Save To:" />
+
+                <Border Name="SaveToFileLabelBorder" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 17 0" Background="#FFF3E0" Padding="5" Tapped="BrowseSaveTapped">
+                    <TextBlock Name="SaveToFileLabel" VerticalAlignment="Center" FontStyle="Italic" Text="None Selected" />
+                </Border>
+
+                <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE1DA;" Tapped="BrowseSaveTapped" />
+
+                <TextBlock Grid.Row="3" Grid.Column="1" Margin="0 10 0 10" Text="Port:" />
+
+                <ComboBox Name="PortSelector" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" Background="#95C87D" IsEnabled="{x:Bind PortAvailable, Mode=OneWay}" ItemsSource="{x:Bind Ports}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="devices:DeviceInformation">
+                            <TextBlock Text="{x:Bind Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <Button Grid.Row="4" Grid.Column="4" Margin="-18 0 2 0" VerticalAlignment="Center" Content="Refresh" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE117;" Tapped="RefreshRequested" />
+
+                <Button Grid.Row="6" Grid.Column="1" VerticalAlignment="Top" Content="Cancel" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE10A;" Tapped="CancelDataSelection" />
+
+                <Button Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Connect" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE10B;" Tapped="ShowDataRequested" />
+                <!--#endregion-->
+
             </Grid>
-            <!--#endregion-->
-        </Grid>
-        <!--#endregion-->
 
-        <!--#region Module Part-->
-        <Grid Name="ConnectModuleControl" Background="#FF9800" IsTapEnabled="True" ManipulationCompleted="GridControlManipulationCompleted" ManipulationDelta="GridControlManipulationDelta" Tapped="GridControlTapped"  PointerEntered="ConnectGridControl_PointerEntered">
-            <StackPanel Name="ConnectGridControlLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
-                <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="60" FontWeight="Bold" Foreground="#009688" Text="&#xE99A;" />
-                <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="48" FontWeight="Bold" Foreground="#009688" Text="CONNECT" />
-            </StackPanel>
-        </Grid>
+            <Grid Name="ConnectModuleView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
+                <StackPanel Name="ConnectingModuleLoader" VerticalAlignment="Center" Orientation="Vertical">
+                    <TextBlock Name="ConnectingModuleIcon" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="40" RenderTransformOrigin="0.5, 0.5" >
+                        <TextBlock.RenderTransform>
+                            <RotateTransform />
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+                    <TextBlock Name="ConnectingModuleLabel"  HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF9800" Text="Connecting to module..." />
+                </StackPanel>
+                <ScrollViewer Name="ModuleDataView" VerticalScrollBarVisibility="Auto">
+                    <Grid Padding="10 5">
+                        <TextBlock Text="Datadatadata" />
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
 
-        <Grid Name="ConnectModuleOptions" Background="#FFB74D">
-
-            <!--#region Column and Row Definitions-->
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <!--#endregion-->
-
-            <!--#region Module Options-->
-
-            <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" Text="Save To:" />
-
-            <Border Name="SaveToFileLabelBorder" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 17 0" Background="#FFF3E0" Padding="5" Tapped="BrowseSaveTapped">
-                <TextBlock Name="SaveToFileLabel" VerticalAlignment="Center" FontStyle="Italic" Text="None Selected" />
-            </Border>
-
-            <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE1DA;" Tapped="BrowseSaveTapped" />
-
-            <TextBlock Grid.Row="3" Grid.Column="1" Margin="0 10 0 10" Text="Port:" />
-
-            <ComboBox Name="PortSelector" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" Background="#95C87D" IsEnabled="{x:Bind PortAvailable, Mode=OneWay}" ItemsSource="{x:Bind Ports}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate x:DataType="devices:DeviceInformation">
-                        <TextBlock Text="{x:Bind Name}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-
-            <Button Grid.Row="4" Grid.Column="4" Margin="-18 0 2 0" VerticalAlignment="Center" Content="Refresh" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE117;" Tapped="RefreshRequested" />
-
-            <Button Grid.Row="6" Grid.Column="1" VerticalAlignment="Top" Content="Cancel" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE10A;" Tapped="CancelDataSelection" />
-
-            <Button Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Connect" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE10B;" Tapped="ShowDataRequested" />
             <!--#endregion-->
 
         </Grid>
-
-        <Grid Name="ConnectModuleView" Grid.RowSpan="2" Grid.ColumnSpan="2" Background="White">
-            <StackPanel Name="ConnectingModuleLoader" VerticalAlignment="Center" Orientation="Vertical">
-                <TextBlock Name="ConnectingModuleIcon" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="40" RenderTransformOrigin="0.5, 0.5" >
-                    <TextBlock.RenderTransform>
-                        <RotateTransform />
-                    </TextBlock.RenderTransform>
-                </TextBlock>
-                <TextBlock Name="ConnectingModuleLabel"  HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF9800" Text="Connecting to module..." />
-            </StackPanel>
-            <ScrollViewer Name="ModuleDataView" VerticalScrollBarVisibility="Auto">
-                <Grid Padding="10 5">
-                    <TextBlock Text="Datadatadata" />
-                </Grid>
-            </ScrollViewer>
-        </Grid>
-
-        <!--#endregion-->
-
-    </Grid>
-
+    </Page.Content>
 </Page>

@@ -70,24 +70,38 @@ namespace WindowsApp2._0.Controls
             set { MainGrid.SetValue(Panel.BackgroundProperty, value); }
         }
 
+
+
+        public Boolean UseSystemAccentColorForCurrentPointers
+        {
+            get { return (Boolean) GetValue(UseSystemAccentColorForCurrentPointersProperty); }
+            set { SetValue(UseSystemAccentColorForCurrentPointersProperty, value); }
+        }
+        
+        public static readonly DependencyProperty UseSystemAccentColorForCurrentPointersProperty =
+            DependencyProperty.Register("UseSystemAccentColorForCurrentPointers", typeof(Boolean), typeof(Chart2D), new PropertyMetadata(false, (s, e) => (s as Chart2D).RenderCurrentPointer()));
+
+
+
         Boolean ReRenderEnabled { get; set; } = false;
         #endregion
+        
 
         public Chart2D()
         {
             InitializeComponent();
-            //SizeChanged += ReRenderWrapper;
             Loaded += (s, e) =>
             {
                 ReRenderEnabled = true;
             };
         }
-
+        
 
         public void ReRender(Size newSize)
         {
             if (Visibility == Visibility.Visible && ReRenderEnabled)
             {
+                Debug.WriteLine("ReRendering");
                 PlotArea.Width = 3 * newSize.Width / 4;
                 PlotArea.Height = 3 * newSize.Height / 4;
 
@@ -164,7 +178,7 @@ namespace WindowsApp2._0.Controls
 
         void RenderCurrentPointer()
         {
-
+            SolidColorBrush strokeBrush = new SolidColorBrush(UseSystemAccentColorForCurrentPointers ? (Color)Resources["SystemAccentColor"] : Colors.Red);
             try
             {
                 PlotArea.Children.Remove(PlotArea.Children.OfType<Line>().First(p => p.Name == "CurrentDataPointer"));
@@ -184,7 +198,7 @@ namespace WindowsApp2._0.Controls
                     Y1 = 0,
                     X2 = (DesiredKey - Points.Keys.First()) * xStep,
                     Y2 = PlotArea.Height,
-                    Stroke = new SolidColorBrush(Colors.Red),
+                    Stroke = strokeBrush,
                     StrokeThickness = 2
                 });
                 VisualTreeHelper.DisconnectChildrenRecursive(CurrentDataPointerLabelSpace);
@@ -200,7 +214,7 @@ namespace WindowsApp2._0.Controls
                     Y1 = PlotArea.Height - (Points[DesiredKey] - Points.Values.Min()) * yStep,
                     X2 = PlotArea.Width,
                     Y2 = PlotArea.Height - (Points[DesiredKey] - Points.Values.Min()) * yStep,
-                    Stroke = new SolidColorBrush(Colors.Red),
+                    Stroke = strokeBrush,
                     StrokeThickness = 1
                 });
                 VisualTreeHelper.DisconnectChildrenRecursive(CurrentDataPointerLabelSpaceY);
@@ -220,8 +234,11 @@ namespace WindowsApp2._0.Controls
 
         public void Push(Int32 x, Double y)
         {
-            if (Points.Count < 1 || x > Points.Keys.Last()) Points.Add(x, y);
-            ReRender(RenderSize);
+            if (Points.Count < 1 || x > Points.Keys.Last())
+            {
+                Points.Add(x, y);
+                ReRender(RenderSize);
+            }
         }
 
         public void Push(Int32[] xs, Double[] ys)

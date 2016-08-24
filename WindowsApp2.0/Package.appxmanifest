@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="27908Vojtchtpank.CanSat" Publisher="CN=9882071D-CA42-49E6-B680-19FAFFC35CAD" Version="1.1.10.0" />
+  <Identity Name="27908Vojtchtpank.CanSat" Publisher="CN=9882071D-CA42-49E6-B680-19FAFFC35CAD" Version="1.1.14.0" />
   <mp:PhoneIdentity PhoneProductId="58ce4b7d-649d-4b0f-812c-d8c886872af3" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>CanSat</DisplayName>

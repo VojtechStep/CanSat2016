@@ -48,7 +48,7 @@ namespace WindowsApp2._0
             var rootFrame = Init();
             if (rootFrame.Content == null) rootFrame.Navigate(typeof(EntryPage));
             Window.Current.Activate();
-            try { await new Task(() => { while (true) { } }, new CancellationTokenSource(1000).Token); } catch(TaskCanceledException) {}
+            await Task.Delay(1000);
             var current = rootFrame.Content as EntryPage;
             current.UpdateEnvironmentWithFile(args.Files[0]);
             current.CurrentState = DataSelectionState.OpenView;

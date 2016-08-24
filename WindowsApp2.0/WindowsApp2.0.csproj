@@ -25,7 +25,7 @@
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <PackageCertificateThumbprint>3768526A4D68FAC6EEBE211B780CBA260C0990F4</PackageCertificateThumbprint>
-    <AssemblyVersion>1.0.6060.69</AssemblyVersion>
+    <AssemblyVersion>1.0.6076.101</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
