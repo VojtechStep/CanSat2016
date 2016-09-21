@@ -29,7 +29,7 @@ namespace WindowsApp2._0
     public sealed partial class EntryPage
     {
 
-        #region Properties, varables and stuff
+        #region Properties, variables and stuff
 
         Size _internalWindowSize;
         DispatcherTimer dataAnimationTimer = new DispatcherTimer();
@@ -323,7 +323,7 @@ namespace WindowsApp2._0
             if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "FileSuccess")
             {
                 lines.Remove(lines[0]);
-                //! File loaded successfuly
+                //! File loaded successfully
 
                 foreach (Chart2D chart in (FileDataView.Content as Grid).Children.OfType<Chart2D>()) chart.XMarkerConverter = ReadableTimeFromGPSTime;
 
@@ -397,8 +397,8 @@ namespace WindowsApp2._0
             ConnectingModuleIconAnimation.Stop();
             if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "ModuleSuccess")
             {
-                Task.Run(Listen);
                 Debug.WriteLine("Listening");
+                Task.Run(Listen);
             }
         }
 
@@ -458,13 +458,13 @@ namespace WindowsApp2._0
             var savePicker = new FileSavePicker
             {
                 SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
-                SuggestedFileName = "Mesurement",
+                SuggestedFileName = "Measurement",
                 DefaultFileExtension = ".csv",
                 FileTypeChoices =
                 {
                     ["Comma Separated Values"] = new String[] {".csv"},
                     ["Text"] = new String[] {".txt"},
-                    ["CanSat Mesurement"] = new String[] {".csmes"},
+                    ["CanSat Measurement"] = new String[] {".csmes"},
                     ["Log"] = new String[] {".log"}
                 }
             };

@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.25302.0
+VisualStudioVersion = 15.0.25618.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsCode", "WindowsCode\WindowsCode.csproj", "{BB89E30A-7B02-4432-92AC-4672E21172D3}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProbeCode", "ProbeCode\ProbeCode.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GroundStationCode", "GroundStationCode\GroundStationCode.vcxproj", "{4718EF5E-0E17-446F-94D2-95ED607AEEC4}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "CanSatPage", "CanSatPage", "{3C697F35-ED09-45F2-A52B-5FA1979CE41A}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "CanSatPage", "CanSatPage\", "{3C697F35-ED09-45F2-A52B-5FA1979CE41A}"
 	ProjectSection(WebsiteProperties) = preProject
 		SccProjectName = "SAK"
 		SccAuxPath = "SAK"
@@ -50,26 +48,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|ARM.ActiveCfg = Debug|ARM
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|ARM.Build.0 = Debug|ARM
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|ARM.Deploy.0 = Debug|ARM
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|x64.ActiveCfg = Debug|x64
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|x64.Build.0 = Debug|x64
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|x64.Deploy.0 = Debug|x64
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|x86.ActiveCfg = Debug|x86
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|x86.Build.0 = Debug|x86
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Debug|x86.Deploy.0 = Debug|x86
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|Any CPU.ActiveCfg = Release|x86
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|ARM.ActiveCfg = Release|ARM
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|ARM.Build.0 = Release|ARM
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|ARM.Deploy.0 = Release|ARM
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|x64.ActiveCfg = Release|x64
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|x64.Build.0 = Release|x64
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|x64.Deploy.0 = Release|x64
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|x86.ActiveCfg = Release|x86
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|x86.Build.0 = Release|x86
-		{BB89E30A-7B02-4432-92AC-4672E21172D3}.Release|x86.Deploy.0 = Release|x86
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|ARM.ActiveCfg = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x64.ActiveCfg = Debug|Win32
@@ -141,31 +119,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 7
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://vojtechstepancik.visualstudio.com/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = WindowsCode\\WindowsCode.csproj
-		SccProjectName1 = WindowsCode
-		SccLocalPath1 = WindowsCode
-		SccProjectUniqueName2 = ProbeCode\\ProbeCode.vcxproj
-		SccProjectName2 = ProbeCode
-		SccLocalPath2 = ProbeCode
-		SccProjectUniqueName3 = GroundStationCode\\GroundStationCode.vcxproj
-		SccProjectName3 = GroundStationCode
-		SccLocalPath3 = GroundStationCode
-		SccWebProject4 = true
-		SccProjectUniqueName4 = CanSatPage
-		SccProjectName4 = CanSatPage
-		SccLocalPath4 = CanSatPage
-		SccProjectEnlistmentChoice4 = 2
-		SccProjectUniqueName5 = CompanionCode\\CompanionCode.vcxproj
-		SccProjectName5 = CompanionCode
-		SccLocalPath5 = CompanionCode
-		SccProjectUniqueName6 = WindowsApp2.0\\WindowsApp2.0.csproj
-		SccProjectName6 = WindowsApp2.0
-		SccLocalPath6 = WindowsApp2.0
 	EndGlobalSection
 EndGlobal

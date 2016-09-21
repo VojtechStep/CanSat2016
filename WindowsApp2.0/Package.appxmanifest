@@ -30,7 +30,7 @@
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="csdata">
             <uap:DisplayName>CanSat data</uap:DisplayName>
-            <uap:InfoTip>Data collected via the CanSat setellite</uap:InfoTip>
+            <uap:InfoTip>Data collected via the CanSat satellite</uap:InfoTip>
             <uap:SupportedFileTypes>
               <uap:FileType ContentType="text/csv">.csv</uap:FileType>
               <uap:FileType ContentType="text/txt">.txt</uap:FileType>
