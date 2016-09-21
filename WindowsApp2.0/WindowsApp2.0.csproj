@@ -101,7 +101,6 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="DLLs\Patha.Utilities.pri" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -172,7 +171,6 @@
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="DLLs\Patha.Utilities.dll" />
-    <Content Include="DLLs\Patha.Utilities.pdb" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>

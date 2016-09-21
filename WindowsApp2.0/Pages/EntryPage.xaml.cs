@@ -72,13 +72,13 @@ namespace WindowsApp2._0
                         OpenPageOpen();
                         break;
                     case DataSelectionState.Connect:
-                        ConnectPageOpen();
+                        Task.Run(ConnectPageOpen);
                         break;
                     case DataSelectionState.OpenView:
-                        FileViewPageOpen();
+                        Task.Run(FileViewPageOpen);
                         break;
                     case DataSelectionState.ConnectView:
-                        ConnectModulePageOpen();
+                        Task.Run(ConnectModulePageOpen);
                         break;
                     default:
                         EntryViewOpen();
@@ -125,7 +125,7 @@ namespace WindowsApp2._0
         #region Render stuff
         public EntryPage()
         {
-            Init();
+            Task.Run(Init);
         }
 
         async Task Init()
@@ -141,11 +141,10 @@ namespace WindowsApp2._0
             nastyHackyTimerThingy.Tick += (s, o) =>
             {
                 nastyHackyTimerThingy.Stop();
-                Debug.WriteLine("Firing rerender");
+                Debug.WriteLine("Firing re-render");
                 if (CurrentState == DataSelectionState.OpenView) try { (FileDataView.Content as Grid)?.Children.OfType<Chart2D>().ForEach(p => p.ReRender(p.RenderSize)); } catch (InvalidOperationException) { }
             };
             await HideStatBar();
-            //CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
             ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Colors.White;
             ApplicationView.GetForCurrentView().TitleBar.ButtonForegroundColor = Colors.White;
             ApplicationView.GetForCurrentView().TitleBar.ButtonHoverForegroundColor = Colors.White;
@@ -398,7 +397,7 @@ namespace WindowsApp2._0
             ConnectingModuleIconAnimation.Stop();
             if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "ModuleSuccess")
             {
-                Listen();
+                Task.Run(Listen);
                 Debug.WriteLine("Listening");
             }
         }
