@@ -178,6 +178,7 @@
 **/ApplicationInsights.config
 
 # Windows Store app package directory
+**/Package.StoreAssociation.xml
 **/AppPackages/
 **/BundleArtifacts/
 
