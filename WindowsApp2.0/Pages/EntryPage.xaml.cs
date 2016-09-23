@@ -72,13 +72,13 @@ namespace WindowsApp2._0
                         OpenPageOpen();
                         break;
                     case DataSelectionState.Connect:
-                        Task.Run(ConnectPageOpen);
+                        ConnectPageOpen();
                         break;
                     case DataSelectionState.OpenView:
-                        Task.Run(FileViewPageOpen);
+                        FileViewPageOpen();
                         break;
                     case DataSelectionState.ConnectView:
-                        Task.Run(ConnectModulePageOpen);
+                        ConnectModulePageOpen();
                         break;
                     default:
                         EntryViewOpen();
@@ -125,7 +125,7 @@ namespace WindowsApp2._0
         #region Render stuff
         public EntryPage()
         {
-            Task.Run(Init);
+            Init();
         }
 
         async Task Init()
@@ -398,7 +398,7 @@ namespace WindowsApp2._0
             if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "ModuleSuccess")
             {
                 Debug.WriteLine("Listening");
-                Task.Run(Listen);
+                Listen();
             }
         }
 
