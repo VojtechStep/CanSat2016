@@ -373,20 +373,23 @@ namespace WindowsApp2._0
                 if (!String.IsNullOrWhiteSpace(saveFileToken))
                 {
                     await FileIO.WriteLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(saveFileToken), new String[] { "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" });
-                    if (await Communication.ConnectAsync(1500, (await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[PortSelector.SelectedIndex].Id))
+                    using (Communication com = new Communication())
                     {
-                        await Communication.WriteAsync(1500, (Byte)'s');
-                        if (await Communication.ReadAsync(1500) == 0x06)
+                        if (await com.ConnectAsync(1500, (await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[PortSelector.SelectedIndex].Id))
                         {
-                            if (await Communication.ReadAsync(1500) == 0x07)
+                            await com.WriteAsync(1500, (Byte)'s');
+                            if (await com.ReadAsync(1500) == 0x06)
                             {
-                                moduleStateAppend = "Success";
+                                if (await com.ReadAsync(1500) == 0x07)
+                                {
+                                    moduleStateAppend = "Success";
+                                }
+                                else { moduleStateAppend = "SDFail"; }
                             }
-                            else { moduleStateAppend = "SDFail"; }
+                            else { moduleStateAppend = "NotRecognised"; }
                         }
-                        else { moduleStateAppend = "NotRecognised"; }
+                        else { moduleStateAppend = "NotConnectable"; }
                     }
-                    else { moduleStateAppend = "NotConnectable"; }
                 }
                 else { moduleStateAppend = "FileNotSelected"; }
             }
