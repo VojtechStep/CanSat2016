@@ -25,7 +25,7 @@ namespace WindowsApp2._0
             var rootFrame = Init();
             if (!args.PrelaunchActivated)
             {
-                if (rootFrame.Content == null) rootFrame.Navigate(typeof(EntryPage), args.Arguments);
+                if (rootFrame.Content == null) rootFrame.Navigate(typeof(EntryPage));
                 Window.Current.Activate();
             }
         }

@@ -56,11 +56,11 @@
                                         </VisualState>
                                     </VisualStateGroup>
                                 </VisualStateManager.VisualStateGroups>
-                                <Border Name="BackgroundBorder" BorderBrush="#FF9800" BorderThickness="2 2 2 2" Padding="8 4 8 4">
+                                <Border Name="BackgroundBorder" BorderBrush="#FF9800" BorderThickness="2" Padding="8 4 8 4">
                                     <Border.Background>
                                         <SolidColorBrush Color="#FF9800" />
                                     </Border.Background>
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" Margin="2">
                                         <ContentPresenter Margin="0 0 5 0" VerticalAlignment="Center" Content="{TemplateBinding Content}" FontSize="{TemplateBinding FontSize}" />
                                         <TextBlock VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding Tag}" />
                                     </StackPanel>
@@ -460,6 +460,8 @@
                 <!--#endregion-->
 
                 <!--#region File Controls-->
+                <Button VerticalAlignment="Top" Grid.ColumnSpan="5" HorizontalAlignment="Left" Margin="15" FontSize="16" Style="{StaticResource OpenButtonStyle}" Tag="&#xE11B;" Content="Help" Tapped="HelpFileTapped" />
+
                 <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" Text="File:" />
 
                 <Border Name="SelectedFileLabelBorder" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="0 0 17 0" Background="#E0F2F1" IsTapEnabled="True" Padding="5" Tapped="BrowseOpenTapped">
@@ -576,10 +578,12 @@
                             </StackPanel>
                         </StackPanel>
 
-                        <TextBlock Grid.Row="13" Grid.ColumnSpan="8" Margin="5" FontSize="20" Text="Raw packets" />
+                        <StackPanel Grid.Row="13" Grid.ColumnSpan="8" Margin="5" Orientation="Horizontal">
+                            <TextBlock FontSize="20" Text="Raw packets"/>
+                            <Button FontSize="20" FontFamily="Segoe MDL2 Assets" Margin="15 0 0 0" Tapped="CopyDataToClipboard">&#xE16F;</Button>
+                        </StackPanel>
 
                         <TextBlock x:Name="RawPacketView" Grid.Row="14" Grid.ColumnSpan="8" Margin="5" />
-
                     </Grid>
                 </ScrollViewer>
                 <!--#region BottomAppBar-->
@@ -655,6 +659,8 @@
                 <!--#endregion-->
 
                 <!--#region Module Options-->
+
+                <Button VerticalAlignment="Top" HorizontalAlignment="Right" Grid.ColumnSpan="5" Margin="15" FontSize="16" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE11B;" Content="Help" Tapped="HelpModuleTapped" />
 
                 <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" Text="Save To:" />
 

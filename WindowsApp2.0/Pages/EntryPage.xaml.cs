@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using Patha.Utils;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Geolocation;
 using Windows.Devices.SerialCommunication;
@@ -21,6 +22,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
 using WindowsApp2._0.Controls;
 using WindowsApp2._0.Utils;
 
@@ -33,7 +35,7 @@ namespace WindowsApp2._0
 
         Size _internalWindowSize;
         DispatcherTimer dataAnimationTimer = new DispatcherTimer();
-        DispatcherTimer nastyHackyTimerThingy = new DispatcherTimer { Interval = new TimeSpan(0, 0 , 1) };
+        DispatcherTimer nastyHackyTimerThingy = new DispatcherTimer { Interval = new TimeSpan(0, 0, 1) };
         Boolean _centerMap = true;
 
         static Int32[] Times;
@@ -123,10 +125,6 @@ namespace WindowsApp2._0
         #endregion
 
         #region Render stuff
-        public EntryPage()
-        {
-            Init();
-        }
 
         async Task Init()
         {
@@ -134,8 +132,8 @@ namespace WindowsApp2._0
             SizeChanged += (s, e) => Recompose(e.NewSize);
             Loaded += (s, e) =>
             {
+                CurrentState = CurrentState;
                 Recompose(DesiredSize);
-                CurrentState = DataSelectionState.None;
             };
             dataAnimationTimer.Tick += (s, o) => TimeSlider.Value += 1;
             nastyHackyTimerThingy.Tick += (s, o) =>
@@ -150,6 +148,13 @@ namespace WindowsApp2._0
             ApplicationView.GetForCurrentView().TitleBar.ButtonHoverForegroundColor = Colors.White;
             ApplicationView.GetForCurrentView().TitleBar.ButtonPressedForegroundColor = Colors.White;
             ApplicationView.GetForCurrentView().FullScreenSystemOverlayMode = FullScreenSystemOverlayMode.Standard;
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            await Init();
+            if (e.Parameter != null) CurrentState = (DataSelectionState)e.Parameter;
+            else CurrentState = DataSelectionState.None;
         }
 
         async Task ShowStatBar()
@@ -260,25 +265,21 @@ namespace WindowsApp2._0
 
         void OpenPageOpen()
         {
-            if (ApiInformation.IsApiContractPresent("Windows.Phone.UI.Input.HardwareButtons", 1, 0))
-                Windows.Phone.UI.Input.HardwareButtons.BackPressed += GoToEntryPage;
+            SystemNavigationManager.GetForCurrentView().BackRequested += GoToEntryPage;
         }
 
         async Task ConnectPageOpen()
         {
-            if (ApiInformation.IsApiContractPresent("Windows.Phone.UI.Input.HardwareButtons", 1, 0))
-                Windows.Phone.UI.Input.HardwareButtons.BackPressed += GoToEntryPage;
+            SystemNavigationManager.GetForCurrentView().BackRequested += GoToEntryPage;
             await LoadSerialPorts();
         }
 
-        private void GoToEntryPage(Object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
+        private void GoToEntryPage(Object sender, BackRequestedEventArgs e)
         {
             if (!String.IsNullOrWhiteSpace(loadFileToken)) try { Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(loadFileToken); } catch (Exception) { }
             CurrentState = DataSelectionState.None;
-            if (ApiInformation.IsApiContractPresent("Windows.Phone.UI.Input.HardwareButtons", 1, 0))
-                Windows.Phone.UI.Input.HardwareButtons.BackPressed -= GoToEntryPage;
+            SystemNavigationManager.GetForCurrentView().BackRequested -= GoToEntryPage;
         }
-
 
 
         async Task FileViewPageOpen()
@@ -318,7 +319,6 @@ namespace WindowsApp2._0
 
             OpeningFileIconAnimation.Stop();
 
-            TimeSlider.IsEnabled = Play.IsEnabled = Settings.IsEnabled = true;
 
             if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "FileSuccess")
             {
@@ -345,11 +345,13 @@ namespace WindowsApp2._0
                 }
                 Altitudes = (from line in lines select Double.Parse(line.Split(',')[10])).ToArray();
 
-                RawPacketView.Text = String.Join("\n", lines);
+                RawPacketView.Text = String.Join(Environment.NewLine, lines);
                 TimeSlider.Maximum = Times.Count() - 1;
+                TimeSlider.Value = 0;
 
                 //TimeSlider.ThumbToolTipValueConverter = new TimeSliderConverter();
 
+                TimeSlider.IsEnabled = Play.IsEnabled = Settings.IsEnabled = true;
                 UpdateGraphs(0);
             }
         }
@@ -448,6 +450,51 @@ namespace WindowsApp2._0
                 CurrentState = DataSelectionState.None;
             }
         }
+
+        private void HelpFileTapped(Object sender, TappedRoutedEventArgs e)
+        {
+            var frame = Window.Current.Content as Frame;
+            if(frame != null)
+            {
+                frame.Navigate(typeof(Pages.FileHelp));
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+                SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToFileOptions;
+            }
+        }
+
+        private void HelpModuleTapped(Object sender, TappedRoutedEventArgs e)
+        {
+            var frame = Window.Current.Content as Frame;
+            if(frame != null)
+            {
+                frame.Navigate(typeof(Pages.ModuleHelp));
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+                SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToModuleOptions;
+            }
+        }
+
+        private void GoBackToFileOptions(Object sender, BackRequestedEventArgs e)
+        {
+            var frame = Window.Current.Content as Frame;
+            if(frame != null && frame.CanGoBack)
+            {
+                frame.Navigate(typeof(EntryPage), DataSelectionState.Open);
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+                SystemNavigationManager.GetForCurrentView().BackRequested -= GoBackToFileOptions;
+            }
+        }
+
+        private void GoBackToModuleOptions(Object sender, BackRequestedEventArgs e)
+        {
+            var frame = Window.Current.Content as Frame;
+            if(frame != null && frame.CanGoBack)
+            {
+                frame.Navigate(typeof(EntryPage), DataSelectionState.Connect);
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+                SystemNavigationManager.GetForCurrentView().BackRequested -= GoBackToModuleOptions;
+            }
+        }
+
 
         #endregion
 
@@ -613,17 +660,26 @@ namespace WindowsApp2._0
         {
             GPSDataMap.Style = (sender as ToggleSwitch).IsOn ? MapStyle.AerialWithRoads : MapStyle.Terrain;
         }
+
+        private void CopyDataToClipboard(Object sender, TappedRoutedEventArgs e)
+        {
+            DataPackage tempTextPackage = new DataPackage();
+            tempTextPackage.SetText(RawPacketView.Text);
+            Clipboard.Clear();
+            Clipboard.SetContent(tempTextPackage);
+        }
+
     }
 
     #region Enums and little helpers
 
     public enum DataSelectionState
     {
+        None,
         Open,
         Connect,
         OpenView,
-        ConnectView,
-        None
+        ConnectView
     }
 
     enum LayoutState
