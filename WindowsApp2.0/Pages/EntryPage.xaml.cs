@@ -358,8 +358,6 @@ namespace WindowsApp2._0
             ConnectingModuleIconAnimation.Begin();
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
             SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
-            if (ApiInformation.IsApiContractPresent("Windows.Phone.UI.Input.HardwareButtons", 1, 0))
-                Windows.Phone.UI.Input.HardwareButtons.BackPressed += GoBackToDataSelect;
 
 
             VisualStateManager.GoToState(this, "ModuleConnecting", false);
@@ -375,7 +373,7 @@ namespace WindowsApp2._0
                     await FileIO.WriteLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(saveFileToken), new String[] { "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" });
                     using (Communication com = new Communication())
                     {
-                        if (await com.ConnectAsync(1500, (await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[PortSelector.SelectedIndex].Id))
+                        if (await com.ConnectAsync(1500, Ports[PortSelector.SelectedIndex].Id))
                         {
                             await com.WriteAsync(1500, (Byte)'s');
                             if (await com.ReadAsync(1500) == 0x06)
@@ -405,7 +403,6 @@ namespace WindowsApp2._0
             }
         }
 
-        void GoBackToDataSelect(Object o, Windows.Phone.UI.Input.BackPressedEventArgs e) => GoBackToDataSelect(o, (BackRequestedEventArgs)null);
         void GoBackToDataSelect(object o, BackRequestedEventArgs e)
         {
             CurrentState = CurrentState == DataSelectionState.OpenView ? DataSelectionState.Open : (CurrentState == DataSelectionState.ConnectView ? DataSelectionState.Connect : DataSelectionState.None);
@@ -413,10 +410,9 @@ namespace WindowsApp2._0
             ConnectingModuleIconAnimation.Stop();
             dataAnimationTimer.Stop();
             (FileDataView.Content as Grid).Children.OfType<Chart2D>().ForEach(p => p.Clear());
-            if (ApiInformation.IsApiContractPresent("Windows.Phone.UI.Input.HardwareButtons", 1, 0))
-                Windows.Phone.UI.Input.HardwareButtons.BackPressed -= GoBackToDataSelect;
             SystemNavigationManager.GetForCurrentView().BackRequested -= GoBackToDataSelect;
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+            e.Handled = true;
         }
 
         void CancelDataSelection(Object sender, TappedRoutedEventArgs e) => CurrentState = DataSelectionState.None;
@@ -495,7 +491,10 @@ namespace WindowsApp2._0
 
         async Task Listen()
         {
-            await Task.Run(() => { });
+            using (Communication com = new Communication())
+            {
+                await com.ConnectAsync(3000, Ports[PortSelector.SelectedIndex].Id);
+            }
         }
 
         #endregion
