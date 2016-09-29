@@ -460,7 +460,7 @@
                 <!--#endregion-->
 
                 <!--#region File Controls-->
-                <Button VerticalAlignment="Top" Grid.ColumnSpan="5" HorizontalAlignment="Left" Margin="15" FontSize="16" Style="{StaticResource OpenButtonStyle}" Tag="&#xE11B;" Content="Help" Tapped="HelpFileTapped" />
+                <Button VerticalAlignment="Top" Grid.ColumnSpan="5" Grid.RowSpan="6" HorizontalAlignment="Left" Margin="15" FontSize="16" Style="{StaticResource OpenButtonStyle}" Tag="&#xE11B;" Content="Help" Tapped="HelpFileTapped" />
 
                 <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" Text="File:" />
 
@@ -660,7 +660,7 @@
 
                 <!--#region Module Options-->
 
-                <Button VerticalAlignment="Top" HorizontalAlignment="Right" Grid.ColumnSpan="5" Margin="15" FontSize="16" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE11B;" Content="Help" Tapped="HelpModuleTapped" />
+                <Button VerticalAlignment="Top" HorizontalAlignment="Right" Grid.ColumnSpan="5" Grid.RowSpan="8" Margin="15" FontSize="16" Style="{StaticResource ConnectButtonStyle}" Tag="&#xE11B;" Content="Help" Tapped="HelpModuleTapped" />
 
                 <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 0 0 10" Text="Save To:" />
 
