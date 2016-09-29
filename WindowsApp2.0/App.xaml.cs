@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Microsoft.HockeyApp;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -16,6 +17,7 @@ namespace WindowsApp2._0
             Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
                 Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
+            HockeyClient.Current.Configure("f924c802b42341bfb7f016b55d01fc5c");
             InitializeComponent();
             Suspending += OnSuspending;
         }

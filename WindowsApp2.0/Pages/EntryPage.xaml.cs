@@ -36,7 +36,6 @@ namespace WindowsApp2._0
         Size _internalWindowSize;
         DispatcherTimer dataAnimationTimer = new DispatcherTimer();
         DispatcherTimer nastyHackyTimerThingy = new DispatcherTimer { Interval = new TimeSpan(0, 0, 1) };
-        Boolean _centerMap = true;
 
         static Int32[] Times;
         Double[] Longitudes;
@@ -58,12 +57,15 @@ namespace WindowsApp2._0
         String saveFileToken;
 
         DataSelectionState _currentState = DataSelectionState.None;
+        Boolean CenterMap { get; set; } = true;
+        Boolean LoopAnimation { get; set; } = false;
 
         public DataSelectionState CurrentState
         {
             get { return _currentState; }
             set
             {
+                SystemNavigationManager.GetForCurrentView().BackRequested -= GoToEntryPage;
                 _currentState = value;
                 Bindings.Update();
                 DataSelectionAnimation.Begin();
@@ -135,7 +137,19 @@ namespace WindowsApp2._0
                 CurrentState = CurrentState;
                 Recompose(DesiredSize);
             };
-            dataAnimationTimer.Tick += (s, o) => TimeSlider.Value += 1;
+            dataAnimationTimer.Tick += (s, o) =>
+            {
+                if (TimeSlider.Value < Times.Length - 1)
+                    TimeSlider.Value += 1;
+                else if (LoopAnimation)
+                    TimeSlider.Value = 0;
+                else
+                {
+                    dataAnimationTimer.Stop();
+                    Play.Content = "\uE102";
+                    Play.Tag = "Play";
+                }
+            };
             nastyHackyTimerThingy.Tick += (s, o) =>
             {
                 nastyHackyTimerThingy.Stop();
@@ -550,6 +564,8 @@ namespace WindowsApp2._0
 
         async void BrowseOpenTapped(Object sender, TappedRoutedEventArgs e)
         {
+            BrowseOpenButton.IsEnabled = false;
+            SelectedFileLabelBorder.Tapped -= BrowseOpenTapped;
             var openPicker = new FileOpenPicker
             {
                 SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
@@ -562,9 +578,13 @@ namespace WindowsApp2._0
             };
             var loadFile = await openPicker.PickSingleFileAsync();
 
-            if (loadFile == null) return;
-            if (!String.IsNullOrWhiteSpace(loadFileToken)) Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(loadFileToken);
-            UpdateEnvironmentWithFile(loadFile);
+            if (loadFile != null)
+            {
+                if (!String.IsNullOrWhiteSpace(loadFileToken)) Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(loadFileToken);
+                UpdateEnvironmentWithFile(loadFile);
+            }
+            SelectedFileLabelBorder.Tapped += BrowseOpenTapped;
+            BrowseOpenButton.IsEnabled = true;
         }
 
         public void UpdateEnvironmentWithFile(IStorageItem loadFile)
@@ -591,7 +611,7 @@ namespace WindowsApp2._0
                 Longitude = Longitudes[newValue],
                 Altitude = Altitudes[newValue]
             });
-            if (_centerMap)
+            if (CenterMap)
                 GPSDataMap.Center = ps;
             GPSDataMap.MapElements.Add(new MapIcon
             {
@@ -616,6 +636,14 @@ namespace WindowsApp2._0
                 return (gpsData - Minutes) / (Math.Pow(10, gpsData.ToString().Length - 5)) + (Minutes / 60);
             }
             return 0;
+        }
+
+        private void CopyDataToClipboard(Object sender, TappedRoutedEventArgs e)
+        {
+            DataPackage tempTextPackage = new DataPackage();
+            tempTextPackage.SetText(RawPacketView.Text);
+            Clipboard.Clear();
+            Clipboard.SetContent(tempTextPackage);
         }
 
         void Play_Tapped(Object sender, TappedRoutedEventArgs e)
@@ -643,7 +671,17 @@ namespace WindowsApp2._0
         }
         void CenterMap_Toggled(Object sender, RoutedEventArgs e)
         {
-            _centerMap = (sender as ToggleSwitch).IsOn;
+            CenterMap = (sender as ToggleSwitch).IsOn;
+        }
+
+        private void AerialToggled(Object sender, RoutedEventArgs e)
+        {
+            GPSDataMap.Style = (sender as ToggleSwitch).IsOn ? MapStyle.AerialWithRoads : MapStyle.Terrain;
+        }
+
+        private void LoopToggled(Object sender, RoutedEventArgs e)
+        {
+            LoopAnimation = (sender as ToggleSwitch).IsOn;
         }
 
         #endregion
@@ -655,20 +693,6 @@ namespace WindowsApp2._0
             var Seconds = Math.Floor(toConvert) % 100 < 10 ? $"0{Math.Floor(toConvert) % 100}" : (Math.Floor(toConvert) % 100).ToString();
             return $"{Hours}:{Minutes}:{Seconds}";
         }
-
-        private void ToggleSwitch_Toggled(Object sender, RoutedEventArgs e)
-        {
-            GPSDataMap.Style = (sender as ToggleSwitch).IsOn ? MapStyle.AerialWithRoads : MapStyle.Terrain;
-        }
-
-        private void CopyDataToClipboard(Object sender, TappedRoutedEventArgs e)
-        {
-            DataPackage tempTextPackage = new DataPackage();
-            tempTextPackage.SetText(RawPacketView.Text);
-            Clipboard.Clear();
-            Clipboard.SetContent(tempTextPackage);
-        }
-
     }
 
     #region Enums and little helpers

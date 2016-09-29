@@ -468,7 +468,7 @@
                     <TextBlock Name="SelectedFileLabel" VerticalAlignment="Center" FontStyle="Italic" Text="None Selected" />
                 </Border>
 
-                <Button Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Style="{StaticResource OpenButtonStyle}" Tag="&#xE1A5;" Tapped="BrowseOpenTapped" />
+                <Button Name="BrowseOpenButton"  Grid.Row="2" Grid.Column="4" Margin="-17 0 2 0" VerticalAlignment="Center" Content="Browse" Style="{StaticResource OpenButtonStyle}" Tag="&#xE1A5;" Tapped="BrowseOpenTapped" />
 
                 <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Content="Cancel" Style="{StaticResource OpenButtonStyle}" Tag="&#xE10A;" Tapped="CancelDataSelection" />
 
@@ -614,8 +614,9 @@
                                                 <TextBlock Text="5" />
                                             </ComboBox.Items>
                                         </ComboBox>
-                                        <ToggleSwitch Header="Center map" IsOn="True" Toggled="CenterMap_Toggled"/>
-                                        <ToggleSwitch Header="Aerial map" IsOn="False" Toggled="ToggleSwitch_Toggled" />
+                                        <ToggleSwitch Header="Loop" IsOn="False" Toggled="LoopToggled" />
+                                        <ToggleSwitch Header="Center map" IsOn="True" Toggled="CenterMap_Toggled" />
+                                        <ToggleSwitch Header="Aerial map" IsOn="False" Toggled="AerialToggled" />
                                     </StackPanel>
                                 </Flyout>
                             </Button.Flyout>
