@@ -7,18 +7,19 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="#2BD9AE" HorizontalAlignment="Stretch">
+    <Grid Background="White" HorizontalAlignment="Stretch">
         <StackPanel HorizontalAlignment="Stretch">
-            <TextBlock Name="Header" HorizontalAlignment="Center" Margin="0 100 0 0" Foreground="#FF9800" FontSize="30" FontFamily="Consolas">
+            <TextBlock Name="Header" HorizontalAlignment="Center" Margin="0 100 0 0" Foreground="Black" FontSize="30" FontFamily="Consolas">
                 Opening file?
             </TextBlock>
+            <RelativePanel Height="3" Margin="10" Background="#009688"  />
             <RichTextBlock TextWrapping="Wrap" Margin="20 0 20 0">
                 <Paragraph>
-                    <Run Foreground="White" FontFamily="Consolas" Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean non posuere diam, aliquam tempus libero. Duis malesuada semper ex, nec vulputate lacus lacinia id. Donec bibendum, enim quis fermentum egestas, sapien sapien accumsan elit, et aliquet neque neque quis turpis. Aenean a orci felis. Morbi interdum suscipit erat id bibendum. Nulla molestie, tortor ac fermentum iaculis, diam erat volutpat est, sollicitudin pharetra libero erat non lacus. Maecenas sit amet sapien accumsan, dapibus justo vel, mollis eros. Sed et dignissim ipsum. Sed ac vulputate justo, eget elementum metus. Quisque sed nulla nibh. Quisque et consectetur justo." />
+                    <Run Foreground="Black" FontFamily="Consolas" Text="For data rendering we use kind of .csv. With love, your Lobster" />
                 </Paragraph>
             </RichTextBlock>
-            <HyperlinkButton Margin="40" Width="120" Height="40" HorizontalAlignment="Center" Background="LightGray" NavigateUri="https://1drv.ms/u/s!AsVJrndh008ZnP01ASGKkjhahGlcJw" >
-                csv. file example
+            <HyperlinkButton Margin="40" Width="120" Height="40" HorizontalAlignment="Center" Background="#009688" Foreground="White" NavigateUri="https://1drv.ms/u/s!AsVJrndh008ZnP01ASGKkjhahGlcJw" >
+                .csv file example
             </HyperlinkButton>
         </StackPanel>
     </Grid>
