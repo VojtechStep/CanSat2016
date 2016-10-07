@@ -17,7 +17,7 @@ namespace WindowsApp2._0
             Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
                 Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
-            HockeyClient.Current.Configure("f924c802b42341bfb7f016b55d01fc5c");
+            HockeyClient.Current.Configure("898dfc3f60054df2997a787deeaacddb");
             InitializeComponent();
             Suspending += OnSuspending;
         }
@@ -54,6 +54,18 @@ namespace WindowsApp2._0
             var current = rootFrame.Content as EntryPage;
             current.UpdateEnvironmentWithFile(args.Files[0]);
             current.CurrentState = DataSelectionState.OpenView;
+        }
+
+        protected override void OnActivated(IActivatedEventArgs args)
+        {
+            if(args.Kind == ActivationKind.Protocol)
+            {
+                var prtArgs = args as ProtocolActivatedEventArgs;
+                //TODO: Use the protocol data
+                var rootFrame = Init();
+                if (rootFrame.Content == null) rootFrame.Navigate(typeof(EntryPage));
+                Window.Current.Activate();
+            }
         }
 
         void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
