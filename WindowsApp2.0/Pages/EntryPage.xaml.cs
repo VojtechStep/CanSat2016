@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -36,6 +37,7 @@ namespace WindowsApp2._0
         Size _internalWindowSize;
         DispatcherTimer dataAnimationTimer = new DispatcherTimer();
         DispatcherTimer nastyHackyTimerThingy = new DispatcherTimer { Interval = new TimeSpan(0, 0, 1) };
+        DeviceWatcher deviceWatcher;
 
         static Int32[] Times;
         Double[] Longitudes;
@@ -120,7 +122,7 @@ namespace WindowsApp2._0
                                                 : 0);
 
 
-        List<DeviceInformation> Ports { get; } = new List<DeviceInformation>();
+        ObservableCollection<DeviceInformation> Ports { get; } = new ObservableCollection<DeviceInformation>();
 
         Boolean PortAvailable => Ports?.Count > 0;
 
@@ -131,6 +133,7 @@ namespace WindowsApp2._0
         async Task Init()
         {
             InitializeComponent();
+            var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
             SizeChanged += (s, e) => Recompose(e.NewSize);
             Loaded += (s, e) =>
             {
@@ -155,6 +158,17 @@ namespace WindowsApp2._0
                 nastyHackyTimerThingy.Stop();
                 Debug.WriteLine("Firing re-render");
                 if (CurrentState == DataSelectionState.OpenView) try { (FileDataView.Content as Grid)?.Children.OfType<Chart2D>().ForEach(p => p.ReRender(p.RenderSize)); } catch (InvalidOperationException) { }
+            };
+            Ports.CollectionChanged += (s, e) => Bindings.Update();
+            deviceWatcher = DeviceInformation.CreateWatcher(SerialDevice.GetDeviceSelector());
+            deviceWatcher.Added += async (s, dinf) =>
+            {
+                if (Ports.Count == 0 ||( !Ports.Contains(dinf))) await dispatcher.RunAsync(CoreDispatcherPriority.High, () => Ports.Add(dinf));
+                if (Ports.Count == 1) await dispatcher.RunAsync(CoreDispatcherPriority.High, () => PortSelector.SelectedItem = dinf);
+            };
+            deviceWatcher.Removed += async (s, dinf) =>
+            {
+                if (Ports.Count > 0 && Ports.Count(p => p.Id == dinf.Id) != 0) await dispatcher.RunAsync(CoreDispatcherPriority.High, () => Ports.Remove(Ports.First(p => p.Id == dinf.Id)));
             };
             await HideStatBar();
             ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Colors.White;
@@ -274,7 +288,7 @@ namespace WindowsApp2._0
         #region Navigation stuff
         void EntryViewOpen()
         {
-
+            if(deviceWatcher.Status == DeviceWatcherStatus.Started) deviceWatcher.Stop();
         }
 
         void OpenPageOpen()
@@ -285,139 +299,19 @@ namespace WindowsApp2._0
         async Task ConnectPageOpen()
         {
             SystemNavigationManager.GetForCurrentView().BackRequested += GoToEntryPage;
-            await LoadSerialPorts();
+            if(deviceWatcher.Status == DeviceWatcherStatus.Created ||
+                deviceWatcher.Status == DeviceWatcherStatus.Aborted ||
+                deviceWatcher.Status == DeviceWatcherStatus.Stopped) deviceWatcher.Start();
         }
 
         private void GoToEntryPage(Object sender, BackRequestedEventArgs e)
         {
-            if (!String.IsNullOrWhiteSpace(loadFileToken)) try { Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(loadFileToken); } catch (Exception) { }
+            if (!String.IsNullOrWhiteSpace(loadFileToken)) try { Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(loadFileToken); } catch { }
+            if(!String.IsNullOrWhiteSpace(saveFileToken)) try { Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(saveFileToken); } catch { }
             CurrentState = DataSelectionState.None;
             SystemNavigationManager.GetForCurrentView().BackRequested -= GoToEntryPage;
         }
 
-
-        async Task FileViewPageOpen()
-        {
-            TimeSlider.IsEnabled = Play.IsEnabled = Settings.IsEnabled = false;
-            OpeningFileIconAnimation.Begin();
-            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
-            SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
-
-            IList<String> lines = null;
-            VisualStateManager.GoToState(this, "FileLoading", false);
-
-            //VisualStateManager.GoToState(this, "File" + ((!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken) && (lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken))) != null) ? (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" ? (lines.Count > 2 ? "Success" : "Empty") : "UnknownHeader") : "Fail"), false);
-
-            String fileStateAppend;
-
-            if (!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken))
-            {
-                lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken));
-                if (lines != null)
-                {
-                    if (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]")
-                    {
-                        if (lines.Count > 2)
-                        {
-                            fileStateAppend = "Success";
-                        }
-                        else { fileStateAppend = "Empty"; }
-                    }
-                    else { fileStateAppend = "UnknownHeader"; }
-                }
-                else { fileStateAppend = "Fail"; }
-            }
-            else { fileStateAppend = "Fail"; }
-
-            VisualStateManager.GoToState(this, "File" + fileStateAppend, false);
-
-            OpeningFileIconAnimation.Stop();
-
-
-            if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "FileSuccess")
-            {
-                lines.Remove(lines[0]);
-                //! File loaded successfully
-
-                foreach (Chart2D chart in (FileDataView.Content as Grid).Children.OfType<Chart2D>()) chart.XMarkerConverter = ReadableTimeFromGPSTime;
-
-                Times = (from line in lines select (Int32)Double.Parse(line.Split(',')[0])).ToArray();
-                TemperatureChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[1])).ToArray());
-                PressureChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[2])).ToArray());
-                XAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[3])).ToArray());
-                YAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[4])).ToArray());
-                ZAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[5])).ToArray());
-                if ((await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken)).DisplayName.Contains("FinalData"))
-                {
-                    Latitudes = (from line in lines select Double.Parse(line.Split(',')[6]) / 100).ToArray();
-                    Longitudes = (from line in lines select Double.Parse(line.Split(',')[8]) / 100).ToArray();
-                }
-                else
-                {
-                    Latitudes = (from line in lines select (Math.Floor((Double.Parse(line.Split(',')[6])) / 100) + (Double.Parse(line.Split(',')[6]) % 100) / 60)).ToArray();
-                    Longitudes = (from line in lines select (Math.Floor((Double.Parse(line.Split(',')[8])) / 100) + (Double.Parse(line.Split(',')[8]) % 100) / 60)).ToArray();
-                }
-                Altitudes = (from line in lines select Double.Parse(line.Split(',')[10])).ToArray();
-
-                RawPacketView.Text = String.Join(Environment.NewLine, lines);
-                TimeSlider.Maximum = Times.Count() - 1;
-                TimeSlider.Value = 0;
-
-                //TimeSlider.ThumbToolTipValueConverter = new TimeSliderConverter();
-
-                TimeSlider.IsEnabled = Play.IsEnabled = Settings.IsEnabled = true;
-                UpdateGraphs(0);
-            }
-        }
-        async Task ConnectModulePageOpen()
-        {
-            ConnectingModuleIconAnimation.Begin();
-            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
-            SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
-
-
-            VisualStateManager.GoToState(this, "ModuleConnecting", false);
-
-            //VisualStateManager.GoToState(this, "Module" + ((PortAvailable) ? (!String.IsNullOrWhiteSpace(saveFileToken) ? (await Communication.ConnectAsync(1000, (await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[PortSelector.SelectedIndex].Id) ? (((await Communication.WriteAsync((Byte)'s')) && (await Communication.ReadAsync(1000)) == 0x06) ? (((await Communication.ReadAsync(1000)) == 0x07) ? "Success" : "SDFail") : "NotRecognised") : "NotConnectable") : "FileNotSelected") : "NotConnected"), false);
-
-            String moduleStateAppend;
-
-            if (PortAvailable)
-            {
-                if (!String.IsNullOrWhiteSpace(saveFileToken))
-                {
-                    await FileIO.WriteLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(saveFileToken), new String[] { "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" });
-                    using (Communication com = new Communication())
-                    {
-                        if (await com.ConnectAsync(1500, Ports[PortSelector.SelectedIndex].Id))
-                        {
-                            await com.WriteAsync(1500, (Byte)'s');
-                            if (await com.ReadAsync(1500) == 0x06)
-                            {
-                                if (await com.ReadAsync(1500) == 0x07)
-                                {
-                                    moduleStateAppend = "Success";
-                                }
-                                else { moduleStateAppend = "SDFail"; }
-                            }
-                            else { moduleStateAppend = "NotRecognised"; }
-                        }
-                        else { moduleStateAppend = "NotConnectable"; }
-                    }
-                }
-                else { moduleStateAppend = "FileNotSelected"; }
-            }
-            else { moduleStateAppend = "NotConnected"; }
-
-            VisualStateManager.GoToState(this, "Module" + moduleStateAppend, false);
-
-            ConnectingModuleIconAnimation.Stop();
-            if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "ModuleSuccess")
-            {
-                Debug.WriteLine("Listening");
-                Listen();
-            }
-        }
 
         void GoBackToDataSelect(object o, BackRequestedEventArgs e)
         {
@@ -508,13 +402,13 @@ namespace WindowsApp2._0
                 SystemNavigationManager.GetForCurrentView().BackRequested -= GoBackToModuleOptions;
             }
         }
-
-
         #endregion
 
         #region Serial stuff
         async void BrowseSaveTapped(Object sender, TappedRoutedEventArgs e)
         {
+            BrowseSaveButton.IsEnabled = false;
+            SaveToFileLabelBorder.Tapped -= BrowseSaveTapped;
             var savePicker = new FileSavePicker
             {
                 SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
@@ -529,25 +423,69 @@ namespace WindowsApp2._0
                 }
             };
             var saveFile = await savePicker.PickSaveFileAsync();
-            if (saveFile == null) return;
-            saveFileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(saveFile);
-            SaveToFileLabel.Text = saveFile.Path;
-            ToolTipService.SetToolTip(SaveToFileLabelBorder, saveFile.Path);
+            if (saveFile != null)
+            {
+                if (!String.IsNullOrWhiteSpace(saveFileToken)) Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(saveFileToken);
+                saveFileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(saveFile);
+                SaveToFileLabel.Text = saveFile.Path;
+                ToolTipService.SetToolTip(SaveToFileLabelBorder, saveFile.Path);
+            }
+            SaveToFileLabelBorder.Tapped += BrowseSaveTapped;
+            BrowseSaveButton.IsEnabled = true;
         }
 
-        async void RefreshRequested(Object sender, TappedRoutedEventArgs e) => await LoadSerialPorts();
-
-        async Task LoadSerialPorts()
+        async Task ConnectModulePageOpen()
         {
-            Ports.Clear();
-            var selector = SerialDevice.GetDeviceSelector();
-            DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(selector).AsTask(new CancellationTokenSource(2000).Token);
-            foreach (DeviceInformation di in devices)
+            if (deviceWatcher.Status == DeviceWatcherStatus.Started) deviceWatcher.Stop();
+            ConnectingModuleIconAnimation.Begin();
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+            SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
+
+
+            VisualStateManager.GoToState(this, "ModuleConnecting", false);
+
+            //VisualStateManager.GoToState(this, "Module" + ((PortAvailable) ? (!String.IsNullOrWhiteSpace(saveFileToken) ? (await Communication.ConnectAsync(1000, (await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))[PortSelector.SelectedIndex].Id) ? (((await Communication.WriteAsync((Byte)'s')) && (await Communication.ReadAsync(1000)) == 0x06) ? (((await Communication.ReadAsync(1000)) == 0x07) ? "Success" : "SDFail") : "NotRecognised") : "NotConnectable") : "FileNotSelected") : "NotConnected"), false);
+
+            String moduleStateAppend;
+
+            if (PortAvailable)
             {
-                Ports.Add(di);
+                if (!String.IsNullOrWhiteSpace(saveFileToken))
+                {
+                    await FileIO.WriteLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(saveFileToken), new String[] { "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" });
+                    using (Communication com = new Communication())
+                    {
+                        if (await com.ConnectAsync(3000, Ports[PortSelector.SelectedIndex].Id, 9600))
+                        {
+                            await com.WriteAsync(1500, 0x73);
+                            var inp = await com.ReadAsync(6000);
+                            if (!inp.HasValue) Debug.WriteLine("The module responded nothing");
+                            Debug.WriteLine($"X{inp:X}");
+                            if (inp == 0x06)
+                            {
+                                if (await com.ReadAsync(1500) == 0x07)
+                                {
+                                    moduleStateAppend = "Success";
+                                }
+                                else { moduleStateAppend = "SDFail"; }
+                            }
+                            else { moduleStateAppend = "NotRecognised"; }
+                        }
+                        else { moduleStateAppend = "NotConnectable"; }
+                    }
+                }
+                else { moduleStateAppend = "FileNotSelected"; }
             }
-            Bindings.Update();
-            if (PortAvailable) PortSelector.SelectedIndex = 0;
+            else { moduleStateAppend = "NotConnected"; }
+
+            VisualStateManager.GoToState(this, "Module" + moduleStateAppend, false);
+
+            ConnectingModuleIconAnimation.Stop();
+            if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "ModuleSuccess")
+            {
+                Debug.WriteLine("Listening");
+                Listen();
+            }
         }
 
         async Task Listen()
@@ -592,6 +530,80 @@ namespace WindowsApp2._0
             loadFileToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(loadFile);
             SelectedFileLabel.Text = loadFile.Path;
             ToolTipService.SetToolTip(SelectedFileLabelBorder, loadFile.Path);
+        }
+
+        async Task FileViewPageOpen()
+        {
+            TimeSlider.IsEnabled = Play.IsEnabled = Settings.IsEnabled = false;
+            OpeningFileIconAnimation.Begin();
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+            SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
+
+            IList<String> lines = null;
+            VisualStateManager.GoToState(this, "FileLoading", false);
+
+            //VisualStateManager.GoToState(this, "File" + ((!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken) && (lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken))) != null) ? (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" ? (lines.Count > 2 ? "Success" : "Empty") : "UnknownHeader") : "Fail"), false);
+
+            String fileStateAppend;
+
+            if (!String.IsNullOrWhiteSpace(loadFileToken) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(loadFileToken))
+            {
+                lines = await FileIO.ReadLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken));
+                if (lines != null)
+                {
+                    if (lines.Count > 0 && lines[0] == "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]")
+                    {
+                        if (lines.Count > 2)
+                        {
+                            fileStateAppend = "Success";
+                        }
+                        else { fileStateAppend = "Empty"; }
+                    }
+                    else { fileStateAppend = "UnknownHeader"; }
+                }
+                else { fileStateAppend = "Fail"; }
+            }
+            else { fileStateAppend = "Fail"; }
+
+            VisualStateManager.GoToState(this, "File" + fileStateAppend, false);
+
+            OpeningFileIconAnimation.Stop();
+
+
+            if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "FileSuccess")
+            {
+                lines.Remove(lines[0]);
+                //! File loaded successfully
+
+                foreach (Chart2D chart in (FileDataView.Content as Grid).Children.OfType<Chart2D>()) chart.XMarkerConverter = ReadableTimeFromGPSTime;
+
+                Times = (from line in lines select (Int32)Double.Parse(line.Split(',')[0])).ToArray();
+                TemperatureChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[1])).ToArray());
+                PressureChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[2])).ToArray());
+                XAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[3])).ToArray());
+                YAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[4])).ToArray());
+                ZAccChart.Push(Times, (from line in lines select Double.Parse(line.Split(',')[5])).ToArray());
+                if ((await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(loadFileToken)).DisplayName.Contains("FinalData"))
+                {
+                    Latitudes = (from line in lines select Double.Parse(line.Split(',')[6]) / 100).ToArray();
+                    Longitudes = (from line in lines select Double.Parse(line.Split(',')[8]) / 100).ToArray();
+                }
+                else
+                {
+                    Latitudes = (from line in lines select (Math.Floor((Double.Parse(line.Split(',')[6])) / 100) + (Double.Parse(line.Split(',')[6]) % 100) / 60)).ToArray();
+                    Longitudes = (from line in lines select (Math.Floor((Double.Parse(line.Split(',')[8])) / 100) + (Double.Parse(line.Split(',')[8]) % 100) / 60)).ToArray();
+                }
+                Altitudes = (from line in lines select Double.Parse(line.Split(',')[10])).ToArray();
+
+                RawPacketView.Text = String.Join(Environment.NewLine, lines);
+                TimeSlider.Maximum = Times.Count() - 1;
+                TimeSlider.Value = 0;
+
+                //TimeSlider.ThumbToolTipValueConverter = new TimeSliderConverter();
+
+                TimeSlider.IsEnabled = Play.IsEnabled = Settings.IsEnabled = true;
+                UpdateGraphs(0);
+            }
         }
 
         void TimeSlider_ValueChanged(Object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e) => UpdateGraphs((Int32)e.NewValue);

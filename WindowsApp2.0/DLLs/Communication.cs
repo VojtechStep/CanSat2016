@@ -19,20 +19,29 @@ namespace WindowsApp2._0.Utils
         /// <summary>
         /// Initialize a connection with a USB device
         /// </summary>
-        /// <param name="Token">Token to cancel the connection</param>
+        /// <param name="Token">Token to cancel the connection attempt</param>
         /// <param name="DeviceId">ID of the device you want to connect to</param>
         /// <param name="BaudRate">Baud rate of the connection</param>
+        /// <param name="Parity">Parity of the connection</param>
+        /// <param name="DataBits">Data bits of the connection</param>
+        /// <param name="Handshake">Handshake of the connection</param>
+        /// <param name="StopBits">Stop bits of the connection</param>
         /// <returns>Whether the connection was established</returns>
-        public async Task<Boolean> ConnectAsync(CancellationToken Token, String DeviceId, UInt32 BaudRate)
+        public async Task<Boolean> ConnectAsync(CancellationToken Token, String DeviceId, UInt32 BaudRate, SerialParity Parity, UInt16 DataBits, SerialHandshake Handshake, SerialStopBitCount StopBits)
         {
             try
             {
                 Token.ThrowIfCancellationRequested();
                 serialPort = await SerialDevice.FromIdAsync(DeviceId);
-                serialPort.BaudRate = BaudRate;
-
                 if (serialPort != null)
                 {
+                    serialPort.PinChanged += (s, e) => Debug.WriteLine("Pin changed");
+                    serialPort.BaudRate = BaudRate;
+                    serialPort.Parity = Parity;
+                    serialPort.DataBits = DataBits;
+                    serialPort.Handshake = Handshake;
+                    serialPort.StopBits = StopBits;
+
                     dataWriter = new DataWriter(serialPort.OutputStream);
                     dataReader = new DataReader(serialPort.InputStream);
                     return true;
@@ -46,17 +55,41 @@ namespace WindowsApp2._0.Utils
         /// <summary>
         /// Initialize a connection with a USB device
         /// </summary>
-        /// <param name="Token">Token to cancel the connection</param>
+        /// <param name="Token">Token to cancel the connection attempt</param>
+        /// <param name="DeviceId">ID of the device you want to connect to</param>
+        /// <param name="BaudRate">Baud rate of the connection</param>
+        /// <returns>Whether the connection was established</returns>
+        public async Task<Boolean> ConnectAsync(CancellationToken Token, String DeviceId, UInt32 BaudRate) => await ConnectAsync(Token, DeviceId, BaudRate, SerialParity.None, 8, SerialHandshake.None, SerialStopBitCount.One);
+        /// <summary>
+        /// Initialize a connection with a USB device
+        /// </summary>
+        /// <param name="Token">Token to cancel the connection attempt</param>
         /// <param name="DeviceId">ID of the device you want to connect to</param>
         /// <returns>Whether the connection was established</returns>
         public async Task<Boolean> ConnectAsync(CancellationToken Token, String DeviceId) => await ConnectAsync(Token, DeviceId, 9600);
         /// <summary>
         /// Initialize a connection with a USB device
         /// </summary>
-        /// <param name="Timeout">Number of milliseconds to timeout after if the connection is taking too long to establish</param>
+        /// <param name="Timeout">Number of milliseonds to cancel the connection attempt after</param>
+        /// <param name="DeviceId">ID of the device you want to connect to</param>
+        /// <param name="BaudRate">Baud rate of the connection</param>
+        /// <returns>Whether the connection was established</returns>
+        public async Task<Boolean> ConnectAsync(Int32 Timeout, String DeviceId, UInt32 BaudRate) => await ConnectAsync(new CancellationTokenSource(Timeout).Token, DeviceId, BaudRate);
+        /// <summary>
+        /// Initialize a connection with a USB device
+        /// </summary>
+        /// <param name="Timeout">Number of milliseconds to cancel the connection attempt after</param>
         /// <param name="DeviceId">ID of the device you want to connect to</param>
         /// <returns>Whether the connection was established</returns>
         public async Task<Boolean> ConnectAsync(Int32 Timeout, String DeviceId) => await ConnectAsync(new CancellationTokenSource(Timeout).Token, DeviceId);
+        /// <summary>
+        /// Initialize a connection with a USB device
+        /// </summary>
+        /// <param name="Timeout">Time span to cancel the connection attempt after</param>
+        /// <param name="DeviceId">ID of the device you want to connect to</param>
+        /// <param name="BaudRate">Baud rate of the connection</param>
+        /// <returns>Whether the connection was established</returns>
+        public async Task<Boolean> ConnectAsync(TimeSpan Timeout, String DeviceId, UInt32 BaudRate) => await ConnectAsync(new CancellationTokenSource(Timeout).Token, DeviceId, BaudRate);
         /// <summary>
         /// Initialize a connection with a USB device
         /// </summary>
@@ -109,7 +142,7 @@ namespace WindowsApp2._0.Utils
                 if (await dataReader.LoadAsync(Count).AsTask(Token) == Count)
                 {
                     dataReader.ReadBytes(InBuffer);
-                    if(ShouldDetachBuffer)
+                    if (ShouldDetachBuffer)
                     {
                         dataReader.DetachBuffer();
                         dataReader = null;
@@ -136,7 +169,7 @@ namespace WindowsApp2._0.Utils
         /// <param name="Token">Token to cancel the reading operation</param>
         /// <param name="InBuffer">Buffer to fill entirely with the data</param>
         /// <returns>Whether the data was read correctly</returns>
-        public async Task<Boolean> ReadAsync(CancellationToken Token, Byte[] InBuffer) => await ReadAsync(Token, InBuffer, (UInt32) InBuffer.Length);
+        public async Task<Boolean> ReadAsync(CancellationToken Token, Byte[] InBuffer) => await ReadAsync(Token, InBuffer, (UInt32)InBuffer.Length);
         /// <summary>
         /// Read data form the serial port
         /// </summary>
@@ -166,7 +199,7 @@ namespace WindowsApp2._0.Utils
                 if (await dataReader.LoadAsync(1).AsTask(Token) == 1)
                 {
                     Byte returnByte = dataReader.ReadByte();
-                    if(ShouldDetachBuffer)
+                    if (ShouldDetachBuffer)
                     {
                         dataReader.DetachBuffer();
                         dataReader = null;
@@ -174,8 +207,9 @@ namespace WindowsApp2._0.Utils
                     return returnByte;
                 }
                 return null;
-            } catch (OperationCanceledException) { }
-            Debug.WriteLine("Written");
+            }
+            catch (OperationCanceledException) { Debug.WriteLine("Don't trust the upcoming message:"); }
+            Debug.WriteLine("Read");
             return null;
         }
         /// <summary>
@@ -209,6 +243,7 @@ namespace WindowsApp2._0.Utils
         /// <returns>Whether the data was written correctly</returns>
         public async Task<Boolean> WriteAsync(CancellationToken Token, Byte[] Command, UInt32 Count, Boolean ShouldDetachBuffer)
         {
+            foreach (var b in Command) Debug.Write($"x{b:X} ");
             if (Count <= 0 || Count > Command.Length)
                 throw new ArgumentException("Count must be greater than 0 and not longer than the command length", nameof(Count));
 
@@ -216,7 +251,7 @@ namespace WindowsApp2._0.Utils
             {
                 Token.ThrowIfCancellationRequested();
                 Task<UInt32> StoreAsyncTask;
-                dataWriter.WriteBytes(Command.Take((Int32) Count).ToArray());
+                dataWriter.WriteBytes(Command.Take((Int32)Count).ToArray());
                 StoreAsyncTask = dataWriter.StoreAsync().AsTask(Token);
 
                 UInt32 BytesWritten = await StoreAsyncTask;
@@ -226,9 +261,9 @@ namespace WindowsApp2._0.Utils
                     dataWriter = null;
                 }
                 return BytesWritten == Count;
-            } catch (OperationCanceledException) { }
-            Debug.WriteLine("Written");
-            return false;
+            }
+            catch (OperationCanceledException) { return false; }
+            catch { throw; }
         }
         /// <summary>
         /// Write a byte buffer to the serial port
@@ -244,7 +279,7 @@ namespace WindowsApp2._0.Utils
         /// <param name="Token">Token to cancel the writing operation</param>
         /// <param name="Command">The byte buffer to write to the port</param>
         /// <returns>Whether the data was written correctly</returns>
-        public async Task<Boolean> WriteAsync(CancellationToken Token, Byte[] Command) => await WriteAsync(Token, Command, (UInt32) Command.Length);
+        public async Task<Boolean> WriteAsync(CancellationToken Token, Byte[] Command) => await WriteAsync(Token, Command, (UInt32)Command.Length);
         /// <summary>
         /// Write a byte buffer to the serial port
         /// </summary>
