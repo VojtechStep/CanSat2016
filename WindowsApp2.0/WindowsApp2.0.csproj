@@ -24,7 +24,7 @@
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>D40490035B43BD03D915ABAC5CFC028B0B4C3A5C</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>5330E0FD4D568FB6D5BDA33C389F54CAE11CD45E</PackageCertificateThumbprint>
     <AssemblyVersion>1.0.6076.101</AssemblyVersion>
     <HockeyAppResourceId>898dfc3f60054df2997a787deeaacddb</HockeyAppResourceId>
   </PropertyGroup>
@@ -113,7 +113,6 @@
       <DependentUpon>Chart2D.xaml</DependentUpon>
     </Compile>
     <Compile Include="DLLs\Communication.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Pages\EntryPage.xaml.cs">
       <DependentUpon>EntryPage.xaml</DependentUpon>
     </Compile>
@@ -213,6 +212,13 @@
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '15.0' ">
     <VisualStudioVersion>15.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

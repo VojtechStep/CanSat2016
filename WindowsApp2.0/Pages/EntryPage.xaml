@@ -10,8 +10,6 @@
       mc:Ignorable="d">
 
     <Page.Resources>
-
-
         <!--#region Animations-->
         <Storyboard x:Name="DataSelectionAnimation">
             <DoubleAnimation Duration="0:0:0.35" Storyboard.TargetName="MainGrid" Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.X)" To="{x:Bind ViewTranslateX}">
@@ -25,10 +23,10 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
-        <Storyboard x:Name="OpeningFileIconAnimation">
+        <Storyboard x:Key="OpeningFileIconAnimation">
             <DoubleAnimation Duration="0:0:1" RepeatBehavior="Forever" Storyboard.TargetName="OpeningFileIcon" Storyboard.TargetProperty="(TextBlock.RenderTransform).(RotateTransform.Angle)" To="360" />
         </Storyboard>
-        <Storyboard x:Name="ConnectingModuleIconAnimation">
+        <Storyboard x:Key="ConnectingModuleIconAnimation">
             <DoubleAnimation Duration="0:0:1" RepeatBehavior="Forever" Storyboard.TargetName="ConnectingModuleIcon" Storyboard.TargetProperty="(TextBlock.RenderTransform).(RotateTransform.Angle)" To="360" />
         </Storyboard>
         <!--#endregion-->
@@ -108,7 +106,7 @@
                 </Setter>
             </Style.Setters>
         </Style>
-        <Style x:Name="FileBottomBarButtonStyle" TargetType="Button">
+        <Style x:Key="FileBottomBarButtonStyle" TargetType="Button">
             <Style.Setters>
                 <Setter Property="Template">
                     <Setter.Value>
@@ -439,7 +437,7 @@
             </Grid.RenderTransform>
 
             <!--#region File Part-->
-            <Grid Name="OpenFileOptions" Background="#2BD9AE">
+            <Grid Name="OpenFileOptions" Background="#2BD9AE" AllowDrop="True" DragOver="OpenFileDragOver" Drop="OpenFileDrop">
 
                 <!--#region Column and Row Definitions-->
                 <Grid.ColumnDefinitions>
@@ -525,8 +523,8 @@
                         <TextBlock Name="TemperatureChartLabel" Margin="5" FontSize="20" Text="Temperature" />
                         <TextBlock Name="PressureChartLabel" Margin="5" FontSize="20" Text="Pressure" />
 
-                        <controls:Chart2D x:Name="TemperatureChart" Margin="5" Background="LightGray" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
-                        <controls:Chart2D x:Name="PressureChart" Margin="5" Background="LightGray" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
+                        <controls:Chart2D AutomationProperties.Name="Temperature Chart" x:Name="TemperatureChart" Margin="5" Background="LightGray" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
+                        <controls:Chart2D AutomationProperties.Name="Pressure Chart" x:Name="PressureChart" Margin="5" Background="LightGray" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
                         <StackPanel Name="MeteoData" Grid.Row="1" Grid.Column="6" Margin="5" Background="LightGray">
                             <StackPanel Margin="5" Orientation="Horizontal">
                                 <TextBlock Name="TempIndicatorValue" Margin="5" FontSize="20" Text="0" />
@@ -542,9 +540,9 @@
                         <TextBlock Name="YAccChartLabel" Margin="5" FontSize="20" Text="Y Acceleration" />
                         <TextBlock Name="ZAccChartLabel" Margin="5" FontSize="20" Text="Z Acceleration" />
 
-                        <controls:Chart2D x:Name="XAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
-                        <controls:Chart2D x:Name="YAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
-                        <controls:Chart2D x:Name="ZAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
+                        <controls:Chart2D AutomationProperties.Name="X Acceleration Chart" x:Name="XAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
+                        <controls:Chart2D AutomationProperties.Name="Y Acceleration Chart" x:Name="YAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
+                        <controls:Chart2D AutomationProperties.Name="Z Acceleration Chart" x:Name="ZAccChart" Margin="5" Background="LightGray" BorderBrush="#009688" PlotAreaBackground="Gray" UseSystemAccentColorForCurrentPointers="True" />
                         <StackPanel Name="AccelData" Grid.Row="5" Grid.Column="6" Margin="5" Background="LightGray">
                             <StackPanel Margin="5" Orientation="Horizontal">
                                 <TextBlock Name="XAccIndicatorValue" Margin="5" FontSize="20" Text="0" />

@@ -23,6 +23,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using WindowsApp2._0.Controls;
 using WindowsApp2._0.Utils;
@@ -38,6 +39,7 @@ namespace WindowsApp2._0
         DispatcherTimer dataAnimationTimer = new DispatcherTimer();
         DispatcherTimer nastyHackyTimerThingy = new DispatcherTimer { Interval = new TimeSpan(0, 0, 1) };
         DeviceWatcher deviceWatcher;
+        CancellationTokenSource serialCancelTokenSource;
 
         static Int32[] Times;
         Double[] Longitudes;
@@ -70,7 +72,7 @@ namespace WindowsApp2._0
                 SystemNavigationManager.GetForCurrentView().BackRequested -= GoToEntryPage;
                 _currentState = value;
                 Bindings.Update();
-                DataSelectionAnimation.Begin();
+                (Resources["DataSelectionAnimation"] as Storyboard).Begin();
                 AdjustTitleBar();
                 switch (value)
                 {
@@ -163,7 +165,7 @@ namespace WindowsApp2._0
             deviceWatcher = DeviceInformation.CreateWatcher(SerialDevice.GetDeviceSelector());
             deviceWatcher.Added += async (s, dinf) =>
             {
-                if (Ports.Count == 0 ||( !Ports.Contains(dinf))) await dispatcher.RunAsync(CoreDispatcherPriority.High, () => Ports.Add(dinf));
+                if (Ports.Count == 0 || (!Ports.Contains(dinf))) await dispatcher.RunAsync(CoreDispatcherPriority.High, () => Ports.Add(dinf));
                 if (Ports.Count == 1) await dispatcher.RunAsync(CoreDispatcherPriority.High, () => PortSelector.SelectedItem = dinf);
             };
             deviceWatcher.Removed += async (s, dinf) =>
@@ -288,7 +290,7 @@ namespace WindowsApp2._0
         #region Navigation stuff
         void EntryViewOpen()
         {
-            if(deviceWatcher.Status == DeviceWatcherStatus.Started) deviceWatcher.Stop();
+            if (deviceWatcher.Status == DeviceWatcherStatus.Started) deviceWatcher.Stop();
         }
 
         void OpenPageOpen()
@@ -299,7 +301,7 @@ namespace WindowsApp2._0
         async Task ConnectPageOpen()
         {
             SystemNavigationManager.GetForCurrentView().BackRequested += GoToEntryPage;
-            if(deviceWatcher.Status == DeviceWatcherStatus.Created ||
+            if (deviceWatcher.Status == DeviceWatcherStatus.Created ||
                 deviceWatcher.Status == DeviceWatcherStatus.Aborted ||
                 deviceWatcher.Status == DeviceWatcherStatus.Stopped) deviceWatcher.Start();
         }
@@ -307,7 +309,7 @@ namespace WindowsApp2._0
         private void GoToEntryPage(Object sender, BackRequestedEventArgs e)
         {
             if (!String.IsNullOrWhiteSpace(loadFileToken)) try { Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(loadFileToken); } catch { }
-            if(!String.IsNullOrWhiteSpace(saveFileToken)) try { Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(saveFileToken); } catch { }
+            if (!String.IsNullOrWhiteSpace(saveFileToken)) try { Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(saveFileToken); } catch { }
             CurrentState = DataSelectionState.None;
             SystemNavigationManager.GetForCurrentView().BackRequested -= GoToEntryPage;
         }
@@ -316,10 +318,11 @@ namespace WindowsApp2._0
         void GoBackToDataSelect(object o, BackRequestedEventArgs e)
         {
             CurrentState = CurrentState == DataSelectionState.OpenView ? DataSelectionState.Open : (CurrentState == DataSelectionState.ConnectView ? DataSelectionState.Connect : DataSelectionState.None);
-            OpeningFileIconAnimation.Stop();
-            ConnectingModuleIconAnimation.Stop();
+            (Resources["OpeningFileIconAnimation"] as Storyboard).Stop();
+            (Resources["ConnectingModuleIconAnimation"] as Storyboard).Stop();
             dataAnimationTimer.Stop();
             (FileDataView.Content as Grid).Children.OfType<Chart2D>().ForEach(p => p.Clear());
+            if (serialCancelTokenSource != null && !serialCancelTokenSource.IsCancellationRequested) serialCancelTokenSource.Cancel();
             SystemNavigationManager.GetForCurrentView().BackRequested -= GoBackToDataSelect;
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
             e.Handled = true;
@@ -362,7 +365,7 @@ namespace WindowsApp2._0
         private void HelpFileTapped(Object sender, TappedRoutedEventArgs e)
         {
             var frame = Window.Current.Content as Frame;
-            if(frame != null)
+            if (frame != null)
             {
                 frame.Navigate(typeof(Pages.FileHelp));
                 SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
@@ -373,7 +376,7 @@ namespace WindowsApp2._0
         private void HelpModuleTapped(Object sender, TappedRoutedEventArgs e)
         {
             var frame = Window.Current.Content as Frame;
-            if(frame != null)
+            if (frame != null)
             {
                 frame.Navigate(typeof(Pages.ModuleHelp));
                 SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
@@ -384,7 +387,7 @@ namespace WindowsApp2._0
         private void GoBackToFileOptions(Object sender, BackRequestedEventArgs e)
         {
             var frame = Window.Current.Content as Frame;
-            if(frame != null && frame.CanGoBack)
+            if (frame != null && frame.CanGoBack)
             {
                 frame.Navigate(typeof(EntryPage), DataSelectionState.Open);
                 SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
@@ -395,7 +398,7 @@ namespace WindowsApp2._0
         private void GoBackToModuleOptions(Object sender, BackRequestedEventArgs e)
         {
             var frame = Window.Current.Content as Frame;
-            if(frame != null && frame.CanGoBack)
+            if (frame != null && frame.CanGoBack)
             {
                 frame.Navigate(typeof(EntryPage), DataSelectionState.Connect);
                 SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
@@ -437,10 +440,10 @@ namespace WindowsApp2._0
         async Task ConnectModulePageOpen()
         {
             if (deviceWatcher.Status == DeviceWatcherStatus.Started) deviceWatcher.Stop();
-            ConnectingModuleIconAnimation.Begin();
+            serialCancelTokenSource = new CancellationTokenSource();
+            (Resources["ConnectingModuleIconAnimation"] as Storyboard).Begin();
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
             SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
-
 
             VisualStateManager.GoToState(this, "ModuleConnecting", false);
 
@@ -450,38 +453,39 @@ namespace WindowsApp2._0
 
             if (PortAvailable)
             {
-                if (!String.IsNullOrWhiteSpace(saveFileToken))
-                {
-                    await FileIO.WriteLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(saveFileToken), new String[] { "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" });
-                    using (Communication com = new Communication())
-                    {
-                        if (await com.ConnectAsync(3000, Ports[PortSelector.SelectedIndex].Id, 9600))
-                        {
-                            await com.WriteAsync(1500, 0x73);
-                            var inp = await com.ReadAsync(6000);
-                            if (!inp.HasValue) Debug.WriteLine("The module responded nothing");
-                            Debug.WriteLine($"X{inp:X}");
-                            if (inp == 0x06)
-                            {
-                                if (await com.ReadAsync(1500) == 0x07)
-                                {
-                                    moduleStateAppend = "Success";
-                                }
-                                else { moduleStateAppend = "SDFail"; }
-                            }
-                            else { moduleStateAppend = "NotRecognised"; }
-                        }
-                        else { moduleStateAppend = "NotConnectable"; }
-                    }
-                }
-                else { moduleStateAppend = "FileNotSelected"; }
+                //if (!String.IsNullOrWhiteSpace(saveFileToken))
+                //{
+                //    await FileIO.WriteLinesAsync(await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(saveFileToken), new String[] { "UTC Time [hhmmss.ss],Temperature [°C],Pressure [mB],X Acceleration [Gs],Y Acceleration [Gs],Z Acceleration [Gs],Latitude [dddmm.mm],N/S Indicator,Longitude [dddmm.mm],W/E Indicator,Altitude [m]" });
+                //    using (Communication com = new Communication())
+                //    {
+                //        if (await com.ConnectAsync(3000, Ports[PortSelector.SelectedIndex].Id, 9600))
+                //        {
+                //            await com.WriteAsync(1500, 0x73);
+                //            var inp = await com.ReadAsync(6000);
+                //            if (!inp.HasValue) Debug.WriteLine("The module responded nothing");
+                //            Debug.WriteLine($"X{inp:X}");
+                //            if (inp == 0x06)
+                //            {
+                //                if (await com.ReadAsync(1500) == 0x07)
+                //                {
+                //                    moduleStateAppend = "Success";
+                //                }
+                //                else { moduleStateAppend = "SDFail"; }
+                //            }
+                //            else { moduleStateAppend = "NotRecognised"; }
+                //        }
+                //        else { moduleStateAppend = "NotConnectable"; }
+                //    }
+                //}
+                //else { moduleStateAppend = "FileNotSelected"; }
+                moduleStateAppend = "Success";
             }
             else { moduleStateAppend = "NotConnected"; }
 
             VisualStateManager.GoToState(this, "Module" + moduleStateAppend, false);
 
-            ConnectingModuleIconAnimation.Stop();
-            if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "ModuleSuccess")
+            (Resources["ConnectingModuleIconAnimation"] as Storyboard).Stop();
+            if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).FirstOrDefault(p => p.Name == "DataLoadStates").CurrentState.Name == "ModuleSuccess")
             {
                 Debug.WriteLine("Listening");
                 Listen();
@@ -490,10 +494,35 @@ namespace WindowsApp2._0
 
         async Task Listen()
         {
-            using (Communication com = new Communication())
+            const UInt16 treshold = 15;
+            try
             {
-                await com.ConnectAsync(3000, Ports[PortSelector.SelectedIndex].Id);
-            }
+                serialCancelTokenSource.Token.ThrowIfCancellationRequested();
+                using (var com = new Communication())
+                {
+                    await com.ConnectAsync(serialCancelTokenSource.Token, (PortSelector.SelectedItem as DeviceInformation).Id);
+                    if (await com.WriteAsync(serialCancelTokenSource.Token, 0x73))
+                    {
+                        UInt16 stat = 0;
+                        while (true)
+                        {
+                            var inp = await com.ReadAsync(serialCancelTokenSource.Token);
+                            if (inp.HasValue)
+                            {
+                                Debug.Write((Char)inp.Value);
+                            }
+                            else
+                            {
+                                Debug.WriteLine($"No data received, attempt #{stat}");
+                                stat++;
+                                if (stat > treshold || serialCancelTokenSource.IsCancellationRequested) break;
+                            }
+                        }
+                    }
+                    else Debug.WriteLine("Data wasn't sent");
+                }
+            } catch (TaskCanceledException) { }
+            Debug.WriteLine("Stopped listening");
         }
 
         #endregion
@@ -535,7 +564,7 @@ namespace WindowsApp2._0
         async Task FileViewPageOpen()
         {
             TimeSlider.IsEnabled = Play.IsEnabled = Settings.IsEnabled = false;
-            OpeningFileIconAnimation.Begin();
+            (Resources["OpeningFileIconAnimation"] as Storyboard).Begin();
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
             SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
 
@@ -567,7 +596,7 @@ namespace WindowsApp2._0
 
             VisualStateManager.GoToState(this, "File" + fileStateAppend, false);
 
-            OpeningFileIconAnimation.Stop();
+            (Resources["OpeningFileIconAnimation"] as Storyboard).Stop();
 
 
             if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).First(p => p.Name == "DataLoadStates").CurrentState.Name == "FileSuccess")
@@ -704,6 +733,27 @@ namespace WindowsApp2._0
             var Minutes = Math.Floor(toConvert / 100) % 100 < 10 ? $"0{Math.Floor(toConvert / 100) % 100}" : (Math.Floor(toConvert / 100) % 100).ToString();
             var Seconds = Math.Floor(toConvert) % 100 < 10 ? $"0{Math.Floor(toConvert) % 100}" : (Math.Floor(toConvert) % 100).ToString();
             return $"{Hours}:{Minutes}:{Seconds}";
+        }
+
+        private void OpenFileDragOver(Object sender, DragEventArgs e)
+        {
+            e.AcceptedOperation = DataPackageOperation.Link;
+            e.DragUIOverride.IsContentVisible = true;
+            e.DragUIOverride.IsCaptionVisible = true;
+            e.DragUIOverride.IsGlyphVisible = true;
+            e.DragUIOverride.Caption = e.DataView.Properties.Count > 1 ? "Drag only one file" : "Visualize the data file";
+        }
+
+        private async void OpenFileDrop(Object sender, DragEventArgs e)
+        {
+            if (e.DataView.Contains(StandardDataFormats.StorageItems))
+            {
+                var items = await e.DataView.GetStorageItemsAsync();
+                if(items.Count == 1)
+                {
+                    UpdateEnvironmentWithFile(items[0]);
+                }
+            }
         }
     }
 

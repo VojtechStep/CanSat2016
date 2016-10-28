@@ -1,12 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.25618.0
+VisualStudioVersion = 15.0.25807.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProbeCode", "ProbeCode\ProbeCode.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GroundStationCode", "GroundStationCode\GroundStationCode.vcxproj", "{4718EF5E-0E17-446F-94D2-95ED607AEEC4}"
-EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "CanSatPage", "CanSatPage\", "{3C697F35-ED09-45F2-A52B-5FA1979CE41A}"
 	ProjectSection(WebsiteProperties) = preProject
 		SccProjectName = "SAK"
@@ -34,6 +30,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "CanSatPage", "CanSatPage\",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsApp2.0", "WindowsApp2.0\WindowsApp2.0.csproj", "{13900792-A140-4872-9725-3E444C521B9F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProbeCode", "ProbeCode", "{C61E33A3-80E1-43CD-9655-EC181C0160DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,28 +44,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|ARM.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x64.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Deploy.0 = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Any CPU.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|ARM.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x64.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
-		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|ARM.ActiveCfg = Debug|Win32
-		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|x64.ActiveCfg = Debug|Win32
-		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|x86.ActiveCfg = Debug|Win32
-		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|x86.Build.0 = Debug|Win32
-		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Debug|x86.Deploy.0 = Debug|Win32
-		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Release|Any CPU.ActiveCfg = Release|Win32
-		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Release|ARM.ActiveCfg = Release|Win32
-		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Release|x64.ActiveCfg = Release|Win32
-		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Release|x86.ActiveCfg = Release|Win32
-		{4718EF5E-0E17-446F-94D2-95ED607AEEC4}.Release|x86.Build.0 = Release|Win32
 		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C697F35-ED09-45F2-A52B-5FA1979CE41A}.Debug|ARM.ActiveCfg = Debug|Any CPU

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,26 +28,20 @@ namespace WindowsApp2._0.Utils
         /// <returns>Whether the connection was established</returns>
         public async Task<Boolean> ConnectAsync(CancellationToken Token, String DeviceId, UInt32 BaudRate, SerialParity Parity, UInt16 DataBits, SerialHandshake Handshake, SerialStopBitCount StopBits)
         {
-            try
+            Token.ThrowIfCancellationRequested();
+            serialPort = await SerialDevice.FromIdAsync(DeviceId);
+            if (serialPort != null)
             {
-                Token.ThrowIfCancellationRequested();
-                serialPort = await SerialDevice.FromIdAsync(DeviceId);
-                if (serialPort != null)
-                {
-                    serialPort.PinChanged += (s, e) => Debug.WriteLine("Pin changed");
-                    serialPort.BaudRate = BaudRate;
-                    serialPort.Parity = Parity;
-                    serialPort.DataBits = DataBits;
-                    serialPort.Handshake = Handshake;
-                    serialPort.StopBits = StopBits;
+                serialPort.BaudRate = BaudRate;
+                serialPort.Parity = Parity;
+                serialPort.DataBits = DataBits;
+                serialPort.Handshake = Handshake;
+                serialPort.StopBits = StopBits;
 
-                    dataWriter = new DataWriter(serialPort.OutputStream);
-                    dataReader = new DataReader(serialPort.InputStream);
-                    return true;
-                }
-                return false;
+                dataWriter = new DataWriter(serialPort.OutputStream);
+                dataReader = new DataReader(serialPort.InputStream);
+                return true;
             }
-            catch (OperationCanceledException) { }
             return false;
 
         }
@@ -133,7 +126,6 @@ namespace WindowsApp2._0.Utils
         {
             if (Count == 0)
                 throw new ArgumentException("Buffer length must be greater than 0", nameof(Count));
-
             try
             {
                 Token.ThrowIfCancellationRequested();
@@ -151,9 +143,7 @@ namespace WindowsApp2._0.Utils
                 }
                 return false;
             }
-            catch (OperationCanceledException) { }
-            Debug.WriteLine("Read");
-            return false;
+            catch (OperationCanceledException) { return false; }
         }
         /// <summary>
         /// Read data from the serial port
@@ -196,21 +186,19 @@ namespace WindowsApp2._0.Utils
             {
                 Token.ThrowIfCancellationRequested();
                 dataReader.InputStreamOptions = InputStreamOptions.Partial;
+                Byte? returnByte = null;
                 if (await dataReader.LoadAsync(1).AsTask(Token) == 1)
                 {
-                    Byte returnByte = dataReader.ReadByte();
+                    returnByte = dataReader.ReadByte();
                     if (ShouldDetachBuffer)
                     {
                         dataReader.DetachBuffer();
                         dataReader = null;
                     }
-                    return returnByte;
                 }
-                return null;
+                return returnByte;
             }
-            catch (OperationCanceledException) { Debug.WriteLine("Don't trust the upcoming message:"); }
-            Debug.WriteLine("Read");
-            return null;
+            catch (OperationCanceledException) { return null; }
         }
         /// <summary>
         /// Read a single byte from the serial port
@@ -243,18 +231,15 @@ namespace WindowsApp2._0.Utils
         /// <returns>Whether the data was written correctly</returns>
         public async Task<Boolean> WriteAsync(CancellationToken Token, Byte[] Command, UInt32 Count, Boolean ShouldDetachBuffer)
         {
-            foreach (var b in Command) Debug.Write($"x{b:X} ");
             if (Count <= 0 || Count > Command.Length)
                 throw new ArgumentException("Count must be greater than 0 and not longer than the command length", nameof(Count));
 
             try
             {
                 Token.ThrowIfCancellationRequested();
-                Task<UInt32> StoreAsyncTask;
                 dataWriter.WriteBytes(Command.Take((Int32)Count).ToArray());
-                StoreAsyncTask = dataWriter.StoreAsync().AsTask(Token);
 
-                UInt32 BytesWritten = await StoreAsyncTask;
+                UInt32 BytesWritten = await dataWriter.StoreAsync().AsTask(Token);
                 if (ShouldDetachBuffer)
                 {
                     dataWriter.DetachBuffer();
@@ -263,7 +248,6 @@ namespace WindowsApp2._0.Utils
                 return BytesWritten == Count;
             }
             catch (OperationCanceledException) { return false; }
-            catch { throw; }
         }
         /// <summary>
         /// Write a byte buffer to the serial port
@@ -301,7 +285,23 @@ namespace WindowsApp2._0.Utils
         /// <param name="Command">Byte to write to the port</param>
         /// <param name="ShouldDetachBuffer">Whether the function should detach the data writer after the operation</param>
         /// <returns>Whether the data was written correctly</returns>
-        public async Task<Boolean> WriteAsync(CancellationToken Token, Byte Command, Boolean ShouldDetachBuffer) => await WriteAsync(Token, new Byte[] { Command }, 1, ShouldDetachBuffer);
+        public async Task<Boolean> WriteAsync(CancellationToken Token, Byte Command, Boolean ShouldDetachBuffer)
+        {
+            Token.ThrowIfCancellationRequested();
+
+            try
+            {
+                dataWriter.WriteByte(Command);
+                UInt32 ByteWritten = await dataWriter.StoreAsync().AsTask();
+                if (ShouldDetachBuffer)
+                {
+                    dataWriter.DetachBuffer();
+                    dataWriter = null;
+                }
+                return ByteWritten == 1;
+            }
+            catch (OperationCanceledException) { return false; }
+        }
         /// <summary>
         /// Write a byte to the serial port
         /// </summary>
@@ -338,7 +338,7 @@ namespace WindowsApp2._0.Utils
                 dataWriter?.Dispose();
                 dataWriter = null;
             }
-            catch { Debug.WriteLine("Exception in Disconnect"); }
+            catch { }
         }
     }
 }

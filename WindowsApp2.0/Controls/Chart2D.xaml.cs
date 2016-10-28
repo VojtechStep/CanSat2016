@@ -181,8 +181,8 @@ namespace WindowsApp2._0.Controls
             SolidColorBrush strokeBrush = new SolidColorBrush(UseSystemAccentColorForCurrentPointers ? (Color)Resources["SystemAccentColor"] : Colors.Red);
             try
             {
-                PlotArea.Children.Remove(PlotArea.Children.OfType<Line>().First(p => p.Name == "CurrentDataPointer"));
-                PlotArea.Children.Remove(PlotArea.Children.OfType<Line>().First(p => p.Name == "CurrentDataPointerY"));
+                PlotArea.Children.Remove(PlotArea.Children.OfType<Line>().FirstOrDefault(p => p.Name == "CurrentDataPointer"));
+                PlotArea.Children.Remove(PlotArea.Children.OfType<Line>().FirstOrDefault(p => p.Name == "CurrentDataPointerY"));
             }
             catch (InvalidOperationException) { }
 
