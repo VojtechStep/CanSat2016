@@ -26,7 +26,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using WindowsApp2._0.Controls;
-using WindowsApp2._0.Utils;
+using System.Text;
+using Windows.Storage.Streams;
 
 namespace WindowsApp2._0
 {
@@ -40,6 +41,8 @@ namespace WindowsApp2._0
         DispatcherTimer nastyHackyTimerThingy = new DispatcherTimer { Interval = new TimeSpan(0, 0, 1) };
         DeviceWatcher deviceWatcher;
         CancellationTokenSource serialCancelTokenSource;
+
+        SerialDevice Device;
 
         static Int32[] Times;
         Double[] Longitudes;
@@ -83,7 +86,7 @@ namespace WindowsApp2._0
                         ConnectPageOpen();
                         break;
                     case DataSelectionState.OpenView:
-                        FileViewPageOpen();
+                        FileViewPageOpenAsync();
                         break;
                     case DataSelectionState.ConnectView:
                         ConnectModulePageOpen();
@@ -132,11 +135,12 @@ namespace WindowsApp2._0
 
         #region Render stuff
 
-        async Task Init()
+        async Task InitAsync()
         {
             InitializeComponent();
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
             SizeChanged += (s, e) => Recompose(e.NewSize);
+
             Loaded += (s, e) =>
             {
                 CurrentState = CurrentState;
@@ -172,7 +176,7 @@ namespace WindowsApp2._0
             {
                 if (Ports.Count > 0 && Ports.Count(p => p.Id == dinf.Id) != 0) await dispatcher.RunAsync(CoreDispatcherPriority.High, () => Ports.Remove(Ports.First(p => p.Id == dinf.Id)));
             };
-            await HideStatBar();
+            await HideStatBarAsync();
             ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Colors.White;
             ApplicationView.GetForCurrentView().TitleBar.ButtonForegroundColor = Colors.White;
             ApplicationView.GetForCurrentView().TitleBar.ButtonHoverForegroundColor = Colors.White;
@@ -180,14 +184,16 @@ namespace WindowsApp2._0
             ApplicationView.GetForCurrentView().FullScreenSystemOverlayMode = FullScreenSystemOverlayMode.Standard;
         }
 
+#pragma warning disable IDE1006 // Naming Styles
         protected override async void OnNavigatedTo(NavigationEventArgs e)
+#pragma warning restore IDE1006 // Naming Styles
         {
-            await Init();
+            await InitAsync();
             if (e.Parameter != null) CurrentState = (DataSelectionState)e.Parameter;
             else CurrentState = DataSelectionState.None;
         }
 
-        async Task ShowStatBar()
+        async Task ShowStatBarAsync()
         {
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
@@ -196,7 +202,7 @@ namespace WindowsApp2._0
             }
         }
 
-        async Task HideStatBar()
+        async Task HideStatBarAsync()
         {
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
@@ -298,7 +304,7 @@ namespace WindowsApp2._0
             SystemNavigationManager.GetForCurrentView().BackRequested += GoToEntryPage;
         }
 
-        async Task ConnectPageOpen()
+        void ConnectPageOpen()
         {
             SystemNavigationManager.GetForCurrentView().BackRequested += GoToEntryPage;
             if (deviceWatcher.Status == DeviceWatcherStatus.Created ||
@@ -315,7 +321,7 @@ namespace WindowsApp2._0
         }
 
 
-        void GoBackToDataSelect(object o, BackRequestedEventArgs e)
+        void GoBackToDataSelect(Object o, BackRequestedEventArgs e)
         {
             CurrentState = CurrentState == DataSelectionState.OpenView ? DataSelectionState.Open : (CurrentState == DataSelectionState.ConnectView ? DataSelectionState.Connect : DataSelectionState.None);
             (Resources["OpeningFileIconAnimation"] as Storyboard).Stop();
@@ -397,6 +403,7 @@ namespace WindowsApp2._0
 
         private void GoBackToModuleOptions(Object sender, BackRequestedEventArgs e)
         {
+            CancelAllIOTasks();
             var frame = Window.Current.Content as Frame;
             if (frame != null && frame.CanGoBack)
             {
@@ -408,10 +415,10 @@ namespace WindowsApp2._0
         #endregion
 
         #region Serial stuff
-        async void BrowseSaveTapped(Object sender, TappedRoutedEventArgs e)
+        async void BrowseSaveTappedAsync(Object sender, TappedRoutedEventArgs e)
         {
             BrowseSaveButton.IsEnabled = false;
-            SaveToFileLabelBorder.Tapped -= BrowseSaveTapped;
+            SaveToFileLabelBorder.Tapped -= BrowseSaveTappedAsync;
             var savePicker = new FileSavePicker
             {
                 SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
@@ -433,14 +440,15 @@ namespace WindowsApp2._0
                 SaveToFileLabel.Text = saveFile.Path;
                 ToolTipService.SetToolTip(SaveToFileLabelBorder, saveFile.Path);
             }
-            SaveToFileLabelBorder.Tapped += BrowseSaveTapped;
+            SaveToFileLabelBorder.Tapped += BrowseSaveTappedAsync;
             BrowseSaveButton.IsEnabled = true;
         }
 
-        async Task ConnectModulePageOpen()
+        void ConnectModulePageOpen()
         {
             if (deviceWatcher.Status == DeviceWatcherStatus.Started) deviceWatcher.Stop();
             serialCancelTokenSource = new CancellationTokenSource();
+            var reg = serialCancelTokenSource.Token.Register(() => { });
             (Resources["ConnectingModuleIconAnimation"] as Storyboard).Begin();
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
             SystemNavigationManager.GetForCurrentView().BackRequested += GoBackToDataSelect;
@@ -488,51 +496,293 @@ namespace WindowsApp2._0
             if (((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(MainGrid)).FirstOrDefault(p => p.Name == "DataLoadStates").CurrentState.Name == "ModuleSuccess")
             {
                 Debug.WriteLine("Listening");
-                Listen();
+                ListenAsync();
             }
         }
 
-        async Task Listen()
+        CancellationTokenSource ReadCancellationTokenSource;
+        CancellationTokenSource WriteCancellationTokenSource;
+
+        Object ReadCancelLock = new Object();
+        Object WriteCancelLock = new Object();
+
+        DataReader DataReaderObject = null;
+        DataWriter DataWriterObject = null;
+
+        async void ListenAsync()
         {
-            const UInt16 treshold = 15;
-            try
+            #region dead
+            //const UInt16 treshold = 15;
+            //using (var com = new Communication())
+            //{
+            //    await com.ConnectAsync(serialCancelTokenSource.Token, (PortSelector.SelectedItem as DeviceInformation).Id);
+            //    if (await com.WriteAsync(serialCancelTokenSource.Token, 0x73))
+            //    {
+            //        UInt16 stat = 0;
+            //        while (true)
+            //        {
+            //            var inp = await com.ReadAsync(serialCancelTokenSource.Token);
+            //            if (inp.HasValue)
+            //            {
+            //                Debug.Write((Char)inp.Value);
+            //            }
+            //            else
+            //            {
+            //                Debug.WriteLine($"No data received, attempt #{stat}");
+            //                stat++;
+            //                if (stat > treshold || serialCancelTokenSource.IsCancellationRequested) break;
+            //            }
+            //        }
+            //    }                //using (var com = new Communication((PortSelector.SelectedItem as DeviceInformation).Id))
+            //{
+            //    var connectCTS = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            //    if (await com.InitAsync(9600).AsTask(connectCTS.Token))
+            //    {
+            //        Debug.WriteLine("Device connected");
+            //        if (await com.WriteAsync(new Byte[] { 0x73 }))
+            //        {
+            //            Debug.WriteLine("Payload written");
+            //            var after = DateTime.Now.AddSeconds(5);
+            //            while (after > DateTime.Now) ;
+
+            //            UInt16 stat = 0;
+            //            CancellationTokenSource readCTS;
+            //            while (true)
+            //            {
+            //                readCTS = new CancellationTokenSource(TimeSpan.FromMilliseconds(200));
+            //                try
+            //                {
+            //                    var inp = await com.ReadAsync().AsTask(readCTS.Token);
+            //                    Debug.Write((Char) inp);
+            //                }
+            //                catch (Exception)/* when ((UInt32) e.HResult == 0x80004005 /*Failure exception)*/
+            //                {
+            //                    stat++;
+            //                    Debug.WriteLine($"No data received, attempt #{stat}");
+            //                    if (/*stat > treshold || readCTS.IsCancellationRequested || */serialCancelTokenSource.IsCancellationRequested) break;
+            //                }
+            //            }
+            //        }
+            //        else Debug.WriteLine("Writing failed");
+            //    }
+            //    else Debug.WriteLine("Connecting failed");
+            //}
+            //    else Debug.WriteLine("Data wasn't sent");
+            //}
+            //try
+            //{
+            //    var token = serialCancelTokenSource.Token;
+            //    var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            //    token.ThrowIfCancellationRequested();
+            //    using (var com = new Communication())
+            //    {
+            //        token.Register(com.CancelConnectTask);
+            //        token.Register(com.CancelReadTask);
+            //        token.Register(com.CancelWriteTask);
+
+            //        await com.ConnectAsync((PortSelector.SelectedItem as DeviceInformation).Id);
+            //        if (await com.WriteAsync(new Byte[] { 0x73 }))
+            //        {
+            //            timer.Tick += (s, e) =>
+            //            {
+
+            //            };
+            //        }
+            //    }
+            //}
+            //catch (OperationCanceledException) { }
+            //catch (Exception e) { Debug.WriteLine(e.Message); }
+            //Debug.WriteLine("Stopped listening");
+            //using (var com = new Communication())
+            //{
+            //    var connected = await com.ConnectAsync((PortSelector.SelectedItem as DeviceInformation).Id);
+            //    if (connected) Debug.WriteLine("Connected");
+            //    else Debug.WriteLine("Not Connected");
+
+            //    var inByte = new Byte[1];
+            //    while (true)
+            //    {
+            //        if (msg != null)
+            //        {
+            //            await com.WriteAsync(msg, msg.Length, new CancellationTokenSource(5000).Token);
+            //            msg = null;
+            //        }
+
+            //        if (await com.ReadAsync(inByte, 1, new CancellationTokenSource(1000).Token))
+            //        {
+            //            Debug.WriteLine(inByte[0]);
+            //        }
+            //    }
+            //}
+            #endregion
+            Device = await SerialDevice.FromIdAsync((PortSelector.SelectedItem as DeviceInformation).Id);
+            ResetReadCancellationTokenSource();
+            ResetWriteCancellationTokenSource();
+            if (Device != null)
             {
-                serialCancelTokenSource.Token.ThrowIfCancellationRequested();
-                using (var com = new Communication())
+                Device.BaudRate = 9600;
+            }
+            else Debug.WriteLine("Not Connected");
+        }
+
+        private void ResetWriteCancellationTokenSource()
+        {
+            WriteCancellationTokenSource = new CancellationTokenSource();
+            WriteCancellationTokenSource.Token.Register(() => Debug.WriteLine("Write operation cancelled"));
+        }
+
+        private void ResetReadCancellationTokenSource()
+        {
+            ReadCancellationTokenSource = new CancellationTokenSource();
+            ReadCancellationTokenSource.Token.Register(() => Debug.WriteLine("Read operation cancelled"));
+        }
+
+        void CancelAllIOTasks()
+        {
+            CancelReadTask();
+            CancelWriteTask();
+        }
+
+        void CancelReadTask()
+        {
+            lock (ReadCancelLock)
+            {
+                if (ReadCancellationTokenSource != null)
                 {
-                    await com.ConnectAsync(serialCancelTokenSource.Token, (PortSelector.SelectedItem as DeviceInformation).Id);
-                    if (await com.WriteAsync(serialCancelTokenSource.Token, 0x73))
+                    if (!ReadCancellationTokenSource.IsCancellationRequested)
                     {
-                        UInt16 stat = 0;
-                        while (true)
-                        {
-                            var inp = await com.ReadAsync(serialCancelTokenSource.Token);
-                            if (inp.HasValue)
-                            {
-                                Debug.Write((Char)inp.Value);
-                            }
-                            else
-                            {
-                                Debug.WriteLine($"No data received, attempt #{stat}");
-                                stat++;
-                                if (stat > treshold || serialCancelTokenSource.IsCancellationRequested) break;
-                            }
-                        }
+                        ReadCancellationTokenSource.Cancel();
+                        ResetReadCancellationTokenSource();
                     }
-                    else Debug.WriteLine("Data wasn't sent");
                 }
-            } catch (TaskCanceledException) { }
-            Debug.WriteLine("Stopped listening");
+            }
+        }
+
+        void CancelWriteTask()
+        {
+            lock (WriteCancelLock)
+            {
+                if (WriteCancellationTokenSource != null)
+                {
+                    if (!WriteCancellationTokenSource.IsCancellationRequested)
+                    {
+                        WriteCancellationTokenSource.Cancel();
+                        ResetWriteCancellationTokenSource();
+                    }
+                }
+            }
+        }
+
+        void SetMessage()
+        {
+            WriteCommandAsync(SerialInput.Text);
+            SerialInput.Text = "";
+        }
+
+        async void WriteCommandAsync(String command)
+        {
+            if (Device != null)
+            {
+                try
+                {
+                    DataWriterObject = new DataWriter(Device.OutputStream);
+                    DataWriterObject.WriteString(command + "\r\n");
+                    await WriteAsync(WriteCancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException) { }
+                finally
+                {
+                    DataWriterObject?.DetachStream();
+                    DataWriterObject = null;
+                }
+            }
+        }
+
+        async void GetMessageAsync()
+        {
+            if (Device != null)
+            {
+                try
+                {
+                    DataWriterObject = new DataWriter(Device.OutputStream);
+                    DataWriterObject.WriteString("get\r\n");
+                    await WriteAsync(WriteCancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException) { }
+                finally
+                {
+                    DataWriterObject?.DetachStream();
+                    DataWriterObject = null;
+                }
+
+                Byte[] firstBatch = null;
+                Byte[] secondBatch = null;
+                try
+                {
+                    DataReaderObject = new DataReader(Device.InputStream);
+                    firstBatch = await ReadAsync(ReadCancellationTokenSource.Token, 5);
+                }
+                catch (OperationCanceledException) { }
+                finally
+                {
+                    DataReaderObject?.DetachStream();
+                    DataReaderObject = null;
+                }
+
+                if (firstBatch != null)
+                {
+                    UInt16 version = (UInt16)((firstBatch[0] << 8) | firstBatch[1]);
+                    UInt16 length = (UInt16)((firstBatch[2] << 8) | firstBatch[3]);
+                    Debug.WriteLine($"Version: {version}, Length: {length}");
+                }
+            }
+        }
+
+        async Task WriteAsync(CancellationToken token)
+        {
+            Task<UInt32> storeAsyncTask;
+            lock (WriteCancelLock)
+            {
+                token.ThrowIfCancellationRequested();
+                storeAsyncTask = DataWriterObject.StoreAsync().AsTask(token);
+            }
+            UInt32 bytesWritten = await storeAsyncTask;
+            Debug.WriteLine($"{bytesWritten} bytes written");
+        }
+
+        async Task<Byte[]> ReadAsync(CancellationToken token, UInt32 count)
+        {
+            Task<UInt32> loadAsyncTask;
+            lock (ReadCancelLock)
+            {
+                token.ThrowIfCancellationRequested();
+                DataReaderObject.InputStreamOptions = InputStreamOptions.ReadAhead;
+                loadAsyncTask = DataReaderObject.LoadAsync(count).AsTask(token);
+            }
+
+            UInt32 bytesRead = await loadAsyncTask;
+            Debug.WriteLine($"{bytesRead} bytes read");
+            if (bytesRead > 0)
+            {
+                var bytes = new Byte[bytesRead];
+                DataReaderObject.ReadBytes(bytes);
+                for (UInt32 i = 0; i < bytesRead; i++)
+                {
+                    Debug.WriteLine($"[{i}] = {bytes[i]}");
+                }
+                return bytes;
+            }
+            return null;
         }
 
         #endregion
 
         #region File stuff
 
-        async void BrowseOpenTapped(Object sender, TappedRoutedEventArgs e)
+        async void BrowseOpenTappedAsync(Object sender, TappedRoutedEventArgs e)
         {
             BrowseOpenButton.IsEnabled = false;
-            SelectedFileLabelBorder.Tapped -= BrowseOpenTapped;
+            SelectedFileLabelBorder.Tapped -= BrowseOpenTappedAsync;
             var openPicker = new FileOpenPicker
             {
                 SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
@@ -550,7 +800,7 @@ namespace WindowsApp2._0
                 if (!String.IsNullOrWhiteSpace(loadFileToken)) Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Remove(loadFileToken);
                 UpdateEnvironmentWithFile(loadFile);
             }
-            SelectedFileLabelBorder.Tapped += BrowseOpenTapped;
+            SelectedFileLabelBorder.Tapped += BrowseOpenTappedAsync;
             BrowseOpenButton.IsEnabled = true;
         }
 
@@ -561,7 +811,7 @@ namespace WindowsApp2._0
             ToolTipService.SetToolTip(SelectedFileLabelBorder, loadFile.Path);
         }
 
-        async Task FileViewPageOpen()
+        async void FileViewPageOpenAsync()
         {
             TimeSlider.IsEnabled = Play.IsEnabled = Settings.IsEnabled = false;
             (Resources["OpeningFileIconAnimation"] as Storyboard).Begin();
@@ -727,6 +977,7 @@ namespace WindowsApp2._0
 
         #endregion
 
+        #region Utilities
         public static String ReadableTimeFromGPSTime(Double toConvert)
         {
             var Hours = Math.Floor(toConvert / 10000) % 100 < 10 ? $"0{Math.Floor(toConvert / 10000) % 100}" : (Math.Floor(toConvert / 10000) % 100).ToString();
@@ -744,18 +995,19 @@ namespace WindowsApp2._0
             e.DragUIOverride.Caption = e.DataView.Properties.Count > 1 ? "Drag only one file" : "Visualize the data file";
         }
 
-        private async void OpenFileDrop(Object sender, DragEventArgs e)
+        private async void OpenFileDropAsync(Object sender, DragEventArgs e)
         {
             if (e.DataView.Contains(StandardDataFormats.StorageItems))
             {
                 var items = await e.DataView.GetStorageItemsAsync();
-                if(items.Count == 1)
+                if (items.Count == 1)
                 {
                     UpdateEnvironmentWithFile(items[0]);
                 }
             }
         }
     }
+    #endregion
 
     #region Enums and little helpers
 
@@ -773,20 +1025,6 @@ namespace WindowsApp2._0
         None,
         Wide,
         Narrow
-    }
-
-    class TimeSliderConverter : Windows.UI.Xaml.Data.IValueConverter
-    {
-        public Object Convert(Object value, Type targetType, Object parameter, String language)
-        {
-            Debug.WriteLine("?");
-            return "?";
-        }
-
-        public Object ConvertBack(Object value, Type targetType, Object parameter, String language)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     class IsTrueStateTrigger : StateTriggerBase

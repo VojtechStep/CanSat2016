@@ -1,14 +1,36 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.25807.0
+VisualStudioVersion = 15.0.26014.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "CanSatPage", "CanSatPage\", "{3C697F35-ED09-45F2-A52B-5FA1979CE41A}"
 	ProjectSection(WebsiteProperties) = preProject
-		SccProjectName = "SAK"
-		SccAuxPath = "SAK"
-		SccLocalPath = "SAK"
-		SccProvider = "SAK"
+		SccProjectName = ""
+		SccAuxPath = ""
+		SccLocalPath = ""
+		SccProvider = ""
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_50297"
+		Debug.AspNetCompiler.PhysicalPath = "CanSatPage\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_50297\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_50297"
+		Release.AspNetCompiler.PhysicalPath = "CanSatPage\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_50297\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "50297"
+	EndProjectSection
+	ProjectSection(WebsiteProperties) = preProject
+		SccProjectName = ""
+		SccAuxPath = ""
+		SccLocalPath = ""
+		SccProvider = ""
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_50297"
 		Debug.AspNetCompiler.PhysicalPath = "CanSatPage\"
@@ -31,6 +53,15 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsApp2.0", "WindowsApp2.0\WindowsApp2.0.csproj", "{13900792-A140-4872-9725-3E444C521B9F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProbeCode", "ProbeCode", "{C61E33A3-80E1-43CD-9655-EC181C0160DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GroundStationCode", "GroundStationCode", "{5291821F-A6D4-4571-8581-5B1997AB40FE}"
+	ProjectSection(SolutionItems) = preProject
+		GroundStationCode\.clang_complete = GroundStationCode\.clang_complete
+		GroundStationCode\.gcc-flags.json = GroundStationCode\.gcc-flags.json
+		GroundStationCode\.gitignore = GroundStationCode\.gitignore
+		GroundStationCode\.travis.yml = GroundStationCode\.travis.yml
+		GroundStationCode\platformio.ini = GroundStationCode\platformio.ini
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

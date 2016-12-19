@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="27908Vojtchtpank.CanSat" Publisher="CN=9882071D-CA42-49E6-B680-19FAFFC35CAD" Version="1.1.21.0" />
-  <mp:PhoneIdentity PhoneProductId="58ce4b7d-649d-4b0f-812c-d8c886872af3" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="27908Vojtchtpank.CanSat" Publisher="CN=9882071D-CA42-49E6-B680-19FAFFC35CAD" Version="1.1.0.0" />
+  <mp:PhoneIdentity PhoneProductId="b385a905-a427-4395-a83b-fcb4299b8a9b" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>CanSat</DisplayName>
     <PublisherDisplayName>Vojtěch Štěpančík</PublisherDisplayName>
@@ -16,20 +16,11 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="WindowsApp2._0.App">
       <uap:VisualElements DisplayName="CanSat" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="WindowsApp2.0" BackgroundColor="transparent">
-        <uap:LockScreen Notification="badge" BadgeLogo="Assets\BadgeLogo.png" />
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\Square71x71Logo.png" Square310x310Logo="Assets\Square310x310Logo.png" ShortName="CanSat Preview">
-          <uap:ShowNameOnTiles>
-            <uap:ShowOn Tile="square150x150Logo" />
-            <uap:ShowOn Tile="wide310x150Logo" />
-            <uap:ShowOn Tile="square310x310Logo" />
-          </uap:ShowNameOnTiles>
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
-        <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="cansat" />
-        </uap:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="csdata">
             <uap:DisplayName>CanSat data</uap:DisplayName>
@@ -41,12 +32,15 @@
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="cansat" />
+        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
-    <DeviceCapability Name="serialcommunication">
+    <DeviceCapability Name="serialCommunication">
       <Device Id="any">
         <Function Type="name:serialPort" />
       </Device>

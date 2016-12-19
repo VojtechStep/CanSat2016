@@ -42,7 +42,7 @@ namespace WindowsApp2._0.Controls
 
         public Boolean ShowXLabels
         {
-            get { return (Boolean) GetValue(ShowXLabelsProperty); }
+            get { return (Boolean)GetValue(ShowXLabelsProperty); }
             set { SetValue(ShowXLabelsProperty, value); ReRender(RenderSize); }
         }
 
@@ -51,7 +51,7 @@ namespace WindowsApp2._0.Controls
 
         public Boolean ShowYLabels
         {
-            get { return (Boolean) GetValue(ShowYLabelsProperty); }
+            get { return (Boolean)GetValue(ShowYLabelsProperty); }
             set { SetValue(ShowYLabelsProperty, value); ReRender(RenderSize); }
         }
 
@@ -60,13 +60,13 @@ namespace WindowsApp2._0.Controls
 
         public Brush PlotAreaBackground
         {
-            get { return (Brush) PlotArea.GetValue(Panel.BackgroundProperty); }
+            get { return (Brush)PlotArea.GetValue(Panel.BackgroundProperty); }
             set { PlotArea.SetValue(Panel.BackgroundProperty, value); }
         }
 
         public new Brush Background
         {
-            get { return (Brush) MainGrid.GetValue(Panel.BackgroundProperty); }
+            get { return (Brush)MainGrid.GetValue(Panel.BackgroundProperty); }
             set { MainGrid.SetValue(Panel.BackgroundProperty, value); }
         }
 
@@ -74,10 +74,10 @@ namespace WindowsApp2._0.Controls
 
         public Boolean UseSystemAccentColorForCurrentPointers
         {
-            get { return (Boolean) GetValue(UseSystemAccentColorForCurrentPointersProperty); }
+            get { return (Boolean)GetValue(UseSystemAccentColorForCurrentPointersProperty); }
             set { SetValue(UseSystemAccentColorForCurrentPointersProperty, value); }
         }
-        
+
         public static readonly DependencyProperty UseSystemAccentColorForCurrentPointersProperty =
             DependencyProperty.Register("UseSystemAccentColorForCurrentPointers", typeof(Boolean), typeof(Chart2D), new PropertyMetadata(false, (s, e) => (s as Chart2D).RenderCurrentPointer()));
 
@@ -85,7 +85,7 @@ namespace WindowsApp2._0.Controls
 
         Boolean ReRenderEnabled { get; set; } = false;
         #endregion
-        
+
 
         public Chart2D()
         {
@@ -95,7 +95,7 @@ namespace WindowsApp2._0.Controls
                 ReRenderEnabled = true;
             };
         }
-        
+
 
         public void ReRender(Size newSize)
         {
@@ -188,7 +188,7 @@ namespace WindowsApp2._0.Controls
 
             if (CurrentData != null)
             {
-                var DesiredKey = Points.Keys.OrderBy(p => Math.Abs(p - (Double) CurrentData)).First();
+                var DesiredKey = Points.Keys.OrderBy(p => Math.Abs(p - (Double)CurrentData)).First();
                 var xStep = PlotArea.Width / (MathUtils.Limit(Points.Keys.Last() - Points.Keys.First(), 5, Points.Keys.Last() - Points.Keys.First()));
                 var yStep = PlotArea.Height / (MathUtils.Limit(Points.Values.Max() - Points.Values.Min(), 5, Points.Values.Max() - Points.Values.Min()));
                 PlotArea.Children.Add(new Line
@@ -261,7 +261,7 @@ namespace WindowsApp2._0.Controls
         public Double? Get(Int32 key)
         {
             Double output;
-            return Points.TryGetValue(key, out output) ? (Double?) output : null;
+            return Points.TryGetValue(key, out output) ? (Double?)output : null;
         }
 
         public Double? Pop()

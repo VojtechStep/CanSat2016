@@ -14,9 +14,6 @@ namespace WindowsApp2._0
     {
         public App()
         {
-            Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
-                Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
-                Microsoft.ApplicationInsights.WindowsCollectors.Session);
             HockeyClient.Current.Configure("898dfc3f60054df2997a787deeaacddb");
             InitializeComponent();
             Suspending += OnSuspending;
@@ -58,7 +55,7 @@ namespace WindowsApp2._0
 
         protected override void OnActivated(IActivatedEventArgs args)
         {
-            if(args.Kind == ActivationKind.Protocol)
+            if (args.Kind == ActivationKind.Protocol)
             {
                 var prtArgs = args as ProtocolActivatedEventArgs;
                 //TODO: Use the protocol data
@@ -68,12 +65,12 @@ namespace WindowsApp2._0
             }
         }
 
-        void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        void OnNavigationFailed(Object sender, NavigationFailedEventArgs e)
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
 
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private void OnSuspending(Object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
